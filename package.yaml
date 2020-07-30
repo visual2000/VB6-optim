@@ -20,10 +20,17 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/toothbrush/VB6-optim#readme>
 
 dependencies:
+- array
 - base >= 4.7 && < 5
+- containers
+- mtl
 
 library:
   source-dirs: src
+  dependencies:
+  - array
+  - containers
+  - mtl
 
 executables:
   VB6-optim-exe:
@@ -35,6 +42,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - VB6-optim
+    - haskeline
 
 tests:
   VB6-optim-test:

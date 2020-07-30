@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 942e12f54e53c1c34e6a5d82045ded0f57755de2683624783b471b442a58cef4
+-- hash: 7bb4a160d9affa6eb490cf58bbbc7d0bdb1554407eabafdae54ae19fb93aaa35
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -18,8 +18,6 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    src/Lexer.x
-    src/Parser.y
     README.md
     ChangeLog.md
 
@@ -28,11 +26,7 @@ source-repository head
   location: https://github.com/toothbrush/VB6-optim
 
 library
-  build-tools:
-      alex
-    , happy
   exposed-modules:
-      Eval
       Lexer
       Lib
       Parser
@@ -57,7 +51,9 @@ executable VB6-optim-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       VB6-optim
+    , array
     , base >=4.7 && <5
+    , containers
     , haskeline
     , mtl
   default-language: Haskell2010
@@ -72,5 +68,8 @@ test-suite VB6-optim-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       VB6-optim
+    , array
     , base >=4.7 && <5
+    , containers
+    , mtl
   default-language: Haskell2010
