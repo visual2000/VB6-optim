@@ -97,7 +97,7 @@ FuncDecls : {- empty -}        { [] }
 
 FuncDecl : pub_func VAR '(' FnDeclArgs ')' as TypeRef eol
            Statements
-           end_func eol                  { FuncDecl Public $2 $4 $7 [] }
+           end_func eol                  { FuncDecl Public $2 $4 $7 $9 }
 
 FnDeclArgs : {- empty -}               { [] }
            | FnDeclArg                 { [$1] } -- TODO disallow trailing ','
