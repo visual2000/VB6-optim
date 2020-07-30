@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7bb4a160d9affa6eb490cf58bbbc7d0bdb1554407eabafdae54ae19fb93aaa35
+-- hash: ad27e1c832694b75c56ed9e6686ca29a0970bacb9f984ea7b8369e27534ea80c
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
       Lexer
       Lib
       Parser
+      Printer
       Syntax
   other-modules:
       Paths_VB6_optim
@@ -40,6 +41,7 @@ library
     , base >=4.7 && <5
     , containers
     , mtl
+    , pretty
   default-language: Haskell2010
 
 executable VB6-optim-exe
@@ -56,6 +58,7 @@ executable VB6-optim-exe
     , containers
     , haskeline
     , mtl
+    , pretty
   default-language: Haskell2010
 
 test-suite VB6-optim-test
@@ -72,4 +75,5 @@ test-suite VB6-optim-test
     , base >=4.7 && <5
     , containers
     , mtl
+    , pretty
   default-language: Haskell2010
