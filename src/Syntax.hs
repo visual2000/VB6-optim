@@ -3,7 +3,27 @@ module Syntax where
 type Name = String
 
 data Module
-  = Mod [Attribute] [Option] [Stmt]
+  = Mod [Attribute] [Option] [TypeDef] [Stmt]
+  deriving (Show, Eq)
+
+data TypeDef
+  = TypeDef Visibility Name [TypeField]
+  deriving (Show, Eq)
+
+data Visibility
+  = Public
+  | Private
+  deriving (Show, Eq)
+
+data TypeField
+  = TypeField Name TypeRef
+  deriving (Show, Eq)
+
+data TypeRef
+  = TDouble
+  | TInt
+  | TString
+  | TUDT Name
   deriving (Show, Eq)
 
 data Attribute

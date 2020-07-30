@@ -39,9 +39,15 @@ tokens :-
   -- Syntax
   True                          { \s -> TokenTrue }
   False                         { \s -> TokenFalse }
+  Begin                         { \s -> TokenBegin }
+  End                           { \s -> TokenEnd }
   Attribute                     { \s -> TokenAttribute }
   Option                        { \s -> TokenOption }
   Explicit                      { \s -> TokenExplicit }
+  As                            { \s -> TokenAs }
+  Public                        { \s -> TokenPublic }
+  Private                       { \s -> TokenPrivate }
+  Type                          { \s -> TokenType }
   $digit+                       { \s -> TokenNum (read s) }
   \"([^\"]+)\"                  { \s -> TokenString (read s) }
   \=                            { \s -> TokenEq }
@@ -59,7 +65,13 @@ tokens :-
 data Token
   = TokenTrue
   | TokenFalse
+  | TokenAs
+  | TokenBegin
+  | TokenEnd
   | TokenOption
+  | TokenPublic
+  | TokenPrivate
+  | TokenType
   | TokenExplicit
   | TokenAttribute
   | TokenNum Int

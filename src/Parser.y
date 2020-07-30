@@ -1,3 +1,4 @@
+-- -*- mode: prog -*-
 {
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
@@ -32,7 +33,12 @@ import Control.Monad.Except
     STR   { TokenString $$ }
     attr  { TokenAttribute }
     opt   { TokenOption }
+    pub   { TokenPublic }
+    priv  { TokenPrivate }
     explicit { TokenExplicit }
+    end   { TokenEnd }
+    as    { TokenAs }
+    type_ { TokenType }
     '='   { TokenEq }
     '+'   { TokenAdd }
     '-'   { TokenSub }
@@ -46,15 +52,30 @@ import Control.Monad.Except
 %left '*'
 %%
 
-Module : Attributes Options { Mod $1 $2 ([]) }
+Module : Attributes Options TypeDefs { Mod $1 $2 $3 [] }
 
-Attributes : Attribute         { [$1] }
-           | Attributes Attribute { $2 : $1 }
+TypeDefs : {- empty-}       { [] }
+         | TypeDef TypeDefs { $1 : $2 }
+
+TypeDef : Visibility type_ VAR eol
+          TypeDefFields
+          end type_ eol                      { TypeDef $1 $3 $5 }
+
+TypeDefFields : TypeDefField                 { [$1] }
+              | TypeDefField TypeDefFields   { $1 : $2 }
+
+TypeDefField : VAR as VAR eol { TypeField $1 (TUDT $3) }
+
+Attributes : {- empty -}       { [] }
+           | Attribute Attributes { $1 : $2 }
 
 Attribute : attr VAR '=' Atom eol { Attribute $2 $4 }
 
-Options : Option { [$1] }
-        | Options Option { $2 : $1 }
+Visibility : pub   { Public }
+           | priv  { Private }
+
+Options : {- empty -}    { [] }
+        | Option Options { $1 : $2 }
 
 Option : opt explicit eol { OptionExplicit }
 
@@ -64,11 +85,11 @@ Option : opt explicit eol { OptionExplicit }
 --      | Atom                        { $1 }
 
 -- Atom : '(' Expr ')'                { $2 }
-Atom : NUM                         { (LInt $1) }
+Atom : NUM                         { LInt $1 }
   --    | VAR                         { Var $1 }
-     | STR                         { (LString $1) }
-     | true                        { (LBool True) }
-     | false                       { (LBool False) }
+     | STR                         { LString $1 }
+     | true                        { LBool True }
+     | false                       { LBool False }
 
 {
 
