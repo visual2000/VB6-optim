@@ -40,8 +40,6 @@ tokens :-
   \"([^\"]+)\"                  { \s -> TokenStringLit (read s) }
   True                          { \s -> TokenTrue }
   False                         { \s -> TokenFalse }
-  Begin                         { \s -> TokenBegin }
-  End                           { \s -> TokenEnd }
   Attribute                     { \s -> TokenAttribute }
   Option                        { \s -> TokenOption }
   Double                        { \s -> TokenDouble }
@@ -49,12 +47,12 @@ tokens :-
   Boolean                       { \s -> TokenBoolean }
   String                        { \s -> TokenString }
   Dim                           { \s -> TokenDim }
-  Function                      { \s -> TokenFunction }
+  "Public Function"             { \s -> TokenPublicFunction }
+  "Public Type"                 { \s -> TokenPublicType }
+  "End Function"                { \s -> TokenEndFunction }
+  "End Type"                    { \s -> TokenEndType }
   Explicit                      { \s -> TokenExplicit }
   As                            { \s -> TokenAs }
-  Public                        { \s -> TokenPublic }
-  Private                       { \s -> TokenPrivate }
-  Type                          { \s -> TokenType }
   $digit+                       { \s -> TokenNum (read s) }
   \=                            { \s -> TokenEq }
   [\+]                          { \s -> TokenAdd }
@@ -74,8 +72,6 @@ data Token
   = TokenTrue
   | TokenFalse
   | TokenAs
-  | TokenBegin
-  | TokenEnd
   | TokenDot
   | TokenDouble
   | TokenInteger
@@ -83,10 +79,10 @@ data Token
   | TokenString
   | TokenOption
   | TokenDim
-  | TokenFunction
-  | TokenPublic
-  | TokenPrivate
-  | TokenType
+  | TokenPublicFunction
+  | TokenPublicType
+  | TokenEndFunction
+  | TokenEndType
   | TokenExplicit
   | TokenAttribute
   | TokenNum Int

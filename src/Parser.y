@@ -26,34 +26,33 @@ import Control.Monad.Except
 
 -- Token Names
 %token
-    fn    { TokenFunction }
-    true  { TokenTrue }
-    false { TokenFalse }
-    NUM   { TokenNum $$ }
-    VAR   { TokenSym $$ }
-    STR   { TokenStringLit $$ }
-    attr  { TokenAttribute }
-    opt   { TokenOption }
-    dim   { TokenDim }
-    pub   { TokenPublic }
-    priv  { TokenPrivate }
-    explicit { TokenExplicit }
-    end   { TokenEnd }
-    as    { TokenAs }
-    type_ { TokenType }
-    '='   { TokenEq }
-    '+'   { TokenAdd }
-    '-'   { TokenSub }
-    '*'   { TokenMul }
-    '.'   { TokenDot }
-    'Double' { TokenDouble }
-    'Integer' { TokenInteger }
-    'Boolean' { TokenBoolean }
-    'String' { TokenString }
-    '('   { TokenLParen }
-    ')'   { TokenRParen }
-    ','   { TokenComma  }
-    eol   { TokenEOL }
+    pub_func    { TokenPublicFunction }
+    pub_type    { TokenPublicType }
+    end_func    { TokenEndFunction }
+    end_type    { TokenEndType }
+    true        { TokenTrue }
+    false       { TokenFalse }
+    NUM         { TokenNum $$ }
+    VAR         { TokenSym $$ }
+    STR         { TokenStringLit $$ }
+    attr        { TokenAttribute }
+    opt         { TokenOption }
+    dim         { TokenDim }
+    explicit    { TokenExplicit }
+    as          { TokenAs }
+    '='         { TokenEq }
+    '+'         { TokenAdd }
+    '-'         { TokenSub }
+    '*'         { TokenMul }
+    '.'         { TokenDot }
+    'Double'    { TokenDouble }
+    'Integer'   { TokenInteger }
+    'Boolean'   { TokenBoolean }
+    'String'    { TokenString }
+    '('         { TokenLParen }
+    ')'         { TokenRParen }
+    ','         { TokenComma  }
+    eol         { TokenEOL }
 
 -- Operators
 %left '+' '-'
@@ -69,9 +68,9 @@ Module : Attributes
 TypeDefs : {- empty-}       { [] }
          | TypeDef TypeDefs { $1 : $2 }
 
-TypeDef : type_ VAR eol
+TypeDef : pub_type VAR eol
               TypeDefFields
-          end type_ eol              { TypeDef Public $2 $4 }
+          end_type eol              { TypeDef Public $2 $4 }
 
 TypeDefFields : TypeDefField                 { [$1] }
               | TypeDefField TypeDefFields   { $1 : $2 }
@@ -82,9 +81,6 @@ Attributes : {- empty -}       { [] }
            | Attribute Attributes { $1 : $2 }
 
 Attribute : attr VAR '=' Lit eol { Attribute $2 $4 }
-
-Visibility : pub   { Public }
-           | priv  { Private }
 
 Options : {- empty -}    { [] }
         | Option Options { $1 : $2 }
@@ -99,9 +95,9 @@ TypeRef : 'Double'  { TDouble }
 FuncDecls : {- empty -}        { [] }
           | FuncDecl FuncDecls { $1 : $2 }
 
-FuncDecl : fn VAR '(' FnDeclArgs ')' as TypeRef eol
+FuncDecl : pub_func VAR '(' FnDeclArgs ')' as TypeRef eol
            Statements
-           end fn eol                  { FuncDecl Public $2 $4 $7 [] }
+           end_func eol                  { FuncDecl Public $2 $4 $7 [] }
 
 FnDeclArgs : {- empty -}               { [] }
            | FnDeclArg                 { [$1] } -- TODO disallow trailing ','
