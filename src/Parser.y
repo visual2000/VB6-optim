@@ -60,7 +60,11 @@ import Control.Monad.Except
 %left '*' '.'
 %%
 
-Module : Attributes Options TypeDefs FuncDecls { Mod $1 $2 $3 [] }
+Module : Attributes
+         Options
+         TypeDefs
+         FuncDecls
+         { Mod $1 $2 $3 $4 }
 
 TypeDefs : {- empty-}       { [] }
          | TypeDef TypeDefs { $1 : $2 }
