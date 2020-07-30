@@ -44,12 +44,7 @@ data Lit
   = LInt Int
   | LBool Bool
   | LString String
-  deriving (Eq, Ord)
+  deriving (Show, Eq, Ord)
 
 data Binop = Add | Sub | Mul | Eql
   deriving (Eq, Ord, Show)
-
-instance Show Lit where
-  show (LInt i) = show i
-  show (LBool b) = show b
-  show (LString s) = "\"" ++ s ++ "\""

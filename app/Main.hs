@@ -21,7 +21,7 @@ process input = do
     Left err -> do
       putStrLn "Parse Error:"
       print err
-    Right ast -> putStr $ render $ pp ast
+    Right ast -> putStrLn $ render $ pp ast
 
 main :: IO ()
 main = loop
