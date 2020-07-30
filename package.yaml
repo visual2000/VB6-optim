@@ -1,6 +1,6 @@
 name:                VB6-optim
 version:             0.1.0.0
-github:              "toothbrush/VB6-optim"
+github:              "visual2000/VB6-optim"
 license:             BSD3
 author:              "Paul"
 maintainer:          "paul@inktvis.org"
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/toothbrush/VB6-optim#readme>
+description:         Please see the README on GitHub at <https://github.com/visual2000/VB6-optim#readme>
 
 dependencies:
 - array
