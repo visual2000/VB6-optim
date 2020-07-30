@@ -24,8 +24,5 @@ process input = do
     Right ast -> putStrLn $ render $ pp ast
 
 main :: IO ()
-main = loop
-  where
-  loop = do
-    minput <- getContents
-    (liftIO $ process minput)
+main = do minput <- getContents
+          liftIO $ process minput
