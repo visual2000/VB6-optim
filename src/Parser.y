@@ -69,9 +69,9 @@ Module : Attributes
 TypeDefs : {- empty-}       { [] }
          | TypeDef TypeDefs { $1 : $2 }
 
-TypeDef : Visibility type_ VAR eol
-          TypeDefFields
-          end type_ eol              { TypeDef $1 $3 $5 }
+TypeDef : type_ VAR eol
+              TypeDefFields
+          end type_ eol              { TypeDef Public $2 $4 }
 
 TypeDefFields : TypeDefField                 { [$1] }
               | TypeDefField TypeDefFields   { $1 : $2 }
@@ -99,9 +99,9 @@ TypeRef : 'Double'  { TDouble }
 FuncDecls : {- empty -}        { [] }
           | FuncDecl FuncDecls { $1 : $2 }
 
-FuncDecl : Visibility fn VAR '(' FnDeclArgs ')' as TypeRef eol
-           -- Statements
-           end fn eol                  { FuncDecl $1 $3 $5 $8 [] }
+FuncDecl : fn VAR '(' FnDeclArgs ')' as TypeRef eol
+           Statements
+           end fn eol                  { FuncDecl Public $2 $4 $7 [] }
 
 FnDeclArgs : {- empty -}               { [] }
            | FnDeclArg                 { [$1] } -- TODO disallow trailing ','
