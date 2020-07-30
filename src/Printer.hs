@@ -51,7 +51,7 @@ instance Printable [TypeField] where
 instance Printable Lit where
   pp (LInt i) = int i
   pp (LBool b) = text $ show b
-  pp (LString s) = quotes $ text s
+  pp (LString s) = doubleQuotes $ text s
 
 instance Printable TypeRef where
   pp TDouble = text "Double"
