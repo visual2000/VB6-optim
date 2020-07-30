@@ -3,7 +3,7 @@ module Main where
 import Lib
 
 import Syntax (Module)
-import Printer (toDoc)
+import Printer (Printable, pp)
 import Parser (parseModule, parseTokens)
 
 import Control.Monad.Trans
@@ -21,7 +21,7 @@ process input = do
     Left err -> do
       putStrLn "Parse Error:"
       print err
-    Right ast -> putStr $ render $ toDoc ast
+    Right ast -> putStr $ render $ pp ast
 
 main :: IO ()
 main = loop
