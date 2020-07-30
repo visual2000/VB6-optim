@@ -1,3 +1,4 @@
+-- -*- mode: prog -*-
 -- **Begin Haskell Syntax**
 {
 {-# OPTIONS_GHC -w #-}
@@ -14,6 +15,9 @@ import Control.Monad.Except
 }
 -- **End Haskell Syntax**
 
+-- TODO use --latin1 option?
+-- TODO use bytestrings?
+
 -- **Begin Alex Syntax**
 %wrapper "basic"
 
@@ -23,11 +27,14 @@ $eol   = [\n]
 
 tokens :-
 
-  -- Whitespace insensitive
+  -- Whitespace insensitive, but preserve newlines
   [\ \t\f\v]+                   ;
 
   -- Comments
   "'".*                         ;
+
+  -- Line continuations
+  " _" $eol                     ;
 
   -- Syntax
   True                          { \s -> TokenTrue }
@@ -36,7 +43,7 @@ tokens :-
   Option                        { \s -> TokenOption }
   Explicit                      { \s -> TokenExplicit }
   $digit+                       { \s -> TokenNum (read s) }
-  \"[^\"]+\"                    { \s -> TokenString s }
+  \"([^\"]+)\"                  { \s -> TokenString (read s) }
   \=                            { \s -> TokenEq }
   [\+]                          { \s -> TokenAdd }
   [\-]                          { \s -> TokenSub }
@@ -44,7 +51,7 @@ tokens :-
   \(                            { \s -> TokenLParen }
   \)                            { \s -> TokenRParen }
   $alpha [$alpha $digit \_]*    { \s -> TokenSym s }
-  $eol                          { \s -> TokenEOL }
+  $eol+                         { \s -> TokenEOL }
 
 -- **End Alex Syntax**
 
