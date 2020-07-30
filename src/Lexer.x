@@ -24,46 +24,47 @@ $eol   = [\n]
 tokens :-
 
   -- Whitespace insensitive
-  $eol                          ;
-  $white+                       ;
+  [\ \t\f\v]+                   ;
 
   -- Comments
-  "#".*                         ;
+  "'".*                         ;
 
   -- Syntax
-  let                           { \s -> TokenLet }
   True                          { \s -> TokenTrue }
   False                         { \s -> TokenFalse }
-  in                            { \s -> TokenIn }
+  Attribute                     { \s -> TokenAttribute }
+  Option                        { \s -> TokenOption }
+  Explicit                      { \s -> TokenExplicit }
   $digit+                       { \s -> TokenNum (read s) }
-  "->"                          { \s -> TokenArrow }
+  \"[^\"]+\"                    { \s -> TokenString s }
   \=                            { \s -> TokenEq }
-  \\                            { \s -> TokenLambda }
   [\+]                          { \s -> TokenAdd }
   [\-]                          { \s -> TokenSub }
   [\*]                          { \s -> TokenMul }
   \(                            { \s -> TokenLParen }
   \)                            { \s -> TokenRParen }
-  $alpha [$alpha $digit \_ \']* { \s -> TokenSym s }
+  $alpha [$alpha $digit \_]*    { \s -> TokenSym s }
+  $eol                          { \s -> TokenEOL }
 
 -- **End Alex Syntax**
 
 {
 data Token
-  = TokenLet
-  | TokenTrue
+  = TokenTrue
   | TokenFalse
-  | TokenIn
-  | TokenLambda
+  | TokenOption
+  | TokenExplicit
+  | TokenAttribute
   | TokenNum Int
-  | TokenSym String
-  | TokenArrow
+  | TokenString String
   | TokenEq
   | TokenAdd
   | TokenSub
   | TokenMul
   | TokenLParen
   | TokenRParen
+  | TokenSym String
+  | TokenEOL
   | TokenEOF
   deriving (Eq,Show)
 
