@@ -37,25 +37,29 @@ tokens :-
   " _" $eol                     ;
 
   -- Syntax
+  \"([^\"]+)\"                  { \s -> TokenString (read s) }
   True                          { \s -> TokenTrue }
   False                         { \s -> TokenFalse }
   Begin                         { \s -> TokenBegin }
   End                           { \s -> TokenEnd }
   Attribute                     { \s -> TokenAttribute }
   Option                        { \s -> TokenOption }
+  Dim                           { \s -> TokenDim }
+  Function                      { \s -> TokenFunction }
   Explicit                      { \s -> TokenExplicit }
   As                            { \s -> TokenAs }
   Public                        { \s -> TokenPublic }
   Private                       { \s -> TokenPrivate }
   Type                          { \s -> TokenType }
   $digit+                       { \s -> TokenNum (read s) }
-  \"([^\"]+)\"                  { \s -> TokenString (read s) }
   \=                            { \s -> TokenEq }
   [\+]                          { \s -> TokenAdd }
   [\-]                          { \s -> TokenSub }
   [\*]                          { \s -> TokenMul }
+  [\.]                          { \s -> TokenDot }
   \(                            { \s -> TokenLParen }
   \)                            { \s -> TokenRParen }
+  [\,]                          { \s -> TokenComma }
   $alpha [$alpha $digit \_]*    { \s -> TokenSym s }
   $eol+                         { \s -> TokenEOL }
 
@@ -68,7 +72,10 @@ data Token
   | TokenAs
   | TokenBegin
   | TokenEnd
+  | TokenDot
   | TokenOption
+  | TokenDim
+  | TokenFunction
   | TokenPublic
   | TokenPrivate
   | TokenType
@@ -82,6 +89,7 @@ data Token
   | TokenMul
   | TokenLParen
   | TokenRParen
+  | TokenComma
   | TokenSym String
   | TokenEOL
   | TokenEOF
