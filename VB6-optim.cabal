@@ -18,6 +18,8 @@ license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
+    src/Lexer.x
+    src/Parser.y
     README.md
     ChangeLog.md
 
@@ -26,14 +28,24 @@ source-repository head
   location: https://github.com/toothbrush/VB6-optim
 
 library
+  build-tools:
+      alex
+    , happy
   exposed-modules:
+      Eval
+      Lexer
       Lib
+      Parser
+      Syntax
   other-modules:
       Paths_VB6_optim
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      array
+    , base >=4.7 && <5
+    , containers
+    , mtl
   default-language: Haskell2010
 
 executable VB6-optim-exe
@@ -46,6 +58,8 @@ executable VB6-optim-exe
   build-depends:
       VB6-optim
     , base >=4.7 && <5
+    , haskeline
+    , mtl
   default-language: Haskell2010
 
 test-suite VB6-optim-test
