@@ -37,13 +37,17 @@ tokens :-
   " _" $eol                     ;
 
   -- Syntax
-  \"([^\"]+)\"                  { \s -> TokenString (read s) }
+  \"([^\"]+)\"                  { \s -> TokenStringLit (read s) }
   True                          { \s -> TokenTrue }
   False                         { \s -> TokenFalse }
   Begin                         { \s -> TokenBegin }
   End                           { \s -> TokenEnd }
   Attribute                     { \s -> TokenAttribute }
   Option                        { \s -> TokenOption }
+  Double                        { \s -> TokenDouble }
+  Integer                       { \s -> TokenInteger }
+  Boolean                       { \s -> TokenBoolean }
+  String                        { \s -> TokenString }
   Dim                           { \s -> TokenDim }
   Function                      { \s -> TokenFunction }
   Explicit                      { \s -> TokenExplicit }
@@ -73,6 +77,10 @@ data Token
   | TokenBegin
   | TokenEnd
   | TokenDot
+  | TokenDouble
+  | TokenInteger
+  | TokenBoolean
+  | TokenString
   | TokenOption
   | TokenDim
   | TokenFunction
@@ -82,7 +90,7 @@ data Token
   | TokenExplicit
   | TokenAttribute
   | TokenNum Int
-  | TokenString String
+  | TokenStringLit String
   | TokenEq
   | TokenAdd
   | TokenSub

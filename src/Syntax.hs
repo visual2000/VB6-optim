@@ -60,6 +60,7 @@ data Expr
   = ELit Lit
   | EVar Name
   | EOp Binop Expr Expr
+  -- todo funcall
   deriving (Show, Eq)
 
 data Lit

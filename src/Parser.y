@@ -26,13 +26,15 @@ import Control.Monad.Except
 
 -- Token Names
 %token
+    fn    { TokenFunction }
     true  { TokenTrue }
     false { TokenFalse }
     NUM   { TokenNum $$ }
     VAR   { TokenSym $$ }
-    STR   { TokenString $$ }
+    STR   { TokenStringLit $$ }
     attr  { TokenAttribute }
     opt   { TokenOption }
+    dim   { TokenDim }
     pub   { TokenPublic }
     priv  { TokenPrivate }
     explicit { TokenExplicit }
@@ -43,33 +45,39 @@ import Control.Monad.Except
     '+'   { TokenAdd }
     '-'   { TokenSub }
     '*'   { TokenMul }
+    '.'   { TokenDot }
+    'Double' { TokenDouble }
+    'Integer' { TokenInteger }
+    'Boolean' { TokenBoolean }
+    'String' { TokenString }
     '('   { TokenLParen }
     ')'   { TokenRParen }
+    ','   { TokenComma  }
     eol   { TokenEOL }
 
 -- Operators
 %left '+' '-'
-%left '*'
+%left '*' '.'
 %%
 
-Module : Attributes Options TypeDefs { Mod $1 $2 $3 [] }
+Module : Attributes Options TypeDefs FuncDecls { Mod $1 $2 $3 [] }
 
 TypeDefs : {- empty-}       { [] }
          | TypeDef TypeDefs { $1 : $2 }
 
 TypeDef : Visibility type_ VAR eol
           TypeDefFields
-          end type_ eol                      { TypeDef $1 $3 $5 }
+          end type_ eol              { TypeDef $1 $3 $5 }
 
 TypeDefFields : TypeDefField                 { [$1] }
               | TypeDefField TypeDefFields   { $1 : $2 }
 
-TypeDefField : VAR as VAR eol { TypeField $1 (TUDT $3) }
+TypeDefField : VAR as TypeRef eol { TypeField $1 $3 }
 
 Attributes : {- empty -}       { [] }
            | Attribute Attributes { $1 : $2 }
 
-Attribute : attr VAR '=' Atom eol { Attribute $2 $4 }
+Attribute : attr VAR '=' Lit eol { Attribute $2 $4 }
 
 Visibility : pub   { Public }
            | priv  { Private }
@@ -79,17 +87,49 @@ Options : {- empty -}    { [] }
 
 Option : opt explicit eol { OptionExplicit }
 
--- Form : Form '+' Form               { Op Add $1 $3 }
---      | Form '-' Form               { Op Sub $1 $3 }
---      | Form '*' Form               { Op Mul $1 $3 }
---      | Atom                        { $1 }
+TypeRef : 'Double'  { TDouble }
+        | 'Integer' { TInt }
+        | 'String'  { TString }
+        | VAR       { TUDT $1 }
 
--- Atom : '(' Expr ')'                { $2 }
-Atom : NUM                         { LInt $1 }
-  --    | VAR                         { Var $1 }
-     | STR                         { LString $1 }
+FuncDecls : {- empty -}        { [] }
+          | FuncDecl FuncDecls { $1 : $2 }
+
+FuncDecl : Visibility fn VAR '(' FnDeclArgs ')' as TypeRef eol
+           -- Statements
+           end fn eol                  { FuncDecl $1 $3 $5 $8 [] }
+
+FnDeclArgs : {- empty -}               { [] }
+           | FnDeclArg                 { [$1] } -- TODO disallow trailing ','
+           | FnDeclArg ',' FnDeclArgs  { $1 : $3 }
+
+FnDeclArg : VAR as TypeRef             { TypeField $1 $3 }
+
+Statements : {- empty -}              { [] }
+           | Statement Statements     { $1 : $2 }
+
+Statement : dim VAR as TypeRef eol    { StmtDecl $2 $4 }
+          | Lhs '=' Expr eol          { StmtAssign $1 $3 }
+
+Lhs : VAR             { NameLhs $1 }
+    | VAR '.' VAR     { FieldLhs [$1, $3] } -- for now only single dot
+    | VAR '(' NUM ')' { ArrayLhs $1 $3 }
+
+Expr : Lit                { ELit $1 }
+     | VAR                { EVar $1 }
+     | Form               { $1 }
+
+Form : Form '+' Form               { EOp Add $1 $3 }
+     | Form '-' Form               { EOp Sub $1 $3 }
+     | Form '*' Form               { EOp Mul $1 $3 }
+     | Atom                        { $1 }
+
+Atom : '(' Expr ')'                { $2 }
+
+Lit  : NUM                         { LInt $1 }
      | true                        { LBool True }
      | false                       { LBool False }
+     | STR                         { LString $1 }
 
 {
 
