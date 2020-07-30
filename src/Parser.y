@@ -96,7 +96,7 @@ FuncDecls : {- empty -}        { [] }
           | FuncDecl FuncDecls { $1 : $2 }
 
 FuncDecl : pub_func VAR '(' FnDeclArgs ')' as TypeRef eol
-           Statements
+               Statements
            end_func eol                  { FuncDecl Public $2 $4 $7 $9 }
 
 FnDeclArgs : {- empty -}               { [] }
