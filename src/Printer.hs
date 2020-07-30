@@ -44,12 +44,41 @@ instance Printable [TypeDef] where
 instance Printable TypeField where
   pp (TypeField n ref) = text n <+> text "As" <+> pp ref
 
+instance Printable [Stmt] where
+  pp [] = empty
+  pp ((StmtDecl n ty):ss) = text "Dim"
+                            <+> text n
+                            <+> text "As"
+                            <+> pp ty
+                            $+$ pp ss
+  pp ((StmtAssign l expr):ss) = pp l
+                                <+> equals
+                                <+> pp expr
+                                $+$ pp ss
+
+instance Printable Lhs where
+  pp (NameLhs n) = text n
+  pp (FieldLhs ns) = hcat $ punctuate (char '.') (map text ns)
+  pp (ArrayLhs n i) = text n <> lparen <> int i <> rparen
+
+instance Printable Expr where
+  pp (ELit l) = pp l
+  pp (EVar n) = text n
+  pp (EOp b e1 e2) = lparen <> pp e1 <+> pp b <+> pp e2 <> rparen
+
+instance Printable Binop where
+  pp Add = char '+'
+  pp Sub = char '-'
+  pp Mul = char '*'
+  pp Eql = char '=' -- todo hmm can VB do this?
+
 instance Printable [FuncDecl] where
   pp [] = empty
   pp ((FuncDecl v n args ty ss) : fs)
     = text (show v) <+> text "Function" <+> text n
       <> parens (hcat $ punctuate (text ", ") (map pp args))
       <+> text "As" <+> pp ty
+      $+$ nest 4 (pp ss)
       $+$ text "End Function"
       $+$ pp fs
 
