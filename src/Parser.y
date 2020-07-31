@@ -30,6 +30,16 @@ import Data.Either
     'Function'    { Token _ (TokenFunction) }
     'Type'        { Token _ (TokenType) }
     'End'         { Token _ (TokenEnd) }
+    'For'         { Token _ (TokenFor) }
+    'To'          { Token _ (TokenTo) }
+    'Next'        { Token _ (TokenNext) }
+    'Step'        { Token _ (TokenStep) }
+    'Or'          { Token _ (TokenOr) }
+    'And'         { Token _ (TokenAnd) }
+    'If'          { Token _ (TokenIf) }
+    'Then'        { Token _ (TokenThen) }
+    'Else'        { Token _ (TokenElse) }
+    'Exit'        { Token _ (TokenExit) }
     'Public'      { Token _ (TokenPublic) }
     'Private'     { Token _ (TokenPrivate) }
     'True'        { Token _ (TokenTrue) }
@@ -112,21 +122,31 @@ Statements : {- empty -}              { [] }
 
 Statement : 'Dim' VAR 'As' TypeRef eol    { StmtDecl $2 $4 }
           | Lhs '=' Expr eol              { StmtAssign $1 $3 }
+          | 'If' Expr 'Then' eol
+                Statements
+            'End' 'If' eol                { StmtIfThenElse $2 $5 [] }
+          | 'For' VAR '=' Expr 'To' Expr eol
+                Statements
+            'Next' VAR eol                { StmtFor $2 $4 $6 1 $8 }
 
 Lhs : VAR             { NameLhs $1 }
     | VAR '.' VAR     { FieldLhs [$1, $3] } -- for now only single dot
     | VAR '(' NUM ')' { ArrayLhs $1 $3 }
 
-Expr : Lit                { ELit $1 }
-     | VAR                { EVar $1 }
-     | Form               { $1 }
+FNCallRef : VAR             { NameLhs $1 }
+          | VAR '.' VAR     { FieldLhs [$1, $3] } -- for now only single dot
 
-Form : Form '+' Form               { EOp Add $1 $3 }
-     | Form '-' Form               { EOp Sub $1 $3 }
-     | Form '*' Form               { EOp Mul $1 $3 }
-     | Atom                        { $1 }
+Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
+     | Lit                        { ELit $1 }
+     | VAR                        { EVar $1 }
+     | VAR '.' VAR                { EAccess [$1, $3] }
+     | Expr '+' Expr              { EOp Add $1 $3 }
+     | Expr '-' Expr              { EOp Sub $1 $3 }
+     | Expr '*' Expr              { EOp Mul $1 $3 }
+--      | '(' Expr ')'             { $2 }
 
-Atom : '(' Expr ')'                { $2 }
+ExprList : Expr              { [$1] }
+         | Expr ',' ExprList { $1 : $3 }
 
 Lit  : NUM                         { LInt $1 }
      | 'True'                      { LBool True }

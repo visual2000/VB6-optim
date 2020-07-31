@@ -49,7 +49,8 @@ data Option
 data Stmt
   = StmtDecl Name TypeRef
   | StmtAssign Lhs Expr
-  -- | ECond eventually
+  | StmtIfThenElse Expr [Stmt] [Stmt]
+  | StmtFor Name Expr Expr Int [Stmt]
   deriving (Eq,Show)
 
 data Lhs
@@ -61,6 +62,8 @@ data Lhs
 data Expr
   = ELit Lit
   | EVar Name
+  | ECall Lhs [Expr]
+  | EAccess [Name] -- a.b.c
   | EOp Binop Expr Expr
   -- todo funcall
   deriving (Show, Eq)
