@@ -6,6 +6,8 @@
 
 module Lexer (
   Token(..),
+  IToken(..),
+  AlexPosn(..),
   scanTokens
 ) where
 
@@ -37,39 +39,42 @@ tokens :-
   " _" $eol                     ;
 
   -- Syntax
-  \"([^\"]+)\"                  { \_ s -> TokenStringLit (read s) }
-  True                          { \_ s -> TokenTrue }
-  False                         { \_ s -> TokenFalse }
-  Attribute                     { \_ s -> TokenAttribute }
-  Option                        { \_ s -> TokenOption }
-  Double                        { \_ s -> TokenDouble }
-  Integer                       { \_ s -> TokenInteger }
-  Boolean                       { \_ s -> TokenBoolean }
-  String                        { \_ s -> TokenString }
-  Dim                           { \_ s -> TokenDim }
-  Public                        { \_ s -> TokenPublic }
-  Private                       { \_ s -> TokenPrivate }
-  Function                      { \_ s -> TokenFunction }
-  Type                          { \_ s -> TokenType }
-  End                           { \_ s -> TokenEnd }
-  Explicit                      { \_ s -> TokenExplicit }
-  As                            { \_ s -> TokenAs }
-  $digit+                       { \_ s -> TokenNum (read s) }
-  \=                            { \_ s -> TokenEq }
-  [\+]                          { \_ s -> TokenAdd }
-  [\-]                          { \_ s -> TokenSub }
-  [\*]                          { \_ s -> TokenMul }
-  [\.]                          { \_ s -> TokenDot }
-  \(                            { \_ s -> TokenLParen }
-  \)                            { \_ s -> TokenRParen }
-  [\,]                          { \_ s -> TokenComma }
-  $alpha [$alpha $digit \_]*    { \_ s -> TokenSym s }
-  $eol+                         { \_ s -> TokenEOL }
+  \"([^\"]+)\"                  { \p s -> Token p $ TokenStringLit (read s) }
+  True                          { \p s -> Token p $ TokenTrue }
+  False                         { \p s -> Token p $ TokenFalse }
+  Attribute                     { \p s -> Token p $ TokenAttribute }
+  Option                        { \p s -> Token p $ TokenOption }
+  Double                        { \p s -> Token p $ TokenDouble }
+  Integer                       { \p s -> Token p $ TokenInteger }
+  Boolean                       { \p s -> Token p $ TokenBoolean }
+  String                        { \p s -> Token p $ TokenString }
+  Dim                           { \p s -> Token p $ TokenDim }
+  Public                        { \p s -> Token p $ TokenPublic }
+  Private                       { \p s -> Token p $ TokenPrivate }
+  Function                      { \p s -> Token p $ TokenFunction }
+  Type                          { \p s -> Token p $ TokenType }
+  End                           { \p s -> Token p $ TokenEnd }
+  Explicit                      { \p s -> Token p $ TokenExplicit }
+  As                            { \p s -> Token p $ TokenAs }
+  $digit+                       { \p s -> Token p $ TokenNum (read s) }
+  \=                            { \p s -> Token p $ TokenEq }
+  [\+]                          { \p s -> Token p $ TokenAdd }
+  [\-]                          { \p s -> Token p $ TokenSub }
+  [\*]                          { \p s -> Token p $ TokenMul }
+  [\.]                          { \p s -> Token p $ TokenDot }
+  \(                            { \p s -> Token p $ TokenLParen }
+  \)                            { \p s -> Token p $ TokenRParen }
+  [\,]                          { \p s -> Token p $ TokenComma }
+  $alpha [$alpha $digit \_]*    { \p s -> Token p $ TokenSym s }
+  $eol+                         { \p s -> Token p $ TokenEOL }
 
 -- **End Alex Syntax**
 
 {
-data Token
+data Token = Token AlexPosn IToken
+  deriving (Eq, Show)
+
+data IToken
   = TokenTrue
   | TokenFalse
   | TokenAs
@@ -101,7 +106,7 @@ data Token
   | TokenSym String
   | TokenEOL
   | TokenEOF
-  deriving (Eq,Show)
+  deriving (Eq, Show)
 
 scanTokens :: String -> Except String [Token]
 scanTokens str = go (alexStartPos, '\n', [], str) where

@@ -27,34 +27,34 @@ import Data.Either
 
 -- Token Names
 %token
-    func        { TokenFunction }
-    type        { TokenType }
-    end         { TokenEnd }
-    public      { TokenPublic }
-    private     { TokenPrivate }
-    true        { TokenTrue }
-    false       { TokenFalse }
-    NUM         { TokenNum $$ }
-    VAR         { TokenSym $$ }
-    STR         { TokenStringLit $$ }
-    attr        { TokenAttribute }
-    opt         { TokenOption }
-    dim         { TokenDim }
-    explicit    { TokenExplicit }
-    as          { TokenAs }
-    '='         { TokenEq }
-    '+'         { TokenAdd }
-    '-'         { TokenSub }
-    '*'         { TokenMul }
-    '.'         { TokenDot }
-    'Double'    { TokenDouble }
-    'Integer'   { TokenInteger }
-    'Boolean'   { TokenBoolean }
-    'String'    { TokenString }
-    '('         { TokenLParen }
-    ')'         { TokenRParen }
-    ','         { TokenComma  }
-    eol         { TokenEOL }
+    func        { Token _ (TokenFunction) }
+    type        { Token _ (TokenType) }
+    end         { Token _ (TokenEnd) }
+    public      { Token _ (TokenPublic) }
+    private     { Token _ (TokenPrivate) }
+    true        { Token _ (TokenTrue) }
+    false       { Token _ (TokenFalse) }
+    NUM         { Token _ (TokenNum $$) }
+    VAR         { Token _ (TokenSym $$) }
+    STR         { Token _ (TokenStringLit $$) }
+    attr        { Token _ (TokenAttribute) }
+    opt         { Token _ (TokenOption) }
+    dim         { Token _ (TokenDim) }
+    explicit    { Token _ (TokenExplicit) }
+    as          { Token _ (TokenAs) }
+    '='         { Token _ (TokenEq) }
+    '+'         { Token _ (TokenAdd) }
+    '-'         { Token _ (TokenSub) }
+    '*'         { Token _ (TokenMul) }
+    '.'         { Token _ (TokenDot) }
+    'Double'    { Token _ (TokenDouble) }
+    'Integer'   { Token _ (TokenInteger) }
+    'Boolean'   { Token _ (TokenBoolean) }
+    'String'    { Token _ (TokenString) }
+    '('         { Token _ (TokenLParen) }
+    ')'         { Token _ (TokenRParen) }
+    ','         { Token _ (TokenComma ) }
+    eol         { Token _ (TokenEOL) }
 
 -- Operators
 %left '+' '-'
@@ -133,9 +133,17 @@ Lit  : NUM                         { LInt $1 }
 
 {
 
+showTokenError :: Token -> String
+showTokenError (Token (AlexPn _ line column) t) =
+               "Parse error on line "
+                               ++ (show line) ++ ", column "
+                               ++ (show column) ++ "." ++ "\n"
+                               -- ++ (lines str !! (line - 1)) ++ "\n"
+                               -- ++ (take (column - 1) (repeat '-')) ++ "^\n"
+
 parseError :: [Token] -> Except String a
-parseError (l:ls) = throwError (show l)
-parseError [] = throwError "Unexpected end of Input"
+parseError (l:ls) = throwError $ (showTokenError l)
+parseError [] = throwError "Unexpected: end of file"
 
 parseModule :: String -> Either String Module
 parseModule input = runExcept $ do
