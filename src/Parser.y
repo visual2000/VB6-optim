@@ -149,7 +149,7 @@ parseError [] = throwError (\_ -> "Unexpected: end of file")
 
 parseModule :: [Token] -> Either (String -> String) Module
 parseModule input = runExcept $ do
-  modu input
+  modu (remDupEOLs input)
 
 -- todo rename to lexTokens
 parseTokens :: String -> Either String [Token]

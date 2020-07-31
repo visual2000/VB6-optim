@@ -8,6 +8,7 @@ module Lexer (
   Token(..),
   IToken(..),
   AlexPosn(..),
+  remDupEOLs,
   scanTokens
 ) where
 
@@ -29,6 +30,7 @@ $eol   = [\n\r]
 
 tokens :-
 
+  -- TODO figure out why we still get duplicate TokenEOL in output!
   -- Whitespace insensitive, but preserve newlines
   [\ \t\f\v]+                   ;
 
@@ -116,6 +118,12 @@ data IToken
   | TokenEOL
   | TokenEOF
   deriving (Eq, Show)
+
+remDupEOLs :: [Token] -> [Token]
+remDupEOLs []  = []
+remDupEOLs [x] = [x]
+remDupEOLs (first@(Token _ TokenEOL):(Token _ TokenEOL):xs) = first : remDupEOLs xs
+remDupEOLs (x1 : xs) = x1 : (remDupEOLs xs)
 
 scanTokens :: String -> Except String [Token]
 scanTokens str = go (alexStartPos, '\n', [], str) where
