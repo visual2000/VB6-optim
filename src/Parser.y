@@ -74,7 +74,8 @@ import Prelude hiding (LT, GT)
 %left 'And' 'Or'
 %left '<' '>' '='
 %left '+' '-'
-%left '*' '.'
+%left '*' '/'
+%left '.'
 %%
 
 Module : Attributes
