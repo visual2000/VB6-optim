@@ -27,34 +27,34 @@ import Data.Either
 
 -- Token Names
 %token
-    func        { Token _ (TokenFunction) }
-    type        { Token _ (TokenType) }
-    end         { Token _ (TokenEnd) }
-    public      { Token _ (TokenPublic) }
-    private     { Token _ (TokenPrivate) }
-    true        { Token _ (TokenTrue) }
-    false       { Token _ (TokenFalse) }
-    NUM         { Token _ (TokenNum $$) }
-    VAR         { Token _ (TokenSym $$) }
-    STR         { Token _ (TokenStringLit $$) }
-    attr        { Token _ (TokenAttribute) }
-    opt         { Token _ (TokenOption) }
-    dim         { Token _ (TokenDim) }
-    explicit    { Token _ (TokenExplicit) }
-    as          { Token _ (TokenAs) }
-    '='         { Token _ (TokenEq) }
-    '+'         { Token _ (TokenAdd) }
-    '-'         { Token _ (TokenSub) }
-    '*'         { Token _ (TokenMul) }
-    '.'         { Token _ (TokenDot) }
-    'Double'    { Token _ (TokenDouble) }
-    'Integer'   { Token _ (TokenInteger) }
-    'Boolean'   { Token _ (TokenBoolean) }
-    'String'    { Token _ (TokenString) }
-    '('         { Token _ (TokenLParen) }
-    ')'         { Token _ (TokenRParen) }
-    ','         { Token _ (TokenComma ) }
-    eol         { Token _ (TokenEOL) }
+    'Function'    { Token _ (TokenFunction) }
+    'Type'        { Token _ (TokenType) }
+    'End'         { Token _ (TokenEnd) }
+    'Public'      { Token _ (TokenPublic) }
+    'Private'     { Token _ (TokenPrivate) }
+    'True'        { Token _ (TokenTrue) }
+    'False'       { Token _ (TokenFalse) }
+    NUM           { Token _ (TokenNum $$) }
+    VAR           { Token _ (TokenSym $$) }
+    STR           { Token _ (TokenStringLit $$) }
+    'Attribute'   { Token _ (TokenAttribute) }
+    'Option'      { Token _ (TokenOption) }
+    'Dim'         { Token _ (TokenDim) }
+    'Explicit'    { Token _ (TokenExplicit) }
+    'As'          { Token _ (TokenAs) }
+    '='           { Token _ (TokenEq) }
+    '+'           { Token _ (TokenAdd) }
+    '-'           { Token _ (TokenSub) }
+    '*'           { Token _ (TokenMul) }
+    '.'           { Token _ (TokenDot) }
+    'Double'      { Token _ (TokenDouble) }
+    'Integer'     { Token _ (TokenInteger) }
+    'Boolean'     { Token _ (TokenBoolean) }
+    'String'      { Token _ (TokenString) }
+    '('           { Token _ (TokenLParen) }
+    ')'           { Token _ (TokenRParen) }
+    ','           { Token _ (TokenComma ) }
+    eol           { Token _ (TokenEOL) }
 
 -- Operators
 %left '+' '-'
@@ -69,30 +69,30 @@ Module : Attributes
 TopLevelDeclarations : {- empty -}        { [] }
                      | TopLevelDeclaration TopLevelDeclarations { $1 : $2 }
 
-TopLevelDeclaration : Visibility type VAR eol
+TopLevelDeclaration : Visibility 'Type' VAR eol
                                      TypeDefFields
-                                 end type eol      { Left (TypeDef $1 $3 $5) }
-                    | Visibility func VAR '(' FnDeclArgs ')' as TypeRef eol
+                                 'End' 'Type' eol      { Left (TypeDef $1 $3 $5) }
+                    | Visibility 'Function' VAR '(' FnDeclArgs ')' 'As' TypeRef eol
                                      Statements
-                                 end func eol      { Right (FuncDecl $1 $3 $5 $8 $10) }
+                                 'End' 'Function' eol      { Right (FuncDecl $1 $3 $5 $8 $10) }
 
-Visibility : private { Private }
-           | public  { Public }
+Visibility : 'Private' { Private }
+           | 'Public'  { Public }
 
 TypeDefFields : TypeDefField                 { [$1] }
               | TypeDefField TypeDefFields   { $1 : $2 }
 
-TypeDefField : VAR as TypeRef eol { TypeField $1 $3 }
+TypeDefField : VAR 'As' TypeRef eol { TypeField $1 $3 }
 
-Attributes : {- empty -}       { [] }
+Attributes : {- empty -}          { [] }
            | Attribute Attributes { $1 : $2 }
 
-Attribute : attr VAR '=' Lit eol { Attribute $2 $4 }
+Attribute : 'Attribute' VAR '=' Lit eol { Attribute $2 $4 }
 
 Options : {- empty -}    { [] }
         | Option Options { $1 : $2 }
 
-Option : opt explicit eol { OptionExplicit }
+Option : 'Option' 'Explicit' eol { OptionExplicit }
 
 TypeRef : 'Double'  { TDouble }
         | 'Integer' { TInt }
@@ -104,14 +104,14 @@ FnDeclArgs : {- empty -}               { [] }
            | FnDeclArg                 { [$1] } -- TODO disallow trailing ','
            | FnDeclArg ',' FnDeclArgs  { $1 : $3 }
 
-FnDeclArg : VAR as TypeRef             { TypeField $1 $3 }
-          | VAR '(' ')' as TypeRef     { TypeField $1 (TArrayOf $5) }
+FnDeclArg : VAR 'As' TypeRef             { TypeField $1 $3 }
+          | VAR '(' ')' 'As' TypeRef     { TypeField $1 (TArrayOf $5) }
 
 Statements : {- empty -}              { [] }
            | Statement Statements     { $1 : $2 }
 
-Statement : dim VAR as TypeRef eol    { StmtDecl $2 $4 }
-          | Lhs '=' Expr eol          { StmtAssign $1 $3 }
+Statement : 'Dim' VAR 'As' TypeRef eol    { StmtDecl $2 $4 }
+          | Lhs '=' Expr eol              { StmtAssign $1 $3 }
 
 Lhs : VAR             { NameLhs $1 }
     | VAR '.' VAR     { FieldLhs [$1, $3] } -- for now only single dot
@@ -129,8 +129,8 @@ Form : Form '+' Form               { EOp Add $1 $3 }
 Atom : '(' Expr ')'                { $2 }
 
 Lit  : NUM                         { LInt $1 }
-     | true                        { LBool True }
-     | false                       { LBool False }
+     | 'True'                      { LBool True }
+     | 'False'                     { LBool False }
      | STR                         { LString $1 }
 
 {
