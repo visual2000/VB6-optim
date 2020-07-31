@@ -155,6 +155,7 @@ instance Printable Lit where
   pp (LInt i) = int i
   pp (LBool b) = text $ show b
   pp (LString s) = doubleQuotes $ text s
+  pp (LDouble d) = double d
 
 instance Printable TypeRef where
   pp TDouble = text "Double"
