@@ -55,7 +55,17 @@ tokens :-
   Private                       { \p s -> Token p $ TokenPrivate }
   Function                      { \p s -> Token p $ TokenFunction }
   Type                          { \p s -> Token p $ TokenType }
+  For                           { \p s -> Token p $ TokenFor }
+  To                            { \p s -> Token p $ TokenTo }
+  Step                          { \p s -> Token p $ TokenStep }
+  If                            { \p s -> Token p $ TokenIf }
+  Then                          { \p s -> Token p $ TokenThen }
+  Else                          { \p s -> Token p $ TokenElse }
+  Or                            { \p s -> Token p $ TokenOr }
+  And                           { \p s -> Token p $ TokenAnd }
+  Next                          { \p s -> Token p $ TokenNext }
   End                           { \p s -> Token p $ TokenEnd }
+  Exit                          { \p s -> Token p $ TokenExit }
   Explicit                      { \p s -> Token p $ TokenExplicit }
   As                            { \p s -> Token p $ TokenAs }
   $digit+                       { \p s -> Token p $ TokenNum (read s) }
@@ -87,6 +97,9 @@ data IToken
   | TokenFalse
   | TokenAs
   | TokenDot
+  | TokenFor | TokenTo | TokenStep | TokenNext
+  | TokenIf | TokenThen | TokenElse
+  | TokenOr | TokenAnd
   | TokenDouble
   | TokenInteger
   | TokenBoolean
@@ -100,6 +113,7 @@ data IToken
   | TokenEnd
   | TokenEndFunction
   | TokenEndType
+  | TokenExit
   | TokenExplicit
   | TokenAttribute
   | TokenNum Int
