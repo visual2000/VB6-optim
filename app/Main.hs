@@ -10,6 +10,8 @@ import Control.Monad.Trans
 import Control.Monad.Except
 import System.Console.Haskeline
 
+import System.IO
+
 import Text.PrettyPrint
 
 process :: String -> IO ()
@@ -20,24 +22,26 @@ process input = do
       putStrLn "Lexing error:"
       putStrLn err
     Right lexedTokens -> do
-      putStrLn ("Tokens: " ++ show lexedTokens)
+      -- putStrLn ("Tokens: " ++ show lexedTokens)
       let ast = parseModule lexedTokens
       case ast of
         Left err -> do
           putStrLn "Parse error:"
           putStrLn (err input)
         Right ast -> do
-          putStrLn ("Syntax: " ++ show ast)
+          -- putStrLn ("Syntax: " ++ show ast)
           putStrLn $ render $ pp ast
 
 files = [ "examples/HitFuncs.bas"
         , "examples/CameraFuncs.bas"
+        , "examples/GfxInit.bas"
         ]
 
-parseFiles :: [FilePath] -> IO()
-parseFiles fs = do fileContentsList <- mapM readFile fs
-                   modules <- mapM process fileContentsList
-                   return ()
+parseFile :: FilePath -> IO()
+parseFile f = do fileContents <- readFile f
+                 hPutStr stderr $ "Reading " ++ f ++ "...\n"
+                 mdl <- process fileContents
+                 return ()
 
 main :: IO ()
-main = do parseFiles files
+main = mapM_ parseFile files
