@@ -48,10 +48,14 @@ data Option
   = OptionExplicit
   deriving (Show, Eq, Ord)
 
+data WithAssignment
+  = WithAssignment Lhs Expr
+  deriving (Show, Eq)
+
 data Stmt
   = StmtDecl [TypeField]
   | StmtReturn
-  | StmtWith Lhs [(Lhs, Expr)]
+  | StmtWith Lhs [WithAssignment]
   | StmtAssign Lhs Expr
   | StmtNakedFunctionCall Lhs [Expr]
   | StmtIfThenElse Expr [Stmt] [Stmt]
@@ -60,7 +64,7 @@ data Stmt
 
 data Lhs
   = NameLhs Name -- just a variable
-  | FieldLhs [Name] -- a.b.c = ..
+  | FieldLhs Name Lhs -- a.b.c = ..
   | ArrayLhs Name Int -- a[0] = 3
   deriving (Show, Eq)
 

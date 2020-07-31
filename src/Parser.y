@@ -77,11 +77,12 @@ import Prelude hiding (LT, GT)
     eol           { Token _ (TokenEOL) }
 
 -- Operators
+%right ','
 %left 'And' 'Or'
 %left '<' '>' '='
 %left '+' '-'
 %left '*' '/'
-%left '.'
+%right '.'
 %%
 
 Module : Attributes
@@ -177,14 +178,14 @@ Statement : 'Dim' DimDeclArgs eol          { StmtDecl $2 }
 Withs : With { [$1] }
       | With Withs { $1 : $2 }
 
-With : '.' Lhs '=' Expr eol { ($2, $4) }
+With : '.' Lhs '=' Expr eol { WithAssignment $2 $4 }
 
 Lhs : VAR             { NameLhs $1 }
-    | VAR '.' VAR     { FieldLhs [$1, $3] } -- for now only single dot
+    | VAR '.' Lhs     { FieldLhs $1 $3 }
     | VAR '(' NUM ')' { ArrayLhs $1 $3 }
 
-FNCallRef : VAR             { NameLhs $1 }
-          | VAR '.' VAR     { FieldLhs [$1, $3] } -- for now only single dot
+FNCallRef : VAR                { NameLhs $1 }
+          | VAR '.' FNCallRef  { FieldLhs $1 $3 }
 
 Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
      | '-' Expr                   { ENeg $2 }
@@ -198,11 +199,16 @@ Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
      | Expr '/' Expr              { EOp Div $1 $3 }
      | '(' Expr ')'               { $2 }
      | Lit                        { ELit $1 }
-     | VAR                        { EVar $1 }
-     | VAR '.' VAR                { EAccess [$1, $3] }
+     | VariableAccess             { EAccess $1 }
 
-ExprList : Expr              { [$1] }
-         | Expr ',' ExprList { $1 : $3 }
+VariableAccess : VAR                    { [ $1 ] }
+               | VAR '.' VariableAccess { $1 : $3 }
+
+ExprList : {-empty -}         { [] }
+         | NonEmptyExprList   { $1 }
+
+NonEmptyExprList : Expr                      { [$1] }
+                 | Expr ',' NonEmptyExprList { $1 : $3 }
 
 Lit  : NUM                         { LInt $1 }
      | 'True'                      { LBool True }
