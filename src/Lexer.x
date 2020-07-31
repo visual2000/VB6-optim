@@ -58,9 +58,12 @@ tokens :-
   As                            { \p s -> Token p $ TokenAs }
   $digit+                       { \p s -> Token p $ TokenNum (read s) }
   \=                            { \p s -> Token p $ TokenEq }
+  [\>]                          { \p s -> Token p $ TokenGt }
+  [\<]                          { \p s -> Token p $ TokenLt }
   [\+]                          { \p s -> Token p $ TokenAdd }
   [\-]                          { \p s -> Token p $ TokenSub }
   [\*]                          { \p s -> Token p $ TokenMul }
+  [\/]                          { \p s -> Token p $ TokenDiv }
   [\.]                          { \p s -> Token p $ TokenDot }
   \(                            { \p s -> Token p $ TokenLParen }
   \)                            { \p s -> Token p $ TokenRParen }
@@ -103,6 +106,9 @@ data IToken
   | TokenAdd
   | TokenSub
   | TokenMul
+  | TokenDiv
+  | TokenGt
+  | TokenLt
   | TokenLParen
   | TokenRParen
   | TokenComma
