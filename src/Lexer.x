@@ -56,6 +56,8 @@ tokens :-
   Public                        { \p s -> Token p $ TokenPublic }
   Private                       { \p s -> Token p $ TokenPrivate }
   Function                      { \p s -> Token p $ TokenFunction }
+  Sub                           { \p s -> Token p $ TokenSubroutine }
+  With                          { \p s -> Token p $ TokenWith }
   Declare                       { \p s -> Token p $ TokenDeclare }
   Lib                           { \p s -> Token p $ TokenLib }
   Type                          { \p s -> Token p $ TokenType }
@@ -110,7 +112,8 @@ data IToken
   | TokenString
   | TokenOption
   | TokenDim | TokenByVal | TokenByRef
-  | TokenFunction
+  | TokenFunction | TokenSubroutine
+  | TokenWith
   | TokenType
   | TokenPublic
   | TokenDeclare | TokenLib

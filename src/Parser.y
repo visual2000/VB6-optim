@@ -31,9 +31,11 @@ import Prelude hiding (LT, GT)
     'Declare'     { Token _ (TokenDeclare) }
     'Lib'         { Token _ (TokenLib) }
     'Function'    { Token _ (TokenFunction) }
+    'Sub'         { Token _ (TokenSubroutine) }
     'ByRef'       { Token _ (TokenByRef) }
     'ByVal'       { Token _ (TokenByVal) }
     'Type'        { Token _ (TokenType) }
+    'With'        { Token _ (TokenWith) }
     'End'         { Token _ (TokenEnd) }
     'For'         { Token _ (TokenFor) }
     'To'          { Token _ (TokenTo) }
@@ -100,6 +102,10 @@ TopLevelDeclaration : Visibility 'Type' VAR eol
                     | Visibility 'Function' VAR '(' FnDeclArgs ')' 'As' TypeRef eol
                                      Statements
                                  'End' 'Function' eol      { FuncDecl $1 $3 $5 $8 $10 }
+                    | Visibility 'Sub' VAR '(' FnDeclArgs ')' eol
+                                     Statements
+                                 'End' 'Sub' eol      { SubDecl $1 $3 $5 $8 }
+                    | Visibility VAR 'As' TypeRef eol  { GlobalVarDecl $1 $2 $4 }
 
 Visibility : 'Private' { Private }
            | 'Public'  { Public }
@@ -153,6 +159,9 @@ Statement : 'Dim' DimDeclArgs eol          { StmtDecl $2 }
             'Else' eol
                 Statements
             'End' 'If' eol                { StmtIfThenElse $2 $5 $8 }
+          | 'With' Lhs eol
+                Withs
+            'End' 'With' eol              { StmtWith $2 $4 }
           | 'If' Expr 'Then' eol
                 Statements
             'End' 'If' eol                { StmtIfThenElse $2 $5 [] }
@@ -163,6 +172,11 @@ Statement : 'Dim' DimDeclArgs eol          { StmtDecl $2 }
                 Statements
             'Next' VAR eol                { StmtFor $2 $4 $6 (ELit (LInt 1)) $8 }
           | 'Exit' 'Function' eol         { StmtReturn }
+
+Withs : With { [$1] }
+      | With Withs { $1 : $2 }
+
+With : '.' Lhs '=' Expr eol { ($2, $4) }
 
 Lhs : VAR             { NameLhs $1 }
     | VAR '.' VAR     { FieldLhs [$1, $3] } -- for now only single dot

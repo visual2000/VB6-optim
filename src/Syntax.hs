@@ -12,7 +12,9 @@ data Module = Mod [Attribute]
 data Declaration
   = DllFuncReference Visibility Name String [ArgumentRef] TypeRef
   | TypeDef Visibility Name [TypeField]
+  | GlobalVarDecl Visibility Name TypeRef
   | FuncDecl Visibility Name [ArgumentRef] TypeRef [Stmt]
+  | SubDecl  Visibility Name [ArgumentRef]         [Stmt]
   deriving (Show, Eq)
 
 data Visibility
@@ -49,6 +51,7 @@ data Option
 data Stmt
   = StmtDecl [TypeField]
   | StmtReturn
+  | StmtWith Lhs [(Lhs, Expr)]
   | StmtAssign Lhs Expr
   | StmtIfThenElse Expr [Stmt] [Stmt]
   | StmtFor Name Expr Expr Expr [Stmt]
