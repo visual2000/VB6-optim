@@ -54,7 +54,19 @@ instance Printable [Stmt] where
                                 <+> equals
                                 <+> pp expr
                                 $+$ pp ss
-  pp ((StmtIfThenElse cond ifss elsess):ss) = text "IFTHENELSE"
+  pp ((StmtIfThenElse cond ifss []):ss) = text "If"
+                                              <+> pp cond
+                                              <+> text "Then"
+                                              $+$ nest 4 (pp ifss)
+                                              $+$ text "End If"
+                                              $+$ pp ss
+  pp ((StmtIfThenElse cond ifss elsess):ss) = text "If"
+                                              <+> pp cond
+                                              <+> text "Then"
+                                              $+$ nest 4 (pp ifss)
+                                              $+$ text "Else"
+                                              $+$ nest 4 (pp elsess)
+                                              $+$ text "End If"
                                               $+$ pp ss
   pp ((StmtFor loopvar from to step bodyss):ss) = text "For"
                                                   <+> text loopvar
