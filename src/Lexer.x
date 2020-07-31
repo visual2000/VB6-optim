@@ -36,7 +36,7 @@ tokens :-
   "'".*                         ;
 
   -- Line continuations
-  " _" $eol                     ;
+  " _" $eol+                    ;
 
   -- Syntax
   \"([^\"]+)\"                  { \p s -> Token p $ TokenStringLit (read s) }
