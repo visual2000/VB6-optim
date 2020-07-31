@@ -56,7 +56,16 @@ instance Printable [Stmt] where
                                 $+$ pp ss
   pp ((StmtIfThenElse cond ifss elsess):ss) = text "IFTHENELSE"
                                               $+$ pp ss
-  pp ((StmtFor loopvar from to step bodyss):ss) = text "FORNEXT"
+  pp ((StmtFor loopvar from to step bodyss):ss) = text "For"
+                                                  <+> text loopvar
+                                                  <+> equals
+                                                  <+> pp from
+                                                  <+> text "To"
+                                                  <+> pp to
+                                                  <+> text "Step"
+                                                  <+> int step
+                                                  $+$ nest 4 (pp bodyss)
+                                                  $+$ text "Next" <+> text loopvar
                                                   $+$ pp ss
 
 instance Printable Lhs where
@@ -67,15 +76,18 @@ instance Printable Lhs where
 instance Printable Expr where
   pp (ELit l) = pp l
   pp (EVar n) = text n
-  pp (ECall lhs args) = text "CALL"
-  pp (EAccess ns) = text "DOT-ACCESS"
+  pp (ECall lhs args) = pp lhs
+                        <> lparen
+                        <> (hcat $ punctuate (text ", ") (map pp args))
+                        <> rparen
+  pp (EAccess ns) = hcat $ punctuate (char '.') (map text ns)
   pp (EOp b e1 e2) = lparen <> pp e1 <+> pp b <+> pp e2 <> rparen
 
 instance Printable Binop where
   pp Add = char '+'
   pp Sub = char '-'
   pp Mul = char '*'
-  pp Eql = char '=' -- todo hmm can VB do this?
+  pp Eql = equals -- todo hmm can VB do this?
 
 instance Printable [FuncDecl] where
   pp [] = empty
