@@ -120,7 +120,7 @@ FnDeclArg : VAR 'As' TypeRef             { TypeField $1 $3 }
 Statements : {- empty -}              { [] }
            | Statement Statements     { $1 : $2 }
 
-Statement : 'Dim' VAR 'As' TypeRef eol    { StmtDecl $2 $4 }
+Statement : 'Dim' FnDeclArgs eol          { StmtDecl $2 }
           | Lhs '=' Expr eol              { StmtAssign $1 $3 }
           | 'If' Expr 'Then' eol
                 Statements

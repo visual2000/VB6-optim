@@ -9,12 +9,10 @@ data Module
 data FuncDecl
   = FuncDecl Visibility
              Name
-             [FuncArgDecl]
+             [TypeField]
              TypeRef
              [Stmt]
   deriving (Show, Eq)
-
-type FuncArgDecl = TypeField -- just a synonym for formatting purposes
 
 data TypeDef
   = TypeDef Visibility Name [TypeField]
@@ -47,7 +45,7 @@ data Option
   deriving (Show, Eq, Ord)
 
 data Stmt
-  = StmtDecl Name TypeRef
+  = StmtDecl [TypeField]
   | StmtAssign Lhs Expr
   | StmtIfThenElse Expr [Stmt] [Stmt]
   | StmtFor Name Expr Expr Int [Stmt]

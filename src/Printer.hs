@@ -46,15 +46,17 @@ instance Printable TypeField where
 
 instance Printable [Stmt] where
   pp [] = empty
-  pp ((StmtDecl n ty):ss) = text "Dim"
-                            <+> text n
-                            <+> text "As"
-                            <+> pp ty
+  pp ((StmtDecl typefields):ss) = text "Dim"
+                            <+> hcat (punctuate (text ", ") (map pp typefields))
                             $+$ pp ss
   pp ((StmtAssign l expr):ss) = pp l
                                 <+> equals
                                 <+> pp expr
                                 $+$ pp ss
+  pp ((StmtIfThenElse cond ifss elsess):ss) = text "IFTHENELSE"
+                                              $+$ pp ss
+  pp ((StmtFor loopvar from to step bodyss):ss) = text "FORNEXT"
+                                                  $+$ pp ss
 
 instance Printable Lhs where
   pp (NameLhs n) = text n
@@ -64,6 +66,8 @@ instance Printable Lhs where
 instance Printable Expr where
   pp (ELit l) = pp l
   pp (EVar n) = text n
+  pp (ECall lhs args) = text "CALL"
+  pp (EAccess ns) = text "DOT-ACCESS"
   pp (EOp b e1 e2) = lparen <> pp e1 <+> pp b <+> pp e2 <> rparen
 
 instance Printable Binop where
@@ -91,4 +95,6 @@ instance Printable TypeRef where
   pp TDouble = text "Double"
   pp TInt = text "Integer"
   pp TString = text "String"
+  pp TBoolean = text "Boolean"
+  pp (TArrayOf t) = pp t <> text "()" -- TODO FIXME Dim world() As Type!
   pp (TUDT n) = text n
