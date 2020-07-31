@@ -23,7 +23,7 @@ import Control.Monad.Except
 
 $digit = 0-9
 $alpha = [a-zA-Z]
-$eol   = [\n]
+$eol   = [\n\r]
 
 tokens :-
 
