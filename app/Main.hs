@@ -35,6 +35,12 @@ process input = do
 files = [ "examples/HitFuncs.bas"
         , "examples/CameraFuncs.bas"
         , "examples/GfxInit.bas"
+        , "examples/GfxPrimitives.bas"
+        , "examples/Logging.bas"
+        , "examples/VecFuncts.bas"
+        , "examples/Types.bas"
+        -- , "examples/RayFuncs.bas"
+        -- , "examples/Numericalconstants.bas"
         ]
 
 parseFile :: FilePath -> IO()
