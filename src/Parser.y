@@ -22,7 +22,7 @@ import Data.Either
 %tokentype { Token }
 
 -- Parser monad
-%monad { Except String } { (>>=) } { return }
+%monad { Except (String -> String) } { (>>=) } { return }
 %error { parseError }
 
 -- Token Names
@@ -133,23 +133,25 @@ Lit  : NUM                         { LInt $1 }
 
 {
 
-showTokenError :: Token -> String
-showTokenError (Token (AlexPn _ line column) t) =
-               "Parse error on line "
+showTokenError :: Token -> String -> String
+showTokenError (Token (AlexPn _ line column) t) orig_input =
+               "Unexpected token " ++ show t ++ " on line "
                                ++ (show line) ++ ", column "
                                ++ (show column) ++ "." ++ "\n"
-                               -- ++ (lines str !! (line - 1)) ++ "\n"
-                               -- ++ (take (column - 1) (repeat '-')) ++ "^\n"
+                               ++ (lines orig_input !! (line - 1)) ++ "\n"
+                               ++ (take (column - 1) (repeat '-')) ++ "^\n"
 
-parseError :: [Token] -> Except String a
+parseError :: [Token] -> Except (String -> String) a
 parseError (l:ls) = throwError $ (showTokenError l)
-parseError [] = throwError "Unexpected: end of file"
+parseError [] = throwError (\_ -> "Unexpected: end of file")
 
-parseModule :: String -> Either String Module
+parseModule :: [Token] -> Either (String -> String) Module
 parseModule input = runExcept $ do
-  tokenStream <- scanTokens input
-  modu tokenStream
+  -- tokenStream <- scanTokens input
+  -- modu tokenStream
+  modu input
 
+-- todo rename to lexTokens
 parseTokens :: String -> Either String [Token]
 parseTokens = runExcept . scanTokens
 

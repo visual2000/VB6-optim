@@ -14,14 +14,17 @@ import Text.PrettyPrint
 process :: String -> IO ()
 process input = do
   let tokens = parseTokens input
-  putStrLn ("Tokens: " ++ show tokens)
-  let ast = parseModule input
-  putStrLn ("Syntax: " ++ show ast)
-  case ast of
-    Left err -> do
-      putStrLn "Parse Error:"
-      putStrLn err
-    Right ast -> putStrLn $ render $ pp ast
+  case tokens of
+    Left err -> putStrLn err
+    Right lexedTokens -> do
+      putStrLn ("Tokens: " ++ show lexedTokens)
+      let ast = parseModule lexedTokens
+      -- putStrLn ("Syntax: " ++ show ast) -- todo bring back raw tokens display
+      case ast of
+        Left err -> do
+          putStrLn "Parse Error:"
+          putStrLn (err input)
+        Right ast -> putStrLn $ render $ pp ast
 
 main :: IO ()
 main = do minput <- getContents
