@@ -82,6 +82,7 @@ data Lit
   = LInt Int
   | LBool Bool
   | LString String
+  | LDouble Double
   deriving (Show, Eq)
 
 data Binop = Add | Sub | Mul | Div | Eql

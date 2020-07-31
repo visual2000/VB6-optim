@@ -74,7 +74,9 @@ tokens :-
   Exit                          { \p s -> Token p $ TokenExit }
   Explicit                      { \p s -> Token p $ TokenExplicit }
   As                            { \p s -> Token p $ TokenAs }
-  $digit+                       { \p s -> Token p $ TokenNum (read s) }
+  $digit+                       { \p s -> Token p $ TokenIntLit (read s) }
+  $digit+ \#                    { \p s -> Token p $ TokenDoubleLit ((read . reverse . (drop 1) . reverse) s) }
+  $digit+ \. $digit+            { \p s -> Token p $ TokenDoubleLit (read s) }
   \=                            { \p s -> Token p $ TokenEq }
   [\>]                          { \p s -> Token p $ TokenGt }
   [\<]                          { \p s -> Token p $ TokenLt }
@@ -124,7 +126,8 @@ data IToken
   | TokenExit
   | TokenExplicit
   | TokenAttribute
-  | TokenNum Int
+  | TokenIntLit Int
+  | TokenDoubleLit Double
   | TokenStringLit String
   | TokenEq
   | TokenAdd

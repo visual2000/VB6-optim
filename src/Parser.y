@@ -51,7 +51,8 @@ import Prelude hiding (LT, GT)
     'Private'     { Token _ (TokenPrivate) }
     'True'        { Token _ (TokenTrue) }
     'False'       { Token _ (TokenFalse) }
-    NUM           { Token _ (TokenNum $$) }
+    INT           { Token _ (TokenIntLit $$) }
+    DOUBLE        { Token _ (TokenDoubleLit $$) }
     VAR           { Token _ (TokenSym $$) }
     STR           { Token _ (TokenStringLit $$) }
     'Attribute'   { Token _ (TokenAttribute) }
@@ -182,7 +183,7 @@ With : '.' Lhs '=' Expr eol { WithAssignment $2 $4 }
 
 Lhs : VAR             { NameLhs $1 }
     | VAR '.' Lhs     { FieldLhs $1 $3 }
-    | VAR '(' NUM ')' { ArrayLhs $1 $3 }
+    | VAR '(' INT ')' { ArrayLhs $1 $3 }
 
 FNCallRef : VAR                { NameLhs $1 }
           | VAR '.' FNCallRef  { FieldLhs $1 $3 }
@@ -210,10 +211,11 @@ ExprList : {-empty -}         { [] }
 NonEmptyExprList : Expr                      { [$1] }
                  | Expr ',' NonEmptyExprList { $1 : $3 }
 
-Lit  : NUM                         { LInt $1 }
+Lit  : INT                         { LInt $1 }
      | 'True'                      { LBool True }
      | 'False'                     { LBool False }
      | STR                         { LString $1 }
+     | DOUBLE                      { LDouble $1 }
 
 {
 
