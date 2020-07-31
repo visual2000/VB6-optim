@@ -130,6 +130,11 @@ Statement : 'Dim' FnDeclArgs eol          { StmtDecl $2 }
           | Lhs '=' Expr eol              { StmtAssign $1 $3 }
           | 'If' Expr 'Then' eol
                 Statements
+            'Else' eol
+                Statements
+            'End' 'If' eol                { StmtIfThenElse $2 $5 $8 }
+          | 'If' Expr 'Then' eol
+                Statements
             'End' 'If' eol                { StmtIfThenElse $2 $5 [] }
           | 'For' VAR '=' Expr 'To' Expr 'Step' Expr eol
                 Statements
