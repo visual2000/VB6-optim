@@ -71,6 +71,8 @@ import Prelude hiding (LT, GT)
     eol           { Token _ (TokenEOL) }
 
 -- Operators
+%left 'And' 'Or'
+%left '<' '>' '='
 %left '+' '-'
 %left '*' '.'
 %%
@@ -129,9 +131,12 @@ Statement : 'Dim' FnDeclArgs eol          { StmtDecl $2 }
           | 'If' Expr 'Then' eol
                 Statements
             'End' 'If' eol                { StmtIfThenElse $2 $5 [] }
+          | 'For' VAR '=' Expr 'To' Expr 'Step' Expr eol
+                Statements
+            'Next' VAR eol                { StmtFor $2 $4 $6 $8 $10 }
           | 'For' VAR '=' Expr 'To' Expr eol
                 Statements
-            'Next' VAR eol                { StmtFor $2 $4 $6 1 $8 }
+            'Next' VAR eol                { StmtFor $2 $4 $6 (ELit (LInt 1)) $8 }
           | 'Exit' 'Function' eol         { StmtReturn }
 
 Lhs : VAR             { NameLhs $1 }
@@ -142,19 +147,19 @@ FNCallRef : VAR             { NameLhs $1 }
           | VAR '.' VAR     { FieldLhs [$1, $3] } -- for now only single dot
 
 Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
-     | Lit                        { ELit $1 }
-     | VAR                        { EVar $1 }
-     | VAR '.' VAR                { EAccess [$1, $3] }
      | '-' Expr                   { ENeg $2 }
+     | Expr 'And' Expr            { EOp And $1 $3 }
+     | Expr 'Or' Expr             { EOp Or $1 $3 }
+     | Expr '<' Expr              { EOp LT $1 $3 }
+     | Expr '>' Expr              { EOp GT $1 $3 }
      | Expr '+' Expr              { EOp Add $1 $3 }
      | Expr '-' Expr              { EOp Sub $1 $3 }
      | Expr '*' Expr              { EOp Mul $1 $3 }
      | Expr '/' Expr              { EOp Div $1 $3 }
-     | Expr '<' Expr              { EOp LT $1 $3 }
-     | Expr '>' Expr              { EOp GT $1 $3 }
-     | Expr 'And' Expr            { EOp And $1 $3 }
-     | Expr 'Or' Expr             { EOp Or $1 $3 }
      | '(' Expr ')'               { $2 }
+     | Lit                        { ELit $1 }
+     | VAR                        { EVar $1 }
+     | VAR '.' VAR                { EAccess [$1, $3] }
 
 ExprList : Expr              { [$1] }
          | Expr ',' ExprList { $1 : $3 }

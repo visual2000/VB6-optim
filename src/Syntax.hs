@@ -51,7 +51,7 @@ data Stmt
   | StmtReturn
   | StmtAssign Lhs Expr
   | StmtIfThenElse Expr [Stmt] [Stmt]
-  | StmtFor Name Expr Expr Int [Stmt]
+  | StmtFor Name Expr Expr Expr [Stmt]
   deriving (Eq,Show)
 
 data Lhs

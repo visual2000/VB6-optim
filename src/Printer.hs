@@ -77,7 +77,7 @@ instance Printable [Stmt] where
                                                   <+> text "To"
                                                   <+> pp to
                                                   <+> text "Step"
-                                                  <+> int step
+                                                  <+> pp step
                                                   $+$ nest 4 (pp bodyss)
                                                   $+$ text "Next" <+> text loopvar
                                                   $+$ pp ss
