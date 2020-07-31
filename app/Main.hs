@@ -15,16 +15,19 @@ process :: String -> IO ()
 process input = do
   let tokens = parseTokens input
   case tokens of
-    Left err -> putStrLn err
+    Left err -> do
+      putStrLn "Lexing error:"
+      putStrLn err
     Right lexedTokens -> do
       putStrLn ("Tokens: " ++ show lexedTokens)
       let ast = parseModule lexedTokens
-      -- putStrLn ("Syntax: " ++ show ast) -- todo bring back raw tokens display
       case ast of
         Left err -> do
-          putStrLn "Parse Error:"
+          putStrLn "Parse error:"
           putStrLn (err input)
-        Right ast -> putStrLn $ render $ pp ast
+        Right ast -> do
+          putStrLn ("Syntax: " ++ show ast)
+          putStrLn $ render $ pp ast
 
 main :: IO ()
 main = do minput <- getContents

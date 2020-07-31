@@ -147,8 +147,6 @@ parseError [] = throwError (\_ -> "Unexpected: end of file")
 
 parseModule :: [Token] -> Either (String -> String) Module
 parseModule input = runExcept $ do
-  -- tokenStream <- scanTokens input
-  -- modu tokenStream
   modu input
 
 -- todo rename to lexTokens
