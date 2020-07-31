@@ -47,7 +47,7 @@ instance Printable TypeField where
 
 instance Printable [Stmt] where
   pp [] = empty
-  pp ((StmtReturn):ss) = text "Exit Function"
+  pp (StmtReturn : ss) = text "Exit Function"
                          $+$ pp ss
   pp ((StmtDecl typefields):ss) = text "Dim"
                             <+> hcat (punctuate (text ", ") (map pp typefields))
@@ -92,7 +92,7 @@ instance Printable Expr where
   pp (EVar n) = text n
   pp (ECall lhs args) = pp lhs
                         <> lparen
-                        <> (hcat $ punctuate (text ", ") (map pp args))
+                        <> hcat (punctuate (text ", ") (map pp args))
                         <> rparen
   pp (EAccess ns) = hcat $ punctuate (char '.') (map text ns)
   pp (EOp b e1 e2) = lparen <> pp e1 <+> pp b <+> pp e2 <> rparen
