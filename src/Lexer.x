@@ -141,7 +141,7 @@ data IToken
 remDupEOLs :: [Token] -> [Token]
 remDupEOLs []  = []
 remDupEOLs [x] = [x]
-remDupEOLs (first@(Token _ TokenEOL):(Token _ TokenEOL):xs) = first : remDupEOLs xs
+remDupEOLs (first@(Token _ TokenEOL):(Token _ TokenEOL):xs) = remDupEOLs (first : xs)
 remDupEOLs (x1 : xs) = x1 : (remDupEOLs xs)
 
 scanTokens :: String -> Except String [Token]
