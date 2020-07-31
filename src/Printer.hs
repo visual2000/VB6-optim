@@ -43,6 +43,7 @@ instance Printable [TypeDef] where
 
 instance Printable TypeField where
   pp (TypeField n ref) = text n <+> text "As" <+> pp ref
+  pp (TypeFieldArray n ref) = text n <> text "()" <+> text "As" <+> pp ref
 
 instance Printable [Stmt] where
   pp [] = empty
@@ -96,5 +97,4 @@ instance Printable TypeRef where
   pp TInt = text "Integer"
   pp TString = text "String"
   pp TBoolean = text "Boolean"
-  pp (TArrayOf t) = pp t <> text "()" -- TODO FIXME Dim world() As Type!
   pp (TUDT n) = text n

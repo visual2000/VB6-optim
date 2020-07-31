@@ -25,6 +25,7 @@ data Visibility
 
 data TypeField
   = TypeField Name TypeRef
+  | TypeFieldArray Name TypeRef
   deriving (Show, Eq)
 
 data TypeRef
@@ -32,7 +33,6 @@ data TypeRef
   | TInt
   | TBoolean
   | TString
-  | TArrayOf TypeRef
   | TUDT Name
   deriving (Show, Eq)
 
