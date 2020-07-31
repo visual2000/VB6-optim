@@ -19,7 +19,7 @@ import Control.Monad.Except
 -- TODO use bytestrings?
 
 -- **Begin Alex Syntax**
-%wrapper "basic"
+%wrapper "posn"
 
 $digit = 0-9
 $alpha = [a-zA-Z]
@@ -37,33 +37,33 @@ tokens :-
   " _" $eol                     ;
 
   -- Syntax
-  \"([^\"]+)\"                  { \s -> TokenStringLit (read s) }
-  True                          { \s -> TokenTrue }
-  False                         { \s -> TokenFalse }
-  Attribute                     { \s -> TokenAttribute }
-  Option                        { \s -> TokenOption }
-  Double                        { \s -> TokenDouble }
-  Integer                       { \s -> TokenInteger }
-  Boolean                       { \s -> TokenBoolean }
-  String                        { \s -> TokenString }
-  Dim                           { \s -> TokenDim }
-  "Public Function"             { \s -> TokenPublicFunction }
-  "Public Type"                 { \s -> TokenPublicType }
-  "End Function"                { \s -> TokenEndFunction }
-  "End Type"                    { \s -> TokenEndType }
-  Explicit                      { \s -> TokenExplicit }
-  As                            { \s -> TokenAs }
-  $digit+                       { \s -> TokenNum (read s) }
-  \=                            { \s -> TokenEq }
-  [\+]                          { \s -> TokenAdd }
-  [\-]                          { \s -> TokenSub }
-  [\*]                          { \s -> TokenMul }
-  [\.]                          { \s -> TokenDot }
-  \(                            { \s -> TokenLParen }
-  \)                            { \s -> TokenRParen }
-  [\,]                          { \s -> TokenComma }
-  $alpha [$alpha $digit \_]*    { \s -> TokenSym s }
-  $eol+                         { \s -> TokenEOL }
+  \"([^\"]+)\"                  { \_ s -> TokenStringLit (read s) }
+  True                          { \_ s -> TokenTrue }
+  False                         { \_ s -> TokenFalse }
+  Attribute                     { \_ s -> TokenAttribute }
+  Option                        { \_ s -> TokenOption }
+  Double                        { \_ s -> TokenDouble }
+  Integer                       { \_ s -> TokenInteger }
+  Boolean                       { \_ s -> TokenBoolean }
+  String                        { \_ s -> TokenString }
+  Dim                           { \_ s -> TokenDim }
+  "Public Function"             { \_ s -> TokenPublicFunction }
+  "Public Type"                 { \_ s -> TokenPublicType }
+  "End Function"                { \_ s -> TokenEndFunction }
+  "End Type"                    { \_ s -> TokenEndType }
+  Explicit                      { \_ s -> TokenExplicit }
+  As                            { \_ s -> TokenAs }
+  $digit+                       { \_ s -> TokenNum (read s) }
+  \=                            { \_ s -> TokenEq }
+  [\+]                          { \_ s -> TokenAdd }
+  [\-]                          { \_ s -> TokenSub }
+  [\*]                          { \_ s -> TokenMul }
+  [\.]                          { \_ s -> TokenDot }
+  \(                            { \_ s -> TokenLParen }
+  \)                            { \_ s -> TokenRParen }
+  [\,]                          { \_ s -> TokenComma }
+  $alpha [$alpha $digit \_]*    { \_ s -> TokenSym s }
+  $eol+                         { \_ s -> TokenEOL }
 
 -- **End Alex Syntax**
 
@@ -100,14 +100,14 @@ data Token
   deriving (Eq,Show)
 
 scanTokens :: String -> Except String [Token]
-scanTokens str = go ('\n',[],str) where
-  go inp@(_,_bs,str) =
+scanTokens str = go (alexStartPos, '\n', [], str) where
+  go inp@(pos, _, _bs, str) =
     case alexScan inp 0 of
-     AlexEOF -> return []
-     AlexError _ -> throwError "Invalid lexeme."
-     AlexSkip  inp' len     -> go inp'
-     AlexToken inp' len act -> do
-      res <- go inp'
-      let rest = act (take len str)
-      return (rest : res)
+      AlexEOF -> return []
+      AlexError ((AlexPn _ line column),_,_,_) -> throwError $ "lexical error at " ++ (show line) ++ " line, " ++ (show column) ++ " column"
+      AlexSkip  inp' len     -> go inp'
+      AlexToken inp' len act -> do
+        res <- go inp'
+        let rest = act pos (take len str)
+        return (rest : res)
 }
