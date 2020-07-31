@@ -123,6 +123,11 @@ instance Printable [Stmt] where
                                                   $+$ nest 4 (pp bodyss)
                                                   $+$ text "Next" <+> text loopvar
                                                   $+$ pp ss
+  pp ((StmtWhileLoop stmts expr):ss) = text "Do"
+                                       $+$ nest 4 (pp stmts)
+                                       $+$ text "Loop While"
+                                       <+> pp expr
+                                       $+$ pp ss
 
 instance Printable Lhs where
   pp (NameLhs n) = text n

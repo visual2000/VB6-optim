@@ -60,6 +60,9 @@ import Prelude hiding (LT, GT)
     'Dim'         { Token _ (TokenDim) }
     'Explicit'    { Token _ (TokenExplicit) }
     'As'          { Token _ (TokenAs) }
+    'Do'          { Token _ (TokenDo) }
+    'Loop'        { Token _ (TokenLoop) }
+    'While'       { Token _ (TokenWhile) }
     '='           { Token _ (TokenEq) }
     '+'           { Token _ (TokenAdd) }
     '-'           { Token _ (TokenSub) }
@@ -177,6 +180,9 @@ Statement : 'Dim' DimDeclArgs eol          { StmtDecl $2 }
             'Next' VAR eol                { StmtFor $2 $4 $6 (ELit (LInt 1)) $8 }
           | 'Exit' 'Function' eol         { StmtReturn }
           | FNCallRef ExprList eol        { StmtNakedFunctionCall $1 $2 }
+          | 'Do' eol
+                Statements
+            'Loop' 'While' Expr eol       { StmtWhileLoop $3 $6 }
 
 Withs : With { [$1] }
       | With Withs { $1 : $2 }

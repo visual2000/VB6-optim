@@ -74,6 +74,9 @@ tokens :-
   Exit                          { \p s -> Token p $ TokenExit }
   Explicit                      { \p s -> Token p $ TokenExplicit }
   As                            { \p s -> Token p $ TokenAs }
+  Do                            { \p s -> Token p $ TokenDo }
+  While                         { \p s -> Token p $ TokenWhile }
+  Loop                          { \p s -> Token p $ TokenLoop }
   $digit+                       { \p s -> Token p $ TokenIntLit (read s) }
   $digit+ \#                    { \p s -> Token p $ TokenDoubleLit ((read . reverse . (drop 1) . reverse) s) }
   $digit+ \. $digit+            { \p s -> Token p $ TokenDoubleLit (read s) }
@@ -106,6 +109,9 @@ data IToken
   = TokenTrue
   | TokenFalse
   | TokenAs
+  | TokenDo
+  | TokenWhile
+  | TokenLoop
   | TokenDot
   | TokenFor | TokenTo | TokenStep | TokenNext
   | TokenIf | TokenThen | TokenElse
