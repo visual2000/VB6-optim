@@ -172,6 +172,7 @@ Statement : 'Dim' DimDeclArgs eol          { StmtDecl $2 }
                 Statements
             'Next' VAR eol                { StmtFor $2 $4 $6 (ELit (LInt 1)) $8 }
           | 'Exit' 'Function' eol         { StmtReturn }
+          | FNCallRef ExprList eol        { StmtNakedFunctionCall $1 $2 }
 
 Withs : With { [$1] }
       | With Withs { $1 : $2 }
