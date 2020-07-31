@@ -33,6 +33,7 @@ data TypeRef
   = TDouble
   | TInt
   | TString
+  | TArrayOf TypeRef
   | TUDT Name
   deriving (Show, Eq)
 

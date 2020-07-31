@@ -104,6 +104,7 @@ FnDeclArgs : {- empty -}               { [] }
            | FnDeclArg ',' FnDeclArgs  { $1 : $3 }
 
 FnDeclArg : VAR as TypeRef             { TypeField $1 $3 }
+          | VAR '(' ')' as TypeRef     { TypeField $1 (TArrayOf $5) }
 
 Statements : {- empty -}              { [] }
            | Statement Statements     { $1 : $2 }
