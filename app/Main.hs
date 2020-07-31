@@ -20,7 +20,7 @@ process input = do
   case ast of
     Left err -> do
       putStrLn "Parse Error:"
-      print err
+      putStrLn err
     Right ast -> putStrLn $ render $ pp ast
 
 main :: IO ()

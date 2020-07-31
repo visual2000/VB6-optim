@@ -101,13 +101,18 @@ data Token
 
 scanTokens :: String -> Except String [Token]
 scanTokens str = go (alexStartPos, '\n', [], str) where
-  go inp@(pos, _, _bs, str) =
+  go inp@(pos, _, _bs, rest_str) =
     case alexScan inp 0 of
       AlexEOF -> return []
-      AlexError ((AlexPn _ line column),_,_,_) -> throwError $ "lexical error at " ++ (show line) ++ " line, " ++ (show column) ++ " column"
+      AlexError ((AlexPn _ line column), prevChar, restOfBytes, _) ->
+        throwError $ "Lexical error on line "
+          ++ (show line) ++ ", column "
+          ++ (show column) ++ "." ++ "\n"
+          ++ (lines str !! (line - 1)) ++ "\n"
+          ++ (take (column - 1) (repeat '-')) ++ "^\n"
       AlexSkip  inp' len     -> go inp'
       AlexToken inp' len act -> do
         res <- go inp'
-        let rest = act pos (take len str)
+        let rest = act pos (take len rest_str)
         return (rest : res)
 }
