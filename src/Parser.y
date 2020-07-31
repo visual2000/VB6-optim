@@ -67,6 +67,8 @@ import Prelude hiding (LT, GT)
     '/'           { Token _ (TokenDiv) }
     '>'           { Token _ (TokenGt) }
     '<'           { Token _ (TokenLt) }
+    '>='          { Token _ (TokenGeq) }
+    '<='          { Token _ (TokenLeq) }
     '.'           { Token _ (TokenDot) }
     'Double'      { Token _ (TokenDouble) }
     'Integer'     { Token _ (TokenInteger) }
@@ -194,6 +196,8 @@ Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
      | Expr 'Or' Expr             { EOp Or $1 $3 }
      | Expr '<' Expr              { EOp LT $1 $3 }
      | Expr '>' Expr              { EOp GT $1 $3 }
+     | Expr '<=' Expr             { EOp LEQ $1 $3 }
+     | Expr '>=' Expr             { EOp GEQ $1 $3 }
      | Expr '+' Expr              { EOp Add $1 $3 }
      | Expr '-' Expr              { EOp Sub $1 $3 }
      | Expr '*' Expr              { EOp Mul $1 $3 }

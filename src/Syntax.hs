@@ -86,5 +86,5 @@ data Lit
   deriving (Show, Eq)
 
 data Binop = Add | Sub | Mul | Div | Eql
-           | GT | LT | And | Or
+           | GT | LT | GEQ | LEQ | And | Or
   deriving (Eq, Ord, Show)

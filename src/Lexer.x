@@ -78,13 +78,15 @@ tokens :-
   $digit+ \#                    { \p s -> Token p $ TokenDoubleLit ((read . reverse . (drop 1) . reverse) s) }
   $digit+ \. $digit+            { \p s -> Token p $ TokenDoubleLit (read s) }
   \=                            { \p s -> Token p $ TokenEq }
-  [\>]                          { \p s -> Token p $ TokenGt }
-  [\<]                          { \p s -> Token p $ TokenLt }
-  [\+]                          { \p s -> Token p $ TokenAdd }
-  [\-]                          { \p s -> Token p $ TokenSub }
-  [\*]                          { \p s -> Token p $ TokenMul }
-  [\/]                          { \p s -> Token p $ TokenDiv }
-  [\.]                          { \p s -> Token p $ TokenDot }
+  \>                            { \p s -> Token p $ TokenGt }
+  \>\=                          { \p s -> Token p $ TokenGeq }
+  \<                            { \p s -> Token p $ TokenLt }
+  \<\=                          { \p s -> Token p $ TokenLeq }
+  \+                            { \p s -> Token p $ TokenAdd }
+  \-                            { \p s -> Token p $ TokenSub }
+  \*                            { \p s -> Token p $ TokenMul }
+  \/                            { \p s -> Token p $ TokenDiv }
+  \.                            { \p s -> Token p $ TokenDot }
   \(                            { \p s -> Token p $ TokenLParen }
   \)                            { \p s -> Token p $ TokenRParen }
   [\,]                          { \p s -> Token p $ TokenComma }
@@ -134,8 +136,7 @@ data IToken
   | TokenSub
   | TokenMul
   | TokenDiv
-  | TokenGt
-  | TokenLt
+  | TokenGt | TokenGeq | TokenLt | TokenLeq
   | TokenLParen
   | TokenRParen
   | TokenComma

@@ -147,6 +147,8 @@ instance Printable Binop where
   pp Div = char '/'
   pp GT  = char '>'
   pp LT  = char '<'
+  pp GEQ = text ">="
+  pp LEQ = text "<="
   pp And = text "And"
   pp Or  = text "Or"
   pp Eql = equals -- todo hmm can VB do this?
