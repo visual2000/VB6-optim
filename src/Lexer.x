@@ -72,7 +72,10 @@ tokens :-
 
 {
 data Token = Token AlexPosn IToken
-  deriving (Eq, Show)
+  deriving (Eq)
+
+instance Show Token where
+  show (Token _ t) = show t
 
 data IToken
   = TokenTrue
