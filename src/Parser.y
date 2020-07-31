@@ -28,7 +28,11 @@ import Prelude hiding (LT, GT)
 
 -- Token Names
 %token
+    'Declare'     { Token _ (TokenDeclare) }
+    'Lib'         { Token _ (TokenLib) }
     'Function'    { Token _ (TokenFunction) }
+    'ByRef'       { Token _ (TokenByRef) }
+    'ByVal'       { Token _ (TokenByVal) }
     'Type'        { Token _ (TokenType) }
     'End'         { Token _ (TokenEnd) }
     'For'         { Token _ (TokenFor) }
@@ -81,17 +85,21 @@ import Prelude hiding (LT, GT)
 Module : Attributes
          Options
          TopLevelDeclarations
-         { Mod $1 $2 (lefts $3) (rights $3) }
+         { Mod $1 $2 $3 }
 
 TopLevelDeclarations : {- empty -}        { [] }
                      | TopLevelDeclaration TopLevelDeclarations { $1 : $2 }
 
 TopLevelDeclaration : Visibility 'Type' VAR eol
                                      TypeDefFields
-                                 'End' 'Type' eol      { Left (TypeDef $1 $3 $5) }
+                                 'End' 'Type' eol      { TypeDef $1 $3 $5 }
+                    | Visibility 'Declare' 'Function'
+                         VAR 'Lib'
+                         STR '(' FnDeclArgs ')' 'As' TypeRef eol
+                                                       { DllFuncReference $1 $4 $6 $8 $11 }
                     | Visibility 'Function' VAR '(' FnDeclArgs ')' 'As' TypeRef eol
                                      Statements
-                                 'End' 'Function' eol      { Right (FuncDecl $1 $3 $5 $8 $10) }
+                                 'End' 'Function' eol      { FuncDecl $1 $3 $5 $8 $10 }
 
 Visibility : 'Private' { Private }
            | 'Public'  { Public }
@@ -121,13 +129,24 @@ FnDeclArgs : {- empty -}               { [] }
            | FnDeclArg                 { [$1] } -- TODO disallow trailing ','
            | FnDeclArg ',' FnDeclArgs  { $1 : $3 }
 
-FnDeclArg : VAR 'As' TypeRef             { TypeField $1 $3 }
-          | VAR '(' ')' 'As' TypeRef     { TypeFieldArray $1 $5 }
+FnDeclArg : VAR 'As' TypeRef             { ByRef $ TypeField $1 $3 }
+          | VAR '(' ')' 'As' TypeRef     { ByRef $ TypeFieldArray $1 $5 }
+          | 'ByRef' VAR 'As' TypeRef             { ByRef $ TypeField $2 $4 }
+          | 'ByRef' VAR '(' ')' 'As' TypeRef     { ByRef $ TypeFieldArray $2 $6 }
+          | 'ByVal' VAR 'As' TypeRef             { ByVal $ TypeField $2 $4 }
+          | 'ByVal' VAR '(' ')' 'As' TypeRef     { ByVal $ TypeFieldArray $2 $6 }
+
+DimDeclArgs : {- empty -}               { [] }
+            | DimDeclArg                 { [$1] } -- TODO disallow trailing ','
+            | DimDeclArg ',' DimDeclArgs  { $1 : $3 }
+
+DimDeclArg : VAR 'As' TypeRef            { TypeField $1 $3 }
+           | VAR '(' ')' 'As' TypeRef    { TypeFieldArray $1 $5 }
 
 Statements : {- empty -}              { [] }
            | Statement Statements     { $1 : $2 }
 
-Statement : 'Dim' FnDeclArgs eol          { StmtDecl $2 }
+Statement : 'Dim' DimDeclArgs eol          { StmtDecl $2 }
           | Lhs '=' Expr eol              { StmtAssign $1 $3 }
           | 'If' Expr 'Then' eol
                 Statements

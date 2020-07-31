@@ -51,9 +51,13 @@ tokens :-
   Boolean                       { \p s -> Token p $ TokenBoolean }
   String                        { \p s -> Token p $ TokenString }
   Dim                           { \p s -> Token p $ TokenDim }
+  ByVal                         { \p s -> Token p $ TokenByVal }
+  ByRef                         { \p s -> Token p $ TokenByRef }
   Public                        { \p s -> Token p $ TokenPublic }
   Private                       { \p s -> Token p $ TokenPrivate }
   Function                      { \p s -> Token p $ TokenFunction }
+  Declare                       { \p s -> Token p $ TokenDeclare }
+  Lib                           { \p s -> Token p $ TokenLib }
   Type                          { \p s -> Token p $ TokenType }
   For                           { \p s -> Token p $ TokenFor }
   To                            { \p s -> Token p $ TokenTo }
@@ -105,10 +109,11 @@ data IToken
   | TokenBoolean
   | TokenString
   | TokenOption
-  | TokenDim
+  | TokenDim | TokenByVal | TokenByRef
   | TokenFunction
   | TokenType
   | TokenPublic
+  | TokenDeclare | TokenLib
   | TokenPrivate
   | TokenEnd
   | TokenEndFunction

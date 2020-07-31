@@ -10,14 +10,14 @@ class Printable a where
   pp :: a -> Doc
 
 instance Printable Module where
-  pp (Mod as os udts funcs) =  foldr ($+$) empty
+  pp (Mod as os decls)
+    =  foldr ($+$) empty
                             [ pp as
                             , blank
                             , pp os
                             , blank
-                            , pp udts
+                            , pp decls
                             , blank
-                            , pp funcs
                             , text "' The end"
                             ]
 
@@ -34,12 +34,25 @@ instance Printable [Option] where
                              $+$ pp os
 
 
-instance Printable [TypeDef] where
+instance Printable [Declaration] where
   pp [] = empty
   pp ((TypeDef v n fs) : ts) = (text (show v) <+> text "Type" <+> text n)
                                $+$ nest 4 (vcat (map pp fs))
                                $+$ text "End Type"
                                $+$ pp ts
+  pp ((FuncDecl v n args ty ss) : fs)
+    = text (show v) <+> text "Function" <+> text n
+      <> parens (hcat $ punctuate (text ", ") (map pp args))
+      <+> text "As" <+> pp ty
+      $+$ nest 4 (pp ss)
+      $+$ text "End Function"
+      $+$ pp fs
+  pp ((DllFuncReference v n lib args ty) : frs)
+    = pp frs
+
+instance Printable ArgumentRef where
+  pp (ByRef t) = text "ByRef" <+> pp t
+  pp (ByVal t) = text "ByVal" <+> pp t
 
 instance Printable TypeField where
   pp (TypeField n ref) = text n <+> text "As" <+> pp ref
@@ -108,16 +121,6 @@ instance Printable Binop where
   pp And = text "And"
   pp Or  = text "Or"
   pp Eql = equals -- todo hmm can VB do this?
-
-instance Printable [FuncDecl] where
-  pp [] = empty
-  pp ((FuncDecl v n args ty ss) : fs)
-    = text (show v) <+> text "Function" <+> text n
-      <> parens (hcat $ punctuate (text ", ") (map pp args))
-      <+> text "As" <+> pp ty
-      $+$ nest 4 (pp ss)
-      $+$ text "End Function"
-      $+$ pp fs
 
 instance Printable Lit where
   pp (LInt i) = int i

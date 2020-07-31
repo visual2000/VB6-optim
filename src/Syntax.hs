@@ -4,25 +4,25 @@ import Prelude hiding ((<), (>), LT, GT)
 
 type Name = String
 
-data Module
-  = Mod [Attribute] [Option] [TypeDef] [FuncDecl]
+data Module = Mod [Attribute]
+                  [Option]
+                  [Declaration]
   deriving (Show, Eq)
 
-data FuncDecl
-  = FuncDecl Visibility
-             Name
-             [TypeField]
-             TypeRef
-             [Stmt]
-  deriving (Show, Eq)
-
-data TypeDef
-  = TypeDef Visibility Name [TypeField]
+data Declaration
+  = DllFuncReference Visibility Name String [ArgumentRef] TypeRef
+  | TypeDef Visibility Name [TypeField]
+  | FuncDecl Visibility Name [ArgumentRef] TypeRef [Stmt]
   deriving (Show, Eq)
 
 data Visibility
   = Public
   | Private
+  deriving (Show, Eq)
+
+data ArgumentRef
+  = ByVal TypeField
+  | ByRef TypeField
   deriving (Show, Eq)
 
 data TypeField
