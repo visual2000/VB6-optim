@@ -7,6 +7,7 @@ import Printer (Printable, pp)
 import Parser (parseModule, parseTokens)
 
 import Control.Monad.Trans
+import Control.Monad.Except
 import System.Console.Haskeline
 
 import Text.PrettyPrint
@@ -29,6 +30,14 @@ process input = do
           putStrLn ("Syntax: " ++ show ast)
           putStrLn $ render $ pp ast
 
+files = [ "examples/HitFuncs.bas"
+        , "examples/CameraFuncs.bas"
+        ]
+
+parseFiles :: [FilePath] -> IO()
+parseFiles fs = do fileContentsList <- mapM readFile fs
+                   modules <- mapM process fileContentsList
+                   return ()
+
 main :: IO ()
-main = do minput <- getContents
-          liftIO $ process minput
+main = do parseFiles files
