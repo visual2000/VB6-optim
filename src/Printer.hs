@@ -2,7 +2,7 @@
 module Printer where
 
 import Text.PrettyPrint
-import Prelude hiding ((<>))
+import Prelude hiding ((<>), GT, LT)
 
 import Syntax
 
@@ -47,6 +47,8 @@ instance Printable TypeField where
 
 instance Printable [Stmt] where
   pp [] = empty
+  pp ((StmtReturn):ss) = text "Exit Function"
+                         $+$ pp ss
   pp ((StmtDecl typefields):ss) = text "Dim"
                             <+> hcat (punctuate (text ", ") (map pp typefields))
                             $+$ pp ss
@@ -94,11 +96,17 @@ instance Printable Expr where
                         <> rparen
   pp (EAccess ns) = hcat $ punctuate (char '.') (map text ns)
   pp (EOp b e1 e2) = lparen <> pp e1 <+> pp b <+> pp e2 <> rparen
+  pp (ENeg e) = char '-' <> pp e
 
 instance Printable Binop where
   pp Add = char '+'
   pp Sub = char '-'
   pp Mul = char '*'
+  pp Div = char '/'
+  pp GT  = char '>'
+  pp LT  = char '<'
+  pp And = text "And"
+  pp Or  = text "Or"
   pp Eql = equals -- todo hmm can VB do this?
 
 instance Printable [FuncDecl] where

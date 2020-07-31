@@ -1,4 +1,4 @@
 .PHONY: all
 all:
 	stack build
-	cat examples/Module1.bas | stack exec VB6-optim-exe
+	cat examples/HitFuncs.bas | stack exec VB6-optim-exe

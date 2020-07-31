@@ -1,5 +1,7 @@
 module Syntax where
 
+import Prelude hiding ((<), (>), LT, GT)
+
 type Name = String
 
 data Module
@@ -46,6 +48,7 @@ data Option
 
 data Stmt
   = StmtDecl [TypeField]
+  | StmtReturn
   | StmtAssign Lhs Expr
   | StmtIfThenElse Expr [Stmt] [Stmt]
   | StmtFor Name Expr Expr Int [Stmt]
@@ -63,6 +66,7 @@ data Expr
   | ECall Lhs [Expr]
   | EAccess [Name] -- a.b.c
   | EOp Binop Expr Expr
+  | ENeg Expr
   -- todo funcall
   deriving (Show, Eq)
 
@@ -72,5 +76,6 @@ data Lit
   | LString String
   deriving (Show, Eq)
 
-data Binop = Add | Sub | Mul | Eql
+data Binop = Add | Sub | Mul | Div | Eql
+           | GT | LT | And | Or
   deriving (Eq, Ord, Show)
