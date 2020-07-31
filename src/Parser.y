@@ -11,6 +11,7 @@ import Lexer
 import Syntax
 
 import Control.Monad.Except
+import Data.Either
 
 }
 
@@ -26,10 +27,11 @@ import Control.Monad.Except
 
 -- Token Names
 %token
-    pub_func    { TokenPublicFunction }
-    pub_type    { TokenPublicType }
-    end_func    { TokenEndFunction }
-    end_type    { TokenEndType }
+    func        { TokenFunction }
+    type        { TokenType }
+    end         { TokenEnd }
+    public      { TokenPublic }
+    private     { TokenPrivate }
     true        { TokenTrue }
     false       { TokenFalse }
     NUM         { TokenNum $$ }
@@ -61,16 +63,21 @@ import Control.Monad.Except
 
 Module : Attributes
          Options
-         TypeDefs
-         FuncDecls
-         { Mod $1 $2 $3 $4 }
+         TopLevelDeclarations
+         { Mod $1 $2 (lefts $3) (rights $3) }
 
-TypeDefs : {- empty-}       { [] }
-         | TypeDef TypeDefs { $1 : $2 }
+TopLevelDeclarations : {- empty -}        { [] }
+                     | TopLevelDeclaration TopLevelDeclarations { $1 : $2 }
 
-TypeDef : pub_type VAR eol
-              TypeDefFields
-          end_type eol              { TypeDef Public $2 $4 }
+TopLevelDeclaration : Visibility type VAR eol
+                                     TypeDefFields
+                                 end type eol      { Left (TypeDef $1 $3 $5) }
+                    | Visibility func VAR '(' FnDeclArgs ')' as TypeRef eol
+                                     Statements
+                                 end func eol      { Right (FuncDecl $1 $3 $5 $8 $10) }
+
+Visibility : private { Private }
+           | public  { Public }
 
 TypeDefFields : TypeDefField                 { [$1] }
               | TypeDefField TypeDefFields   { $1 : $2 }
@@ -91,13 +98,6 @@ TypeRef : 'Double'  { TDouble }
         | 'Integer' { TInt }
         | 'String'  { TString }
         | VAR       { TUDT $1 }
-
-FuncDecls : {- empty -}        { [] }
-          | FuncDecl FuncDecls { $1 : $2 }
-
-FuncDecl : pub_func VAR '(' FnDeclArgs ')' as TypeRef eol
-               Statements
-           end_func eol                  { FuncDecl Public $2 $4 $7 $9 }
 
 FnDeclArgs : {- empty -}               { [] }
            | FnDeclArg                 { [$1] } -- TODO disallow trailing ','

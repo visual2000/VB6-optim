@@ -47,10 +47,11 @@ tokens :-
   Boolean                       { \_ s -> TokenBoolean }
   String                        { \_ s -> TokenString }
   Dim                           { \_ s -> TokenDim }
-  "Public Function"             { \_ s -> TokenPublicFunction }
-  "Public Type"                 { \_ s -> TokenPublicType }
-  "End Function"                { \_ s -> TokenEndFunction }
-  "End Type"                    { \_ s -> TokenEndType }
+  Public                        { \_ s -> TokenPublic }
+  Private                       { \_ s -> TokenPrivate }
+  Function                      { \_ s -> TokenFunction }
+  Type                          { \_ s -> TokenType }
+  End                           { \_ s -> TokenEnd }
   Explicit                      { \_ s -> TokenExplicit }
   As                            { \_ s -> TokenAs }
   $digit+                       { \_ s -> TokenNum (read s) }
@@ -79,8 +80,11 @@ data Token
   | TokenString
   | TokenOption
   | TokenDim
-  | TokenPublicFunction
-  | TokenPublicType
+  | TokenFunction
+  | TokenType
+  | TokenPublic
+  | TokenPrivate
+  | TokenEnd
   | TokenEndFunction
   | TokenEndType
   | TokenExplicit
