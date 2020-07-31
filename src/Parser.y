@@ -97,6 +97,7 @@ Option : opt explicit eol { OptionExplicit }
 TypeRef : 'Double'  { TDouble }
         | 'Integer' { TInt }
         | 'String'  { TString }
+        | 'Boolean' { TBoolean }
         | VAR       { TUDT $1 }
 
 FnDeclArgs : {- empty -}               { [] }

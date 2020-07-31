@@ -32,6 +32,7 @@ data TypeField
 data TypeRef
   = TDouble
   | TInt
+  | TBoolean
   | TString
   | TArrayOf TypeRef
   | TUDT Name
