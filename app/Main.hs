@@ -9,9 +9,11 @@ import Parser (parseModule, parseTokens)
 import Control.Monad.Trans
 import Control.Monad.Except
 import System.Console.Haskeline
+import System.Exit
 
 import Data.Ini
-import Data.Text (pack, unpack)
+import qualified Data.Text    as T
+import qualified Data.Text.IO as T
 
 import System.IO
 
@@ -60,19 +62,28 @@ data Project = Project { originalIni :: Ini
                        }
   deriving (Show, Eq)
 
-parseProject :: FilePath -> IO (Maybe Project)
-parseProject p = do hPutStrLn stderr $ "Reading project " ++ p ++ "..."
-                    fileContents <- readIniFile p
-                    case fileContents of
-                      Left err -> do hPutStrLn stderr "Couldn't parse project file!"
-                                     return Nothing
-                      Right ini -> do
-                        let glo = iniGlobals ini
-                        let mods = map (unpack . snd) $ filter (\(k,v)->(unpack k)=="Module") glo
-                        let stripped = map ((\ws->ws!!1) . words) mods
-                        putStrLn (stripped >>= (\m -> "Found module: " ++ m ++ ".\n"))
-                        return (Just $ Project ini stripped [])
+parseProject :: T.Text -> Maybe Project
+parseProject p = let ini = parseIni p in
+                   case ini of
+                     Left err -> Nothing
+                     Right ini' ->
+                       let glo = iniGlobals ini' in
+                         let mods = map (T.unpack . snd) $ filter (\(k,v)-> T.unpack k =="Module") glo in
+                           let stripped = map ((!!1) . words) mods in
+                             Just $ Project{ originalIni = ini'
+                                           , modules = stripped
+                                           , otherAssets = []
+                                           }
 
-main = parseProject projectFile
--- main :: IO ()
--- main = mapM_ parseFile files
+
+
+main :: IO ()
+main = do fileContents <- T.readFile projectFile
+          hPutStrLn stderr $ "Reading project " ++ projectFile ++ "..."
+          let p = parseProject fileContents
+          case p of
+            Nothing -> do hPutStrLn stderr "Couldn't parse project file.\n"
+                          exitFailure
+            Just proj -> do hPutStrLn stderr "...done."
+                            sequence [ putStrLn $ "Found module: " ++ m | m <- modules proj ]
+          exitSuccess
