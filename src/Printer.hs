@@ -120,7 +120,16 @@ instance Printable [Stmt] where
                                               $+$ nest 4 (pp elsess)
                                               $+$ text "End If"
                                               $+$ pp ss
-  pp ((StmtFor loopvar from to step bodyss):ss) = text "For"
+  pp ((StmtFor loopvar from to Nothing bodyss):ss) = text "For"
+                                                  <+> text loopvar
+                                                  <+> equals
+                                                  <+> pp from
+                                                  <+> text "To"
+                                                  <+> pp to
+                                                  $+$ nest 4 (pp bodyss)
+                                                  $+$ text "Next" <+> text loopvar
+                                                  $+$ pp ss
+  pp ((StmtFor loopvar from to (Just step) bodyss):ss) = text "For"
                                                   <+> text loopvar
                                                   <+> equals
                                                   <+> pp from

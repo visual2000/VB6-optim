@@ -174,10 +174,10 @@ Statement : 'Dim' DimDeclArgs eol          { StmtDecl $2 }
             'End' 'If' eol                { StmtIfThenElse $2 $5 [] }
           | 'For' VAR '=' Expr 'To' Expr 'Step' Expr eol
                 Statements
-            'Next' VAR eol                { StmtFor $2 $4 $6 $8 $10 }
+            'Next' VAR eol                { StmtFor $2 $4 $6 (Just $8) $10 }
           | 'For' VAR '=' Expr 'To' Expr eol
                 Statements
-            'Next' VAR eol                { StmtFor $2 $4 $6 (ELit (LInt 1)) $8 }
+            'Next' VAR eol                { StmtFor $2 $4 $6 Nothing $8 }
           | 'Exit' 'Function' eol         { StmtReturn }
           | FNCallRef ExprList eol        { StmtNakedFunctionCall $1 $2 }
           | 'Do' eol

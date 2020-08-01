@@ -60,7 +60,7 @@ data Stmt
   | StmtAssign Lhs Expr
   | StmtNakedFunctionCall Lhs [Expr]
   | StmtIfThenElse Expr [Stmt] [Stmt]
-  | StmtFor Name Expr Expr Expr [Stmt]
+  | StmtFor Name Expr Expr (Maybe Expr) [Stmt]
   | StmtWhileLoop [Stmt] Expr
   deriving (Eq,Show)
 

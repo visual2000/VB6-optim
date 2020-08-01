@@ -12,6 +12,9 @@ main = hspec $ do
   describe "Line continuations work" $ do
     it "works" $ do
       compareToLiteral "examples/LineContinuation.bas" "' ---\r\n' ---\r\nPublic Function SillyFunc(x As Long, y As Boolean) As Boolean\r\nEnd Function\r\n' ---\r\n' The end\r\n"
+  describe "HitFuncs.bas end-to-end" $ do
+    it "is the same" $ do
+      compareParsed "examples/HitFuncs.bas"
 
 compareParsed f = do contents <- readFile f
                      testOutput <- parseAndPrettyPrintFile f
