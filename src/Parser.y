@@ -85,7 +85,7 @@ import Prelude hiding (LT, GT)
 -- Operators
 %right ','
 %left 'And' 'Or'
-%left '<' '>' '='
+%left '<' '>' '=' '<=' '>='
 %left '+' '-'
 %left '*' '/'
 %right '.'
@@ -159,7 +159,7 @@ DimDeclArg : VAR 'As' TypeRef            { TypeField $1 $3 }
 Statements : {- empty -}              { [] }
            | Statement Statements     { $1 : $2 }
 
-Statement : 'Dim' DimDeclArgs eol          { StmtDecl $2 }
+Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
           | Lhs '=' Expr eol              { StmtAssign $1 $3 }
           | 'If' Expr 'Then' eol
                 Statements
@@ -179,6 +179,7 @@ Statement : 'Dim' DimDeclArgs eol          { StmtDecl $2 }
                 Statements
             'Next' VAR eol                { StmtFor $2 $4 $6 Nothing $8 }
           | 'Exit' 'Function' eol         { StmtReturn }
+          -- FIXME FNCallRef rule is causing a shift/reduce conflict.
           | FNCallRef ExprList eol        { StmtNakedFunctionCall $1 $2 }
           | 'Do' eol
                 Statements
