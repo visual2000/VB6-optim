@@ -26,5 +26,5 @@ test1 = do contents <- readFile "examples/Module1.bas"
                case mod of
                  Left err -> error "Halp"
                  Right ast -> do
-                   let result = render $ pp ast
+                   let result = printModule ast
                    return result

@@ -2,9 +2,16 @@
 module Printer where
 
 import Text.PrettyPrint
+import Text.Regex
 import Prelude hiding ((<>), GT, LT)
 
 import Syntax
+
+printModule :: Module -> String
+printModule m = fixDOSEOL $ ((render . pp) m) ++ "\n"
+
+fixDOSEOL :: String -> String
+fixDOSEOL = \i -> subRegex (mkRegex "\n") i "\r\n"
 
 class Printable a where
   pp :: a -> Doc

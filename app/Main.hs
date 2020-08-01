@@ -3,7 +3,7 @@ module Main where
 import Lib
 
 import Syntax (Module)
-import Printer (Printable, pp)
+import Printer (Printable, printModule)
 import Parser (parseModule, parseTokens)
 
 import Control.Monad.Trans
@@ -30,7 +30,7 @@ process input = do
           putStrLn (err input)
         Right ast -> do
           -- putStrLn ("Syntax: " ++ show ast)
-          putStrLn $ render $ pp ast
+          putStrLn $ printModule ast
 
 files = [ "examples/HitFuncs.bas"
         , "examples/CameraFuncs.bas"
