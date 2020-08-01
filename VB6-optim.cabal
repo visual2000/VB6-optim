@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 311b04533aedacf5db1e78f6b3c5df899fa46e5598622b349be3e5e8e1b8e7b9
+-- hash: ebc7ad18ddfe39c85a4deb74b8b0f74e8dcd52c8e652d729b30ecb2aa49c313c
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -59,6 +59,8 @@ executable VB6-optim-exe
     , array
     , base >=4.7 && <5
     , containers
+    , directory
+    , filepath
     , haskeline
     , ini
     , mtl

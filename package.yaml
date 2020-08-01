@@ -46,6 +46,8 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - VB6-optim
+    - directory
+    - filepath
     - haskeline
 
 tests:
