@@ -142,8 +142,8 @@ FnDeclArgs : {- empty -}               { [] }
            | FnDeclArg                 { [$1] } -- TODO disallow trailing ','
            | FnDeclArg ',' FnDeclArgs  { $1 : $3 }
 
-FnDeclArg : VAR 'As' TypeRef             { ByRef $ TypeField $1 $3 }
-          | VAR '(' ')' 'As' TypeRef     { ByRef $ TypeFieldArray $1 $5 }
+FnDeclArg : VAR 'As' TypeRef             { Unspecified $ TypeField $1 $3 }
+          | VAR '(' ')' 'As' TypeRef     { Unspecified $ TypeFieldArray $1 $5 }
           | 'ByRef' VAR 'As' TypeRef             { ByRef $ TypeField $2 $4 }
           | 'ByRef' VAR '(' ')' 'As' TypeRef     { ByRef $ TypeFieldArray $2 $6 }
           | 'ByVal' VAR 'As' TypeRef             { ByVal $ TypeField $2 $4 }

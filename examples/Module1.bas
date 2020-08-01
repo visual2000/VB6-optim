@@ -14,7 +14,7 @@ Public Function TVec3_init(x As Double, y As Double, z As Double) As TVec3
     t.z = z
     TVec3_init = t
 End Function
-Public Function manyArgs(x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double) As TVec3
+Public Function manyArgs(x As Double, y As Double, z As Double, x As Double, y As Double, z As Double, x As Double, y As Double, z As Double, x As Double, y As Double, z As Double, x As Double, y As Double, z As Double, x As Double, y As Double, z As Double, x As Double, y As Double, z As Double) As TVec3
     Dim t As TVec3
     t.x = x
     t.y = y

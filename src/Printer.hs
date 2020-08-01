@@ -72,8 +72,9 @@ instance Printable [Declaration] where
     = pp frs
 
 instance Printable ArgumentRef where
-  pp (ByRef t) = text "ByRef" <+> pp t
-  pp (ByVal t) = text "ByVal" <+> pp t
+  pp (Unspecified t) = pp t
+  pp (ByRef t)       = text "ByRef" <+> pp t
+  pp (ByVal t)       = text "ByVal" <+> pp t
 
 instance Printable TypeField where
   pp (TypeField n ref) = text n <+> text "As" <+> pp ref

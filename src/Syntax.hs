@@ -23,8 +23,9 @@ data Visibility
   deriving (Show, Eq)
 
 data ArgumentRef
-  = ByVal TypeField
-  | ByRef TypeField
+  = ByVal       TypeField
+  | ByRef       TypeField
+  | Unspecified TypeField
   deriving (Show, Eq)
 
 data TypeField
