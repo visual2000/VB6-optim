@@ -67,12 +67,13 @@ parseProject p = let ini = parseIni p in
                    case ini of
                      Left err -> Nothing
                      Right ini' ->
-                       let glo = iniGlobals ini' in
-                         let mods = map (T.unpack . snd) $ filter (\(k,v)-> T.unpack k =="Module") glo in
-                           let stripped = map ((!!1) . words) mods in
+                       let glo = iniGlobals ini'
+                           mods = map (T.unpack . snd) $ filter (\(k,v)-> T.unpack k =="Module") glo
+                           other_src = map (T.unpack . snd) $ filter (\(k,v)-> T.unpack k =="Form") glo
+                           afterSemicolon = map ((!!1) . words) mods in
                              Just $ Project{ originalIni = ini'
-                                           , modules = stripped
-                                           , otherAssets = []
+                                           , modules = afterSemicolon
+                                           , otherAssets = other_src
                                            }
 
 
@@ -86,4 +87,5 @@ main = do fileContents <- T.readFile projectFile
                           exitFailure
             Just proj -> do hPutStrLn stderr "...done."
                             sequence [ putStrLn $ "Found module: " ++ m | m <- modules proj ]
+                            sequence [ putStrLn $ "Found other source: " ++ m | m <- otherAssets proj ]
           exitSuccess
