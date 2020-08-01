@@ -45,7 +45,7 @@ files = [ "examples/HitFuncs.bas"
         , "examples/VecFuncts.bas"
         , "examples/Types.bas"
         -- , "examples/RayFuncs.bas"
-        -- , "examples/Numericalconstants.bas"
+        -- , "examples/NumericalConstants.bas"
         ]
 
 parseFile :: FilePath -> IO()

@@ -8,10 +8,18 @@ main :: IO ()
 main = hspec $ do
   describe "Module1 end-to-end" $ do
     it "should parse and print the same module contents" $ do
-      contents <- readFile "examples/Module1.bas"
-      test1Output <- parseAndPrettyPrintFile "examples/Module1.bas"
-      test1Output `shouldBe` contents
+      compareParsed "examples/Module1.bas"
+  describe "Line continuations work" $ do
+    it "works" $ do
+      compareToLiteral "examples/LineContinuation.bas" "' ---\r\n' ---\r\nPublic Function SillyFunc(x As Long, y As Boolean) As Boolean\r\nEnd Function\r\n' ---\r\n' The end\r\n"
 
+compareParsed f = do contents <- readFile f
+                     testOutput <- parseAndPrettyPrintFile f
+                     testOutput `shouldBe` contents
+
+compareToLiteral f lit = do contents <- readFile f
+                            testOutput <- parseAndPrettyPrintFile f
+                            testOutput `shouldBe` lit
 
 parseAndPrettyPrintFile :: FilePath -> IO String
 parseAndPrettyPrintFile f = do
