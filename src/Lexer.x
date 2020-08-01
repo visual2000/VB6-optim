@@ -51,6 +51,8 @@ tokens :-
   Boolean                       { \p s -> Token p $ TokenBoolean }
   String                        { \p s -> Token p $ TokenString }
   Dim                           { \p s -> Token p $ TokenDim }
+  Set                           { \p s -> Token p $ TokenSet }
+  LSet                          { \p s -> Token p $ TokenLSet }
   ByVal                         { \p s -> Token p $ TokenByVal }
   ByRef                         { \p s -> Token p $ TokenByRef }
   Public                        { \p s -> Token p $ TokenPublic }
@@ -113,6 +115,7 @@ data IToken
   | TokenWhile
   | TokenLoop
   | TokenDot
+  | TokenSet | TokenLSet
   | TokenFor | TokenTo | TokenStep | TokenNext
   | TokenIf | TokenThen | TokenElse
   | TokenOr | TokenAnd

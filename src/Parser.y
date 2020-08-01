@@ -30,6 +30,8 @@ import Prelude hiding (LT, GT)
 %token
     'Declare'     { Token _ (TokenDeclare) }
     'Lib'         { Token _ (TokenLib) }
+    'LSet'        { Token _ (TokenLSet) }
+    'Set'         { Token _ (TokenSet) }
     'Function'    { Token _ (TokenFunction) }
     'Sub'         { Token _ (TokenSubroutine) }
     'ByRef'       { Token _ (TokenByRef) }
@@ -120,7 +122,7 @@ Visibility : 'Private' { Private }
 TypeDefFields : TypeDefField                 { [$1] }
               | TypeDefField TypeDefFields   { $1 : $2 }
 
-TypeDefField : VAR 'As' TypeRef eol { TypeField $1 $3 }
+TypeDefField : DimDeclArg eol { $1 }
 
 Attributes : {- empty -}          { [] }
            | Attribute Attributes { $1 : $2 }
@@ -155,11 +157,17 @@ DimDeclArgs : {- empty -}               { [] }
 
 DimDeclArg : VAR 'As' TypeRef            { TypeField $1 $3 }
            | VAR '(' ')' 'As' TypeRef    { TypeFieldArray $1 $5 }
+           | VAR '(' INT ')' 'As' TypeRef
+                                         { TypeFieldArrayWithUpperBound $1 $3 $6 }
+           | VAR '(' INT 'To' INT ')' 'As' TypeRef
+                                         { TypeFieldArrayWithBounds $1 $3 $5 $8 }
 
 Statements : {- empty -}              { [] }
            | Statement Statements     { $1 : $2 }
 
 Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
+          | 'LSet' Lhs '=' Expr eol       { StmtLSetAssign $2 $4 }
+          | 'Set' Lhs '=' Expr eol        { StmtSetAssign $2 $4 }
           | Lhs '=' Expr eol              { StmtAssign $1 $3 }
           | 'If' Expr 'Then' eol
                 Statements

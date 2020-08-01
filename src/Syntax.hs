@@ -31,6 +31,8 @@ data ArgumentRef
 data TypeField
   = TypeField Name TypeRef
   | TypeFieldArray Name TypeRef
+  | TypeFieldArrayWithUpperBound Name Int TypeRef
+  | TypeFieldArrayWithBounds Name Int Int TypeRef
   deriving (Show, Eq)
 
 data TypeRef
@@ -58,6 +60,8 @@ data Stmt
   | StmtReturn
   | StmtWith Lhs [WithAssignment]
   | StmtAssign Lhs Expr
+  | StmtSetAssign Lhs Expr
+  | StmtLSetAssign Lhs Expr
   | StmtNakedFunctionCall Lhs [Expr]
   | StmtIfThenElse Expr [Stmt] [Stmt]
   | StmtFor Name Expr Expr (Maybe Expr) [Stmt]

@@ -79,6 +79,14 @@ instance Printable ArgumentRef where
 instance Printable TypeField where
   pp (TypeField n ref) = text n <+> text "As" <+> pp ref
   pp (TypeFieldArray n ref) = text n <> text "()" <+> text "As" <+> pp ref
+  pp (TypeFieldArrayWithUpperBound n b ref) = text n <> text "("
+                                              <> int b
+                                              <> text ")"
+                                              <+> text "As" <+> pp ref
+  pp (TypeFieldArrayWithBounds n l u ref) = text n <> text "("
+                                            <> int l <+> text "To" <+> int u
+                                            <> text ")"
+                                            <+> text "As" <+> pp ref
 
 instance Printable [WithAssignment] where
   pp [] = empty
@@ -102,6 +110,16 @@ instance Printable [Stmt] where
                                 <+> equals
                                 <+> pp expr
                                 $+$ pp ss
+  pp ((StmtSetAssign l expr):ss) = text "Set"
+                                   <+> pp l
+                                   <+> equals
+                                   <+> pp expr
+                                   $+$ pp ss
+  pp ((StmtLSetAssign l expr):ss) = text "LSet"
+                                    <+> pp l
+                                    <+> equals
+                                    <+> pp expr
+                                    $+$ pp ss
   pp ((StmtNakedFunctionCall l args):ss) =
     pp l
     <+> hcat (punctuate (text ", ") (map pp args))
