@@ -1,6 +1,7 @@
 module Main where
 
 import Lib
+import Util
 
 import Syntax
 import Printer (Printable, printModule)
@@ -68,7 +69,7 @@ parseProject baseDir filename p = let ini = parseIni p in
                              Just $ Project{ originalIni = ini'
                                            , modules = afterSemicolon
                                            , otherAssets = other_src
-                                           , projectName = head projTitle
+                                           , projectName = read $ head projTitle
                                            , baseDirectory = baseDir
                                            }
 
@@ -92,6 +93,13 @@ outDirectory = "./output"
 parseModuleList :: FilePath -> [FilePath] -> IO [Module]
 parseModuleList baseDir fs = mapM parseFile (map (\f -> baseDir </> f) fs)
 
+ourPrintIni :: Ini -> String
+ourPrintIni i = let globals = iniGlobals i in
+                  fixDOSEOL $
+                  concat (map (\(k,v) -> T.unpack k ++ "=" ++ T.unpack v ++ "\n") globals)
+                  ++ "\n"
+                  ++ (T.unpack $ printIniWith (WriteIniSettings EqualsKeySeparator) i)
+
 doTheThing :: Project -> FilePath -> IO()
 doTheThing project dest = do
   createDirectory dest
@@ -103,7 +111,7 @@ doTheThing project dest = do
   let oldini = originalIni project
       newglobals = filter (\(k,v) -> T.unpack k /= "Module") $ iniGlobals oldini
       newini = oldini { iniGlobals = (T.pack "Module", T.pack "Monolith; Monolith.bas"):newglobals } in
-    writeFile (baseDirectory project </> (projectName project) ++ ".vbp") (T.unpack $ printIni newini)
+    writeFile (dest </> (projectName project) ++ ".vbp") (ourPrintIni newini)
 
 main :: IO ()
 main = do fileContents <- T.readFile projectFile

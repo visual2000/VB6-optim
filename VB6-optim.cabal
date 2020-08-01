@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ebc7ad18ddfe39c85a4deb74b8b0f74e8dcd52c8e652d729b30ecb2aa49c313c
+-- hash: c5d8ad435882155760fd25aa492b974ce4ab35a5593a294bfb794fb79b930e6b
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -32,6 +32,7 @@ library
       Parser
       Printer
       Syntax
+      Util
   other-modules:
       Paths_VB6_optim
   hs-source-dirs:
