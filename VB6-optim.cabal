@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a0be0b50b3b2d4955a81e1f30bafdefddbfefae91e724604fdec96c566c471ab
+-- hash: 22b637310bbd6ba689ad044fcf4647b7bc840fa2c49a272539ba66b9a860cae4
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -74,6 +74,7 @@ test-suite VB6-optim-test
     , array
     , base >=4.7 && <5
     , containers
+    , hspec
     , mtl
     , pretty
   default-language: Haskell2010
