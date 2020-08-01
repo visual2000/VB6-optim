@@ -66,7 +66,14 @@ instance Printable [Declaration] where
       $+$ text "End Function"
       $+$ pp fs
   pp ((DllFuncReference v n lib args ty) : frs)
-    = pp frs
+    = text (show v) <+> text "Declare" <+> text "Function"
+      <+> text n
+      <+> text "Lib"
+      <+> doubleQuotes (text lib)
+      <+> parens (hcat $ punctuate (text ", ") (map pp args))
+      <+> text "As"
+      <+> pp ty
+      $+$ pp frs
 
 instance Printable ArgumentRef where
   pp (Unspecified t) = pp t

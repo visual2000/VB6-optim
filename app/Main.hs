@@ -76,9 +76,16 @@ parseProject baseDir filename p = let ini = parseIni p in
 
 combineModules :: [Module] -> Module
 combineModules ms =
-  Mod [Attribute "VB_Name" (LString "Monolith")]
-      [OptionExplicit]
-      (concat [ decls | (Mod _ _ decls) <- ms ])
+  let allDecls = (concat [ decls | (Mod _ _ decls) <- ms ]) in
+    Mod [Attribute "VB_Name" (LString "Monolith")]
+        [OptionExplicit]
+        (
+          getDllFuncRefs allDecls
+          ++ getTypeDefs allDecls
+          ++ getGlobalVarDecls allDecls
+          ++ getFuncDecls allDecls
+          ++ getSubDecls allDecls
+        )
 
 
 copyOtherFiles :: Project -> FilePath -> IO()
