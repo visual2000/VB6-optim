@@ -54,18 +54,24 @@ parseFile f = do fileContents <- readFile f
                  mdl <- process fileContents
                  return ()
 
-parseProject :: FilePath -> IO (Maybe Ini, [FilePath])
+data Project = Project { originalIni :: Ini
+                       , modules :: [FilePath]
+                       , otherAssets :: [FilePath]
+                       }
+  deriving (Show, Eq)
+
+parseProject :: FilePath -> IO (Maybe Project)
 parseProject p = do hPutStrLn stderr $ "Reading project " ++ p ++ "..."
                     fileContents <- readIniFile p
                     case fileContents of
                       Left err -> do hPutStrLn stderr "Couldn't parse project file!"
-                                     return (Nothing, [])
+                                     return Nothing
                       Right ini -> do
                         let glo = iniGlobals ini
                         let mods = map (unpack . snd) $ filter (\(k,v)->(unpack k)=="Module") glo
                         let stripped = map ((\ws->ws!!1) . words) mods
                         putStrLn (stripped >>= (\m -> "Found module: " ++ m ++ ".\n"))
-                        return (Just ini, stripped)
+                        return (Just $ Project ini stripped [])
 
 main = parseProject projectFile
 -- main :: IO ()
