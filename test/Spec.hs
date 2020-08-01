@@ -6,9 +6,6 @@ import Test.Hspec
 
 main :: IO ()
 main = hspec $ do
-  describe "Prelude.head" $ do
-    it "returns the first element of a list" $ do
-      head [23 ..] `shouldBe` (23 :: Int)
   describe "Module1 end-to-end" $ do
     it "should parse and print the same module contents" $ do
       contents <- readFile "examples/Module1.bas"
