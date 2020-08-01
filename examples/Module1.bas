@@ -1,12 +1,12 @@
 Attribute VB_Name = "types"
+' ---
 Option Explicit
-
+' ---
 Public Type TVec3
     x As Double
     y As Double
     z As Double
 End Type
-
 Public Function TVec3_init(x As Double, y As Double, z As Double) As TVec3
     Dim t As TVec3
     t.x = x
@@ -14,8 +14,6 @@ Public Function TVec3_init(x As Double, y As Double, z As Double) As TVec3
     t.z = z
     TVec3_init = t
 End Function
-
-
 Public Function manyArgs(x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double,x As Double, y As Double, z As Double) As TVec3
     Dim t As TVec3
     t.x = x
@@ -23,3 +21,5 @@ Public Function manyArgs(x As Double, y As Double, z As Double,x As Double, y As
     t.z = z
     TVec3_init = t
 End Function
+' ---
+' The end
