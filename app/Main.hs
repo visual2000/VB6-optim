@@ -43,8 +43,7 @@ parseStringToModule input = do
 parseFileToModule :: FilePath -> IO Module
 parseFileToModule f = do fileContents <- readFile f
                          hPutStr stderr $ "Reading " ++ f ++ "...\n"
-                         mdl <- parseStringToModule fileContents
-                         return mdl
+                         parseStringToModule fileContents
 
 data Project = Project { originalIni :: Ini
                        , modules :: [FilePath]
@@ -74,7 +73,7 @@ parseProject baseDir filename p = let ini = parseIni p in
 
 combineModules :: [Module] -> Module
 combineModules ms =
-  let allDecls = (concat [ decls | (Mod _ _ decls) <- ms ]) in
+  let allDecls = concat [ decls | (Mod _ _ decls) <- ms ] in
     Mod [ModuleAttribute "VB_Name" (LString newModuleName)]
         [OptionExplicit]
         (
@@ -98,14 +97,13 @@ outDirectory = "/Users/paul/Public/OptimBasicTrace"
 newModuleName = "Monolith"
 
 parseModuleList :: FilePath -> [FilePath] -> IO [Module]
-parseModuleList baseDir fs = mapM parseFileToModule (map (\f -> baseDir </> f) fs)
+parseModuleList baseDir = mapM (parseFileToModule . (baseDir </>))
 
 formatVbpProjectConfig :: Ini -> String
 formatVbpProjectConfig i = let globals = iniGlobals i in
-                  eolsToCRLF $
-                  concat (map (\(k,v) -> T.unpack k ++ "=" ++ T.unpack v ++ "\n") globals)
-                  ++ "\n"
-                  ++ (T.unpack $ printIniWith (WriteIniSettings EqualsKeySeparator) i)
+                  eolsToCRLF $ concatMap (\(k,v) -> T.unpack k ++ "=" ++ T.unpack v ++ "\n") globals
+                               ++ "\n"
+                               ++ (T.unpack $ printIniWith (WriteIniSettings EqualsKeySeparator) i)
 
 processProject :: Project -> FilePath -> IO()
 processProject project dest = do
@@ -116,7 +114,7 @@ processProject project dest = do
   let ini = originalIni project
       globalsMinusModules = filter (\(k,v) -> T.unpack k /= "Module") $ iniGlobals ini
       newini = ini { iniGlobals = (T.pack "Module", T.pack$newModuleName ++ "; " ++ newModuleName ++ ".bas"):globalsMinusModules } in
-    writeFile (dest </> (projectName project) ++ ".vbp") (formatVbpProjectConfig newini)
+    writeFile (dest </> projectName project ++ ".vbp") (formatVbpProjectConfig newini)
 
 main :: IO ()
 main = do fileContents <- T.readFile projectFile

@@ -8,7 +8,7 @@ import Util
 import Syntax
 
 printModule :: Module -> String
-printModule m = eolsToCRLF $ ((render . pp) m) ++ "\n"
+printModule m = eolsToCRLF $ (render . pp) m ++ "\n"
 
 class Printable a where
   pp :: a -> Doc
