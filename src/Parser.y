@@ -93,8 +93,8 @@ import Prelude hiding (LT, GT)
 %right '.'
 %%
 
-Module : Attributes
-         Options
+Module : ModuleAttributes
+         ModuleOptions
          TopLevelDeclarations
          { Mod $1 $2 $3 }
 
@@ -102,12 +102,12 @@ TopLevelDeclarations : {- empty -}        { [] }
                      | TopLevelDeclaration TopLevelDeclarations { $1 : $2 }
 
 TopLevelDeclaration : Visibility 'Type' VAR eol
-                                     TypeDefFields
-                                 'End' 'Type' eol      { TypeDef $1 $3 $5 }
+                                     UserTypeDeclFields
+                                 'End' 'Type' eol      { UserTypeDecl $1 $3 $5 }
                     | Visibility 'Declare' 'Function'
                          VAR 'Lib'
                          STR '(' FnDeclArgs ')' 'As' TypeRef eol
-                                                       { DllFuncReference $1 $4 $6 $8 $11 }
+                                                       { DllFunc $1 $4 $6 $8 $11 }
                     | Visibility 'Function' VAR '(' FnDeclArgs ')' 'As' TypeRef eol
                                      Statements
                                  'End' 'Function' eol      { FuncDecl $1 $3 $5 $8 $10 }
@@ -119,20 +119,20 @@ TopLevelDeclaration : Visibility 'Type' VAR eol
 Visibility : 'Private' { Private }
            | 'Public'  { Public }
 
-TypeDefFields : TypeDefField                 { [$1] }
-              | TypeDefField TypeDefFields   { $1 : $2 }
+UserTypeDeclFields : UserTypeDeclField                 { [$1] }
+              | UserTypeDeclField UserTypeDeclFields   { $1 : $2 }
 
-TypeDefField : DimDeclArg eol { $1 }
+UserTypeDeclField : DimDeclArg eol { $1 }
 
-Attributes : {- empty -}          { [] }
-           | Attribute Attributes { $1 : $2 }
+ModuleAttributes : {- empty -}          { [] }
+           | ModuleAttribute ModuleAttributes { $1 : $2 }
 
-Attribute : 'Attribute' VAR '=' Lit eol { Attribute $2 $4 }
+ModuleAttribute : 'Attribute' VAR '=' Lit eol { ModuleAttribute $2 $4 }
 
-Options : {- empty -}    { [] }
-        | Option Options { $1 : $2 }
+ModuleOptions : {- empty -}    { [] }
+        | ModuleOption ModuleOptions { $1 : $2 }
 
-Option : 'Option' 'Explicit' eol { OptionExplicit }
+ModuleOption : 'Option' 'Explicit' eol { OptionExplicit }
 
 TypeRef : 'Double'  { TDouble }
         | 'Integer' { TInt }
@@ -144,23 +144,23 @@ FnDeclArgs : {- empty -}               { [] }
            | FnDeclArg                 { [$1] } -- TODO disallow trailing ','
            | FnDeclArg ',' FnDeclArgs  { $1 : $3 }
 
-FnDeclArg : VAR 'As' TypeRef             { Unspecified $ TypeField $1 $3 }
-          | VAR '(' ')' 'As' TypeRef     { Unspecified $ TypeFieldArray $1 $5 }
-          | 'ByRef' VAR 'As' TypeRef             { ByRef $ TypeField $2 $4 }
-          | 'ByRef' VAR '(' ')' 'As' TypeRef     { ByRef $ TypeFieldArray $2 $6 }
-          | 'ByVal' VAR 'As' TypeRef             { ByVal $ TypeField $2 $4 }
-          | 'ByVal' VAR '(' ')' 'As' TypeRef     { ByVal $ TypeFieldArray $2 $6 }
+FnDeclArg : VAR 'As' TypeRef             { Unspecified $ TypeDecl $1 $3 }
+          | VAR '(' ')' 'As' TypeRef     { Unspecified $ TypeDeclArray $1 $5 }
+          | 'ByRef' VAR 'As' TypeRef             { ByRef $ TypeDecl $2 $4 }
+          | 'ByRef' VAR '(' ')' 'As' TypeRef     { ByRef $ TypeDeclArray $2 $6 }
+          | 'ByVal' VAR 'As' TypeRef             { ByVal $ TypeDecl $2 $4 }
+          | 'ByVal' VAR '(' ')' 'As' TypeRef     { ByVal $ TypeDeclArray $2 $6 }
 
 DimDeclArgs : {- empty -}               { [] }
             | DimDeclArg                 { [$1] } -- TODO disallow trailing ','
             | DimDeclArg ',' DimDeclArgs  { $1 : $3 }
 
-DimDeclArg : VAR 'As' TypeRef            { TypeField $1 $3 }
-           | VAR '(' ')' 'As' TypeRef    { TypeFieldArray $1 $5 }
+DimDeclArg : VAR 'As' TypeRef            { TypeDecl $1 $3 }
+           | VAR '(' ')' 'As' TypeRef    { TypeDeclArray $1 $5 }
            | VAR '(' INT ')' 'As' TypeRef
-                                         { TypeFieldArrayWithUpperBound $1 $3 $6 }
+                                         { TypeDeclArrayWithUpperBound $1 $3 $6 }
            | VAR '(' INT 'To' INT ')' 'As' TypeRef
-                                         { TypeFieldArrayWithBounds $1 $3 $5 $8 }
+                                         { TypeDeclArrayWithBounds $1 $3 $5 $8 }
 
 Statements : {- empty -}              { [] }
            | Statement Statements     { $1 : $2 }
@@ -191,7 +191,7 @@ Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
           | FNCallRef ExprList eol        { StmtNakedFunctionCall $1 $2 }
           | 'Do' eol
                 Statements
-            'Loop' 'While' Expr eol       { StmtWhileLoop $3 $6 }
+            'Loop' 'While' Expr eol       { StmtDoStatementsLoopWhileCond $3 $6 }
 
 Withs : With { [$1] }
       | With Withs { $1 : $2 }
@@ -256,6 +256,6 @@ parseModule input = runExcept $ do
 
 -- todo rename to lexTokens
 parseTokens :: String -> Either String [Token]
-parseTokens = runExcept . scanTokens
+parseTokens = runExcept . lexStringToTokens
 
 }

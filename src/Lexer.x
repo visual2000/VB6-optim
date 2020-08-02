@@ -9,7 +9,7 @@ module Lexer (
   IToken(..),
   AlexPosn(..),
   remDupEOLs,
-  scanTokens
+  lexStringToTokens
 ) where
 
 import Syntax
@@ -160,8 +160,8 @@ remDupEOLs [x] = [x]
 remDupEOLs (first@(Token _ TokenEOL):(Token _ TokenEOL):xs) = remDupEOLs (first : xs)
 remDupEOLs (x1 : xs) = x1 : (remDupEOLs xs)
 
-scanTokens :: String -> Except String [Token]
-scanTokens str = go (alexStartPos, '\n', [], str) where
+lexStringToTokens :: String -> Except String [Token]
+lexStringToTokens str = go (alexStartPos, '\n', [], str) where
   go inp@(pos, _, _bs, rest_str) =
     case alexScan inp 0 of
       AlexEOF -> return []

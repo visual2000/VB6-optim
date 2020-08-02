@@ -8,7 +8,7 @@ import Util
 import Syntax
 
 printModule :: Module -> String
-printModule m = fixDOSEOL $ ((render . pp) m) ++ "\n"
+printModule m = eolsToCRLF $ ((render . pp) m) ++ "\n"
 
 class Printable a where
   pp :: a -> Doc
@@ -27,12 +27,12 @@ instance Printable Module where
 
 blank = text "' ---"
 
-instance Printable [Attribute] where
+instance Printable [ModuleAttribute] where
   pp [] = empty
-  pp ((Attribute n lit) : as) = text "Attribute" <+> text n <+> equals <+> pp lit
+  pp ((ModuleAttribute n lit) : as) = text "Attribute" <+> text n <+> equals <+> pp lit
                                 $+$ pp as
 
-instance Printable [Option] where
+instance Printable [ModuleOption] where
   pp [] = empty
   pp (OptionExplicit : os) = text "Option Explicit"
                              $+$ pp os
@@ -54,7 +54,7 @@ instance Printable [Declaration] where
     <+> text "As"
     <+> pp t
     $+$ pp gds
-  pp ((TypeDef v n fs) : ts) = (text (show v) <+> text "Type" <+> text n)
+  pp ((UserTypeDecl v n fs) : ts) = (text (show v) <+> text "Type" <+> text n)
                                $+$ nest 4 (vcat (map pp fs))
                                $+$ text "End Type"
                                $+$ pp ts
@@ -65,7 +65,7 @@ instance Printable [Declaration] where
       $+$ nest 4 (pp ss)
       $+$ text "End Function"
       $+$ pp fs
-  pp ((DllFuncReference v n lib args ty) : frs)
+  pp ((DllFunc v n lib args ty) : frs)
     = text (show v) <+> text "Declare" <+> text "Function"
       <+> text n
       <+> text "Lib"
@@ -75,19 +75,19 @@ instance Printable [Declaration] where
       <+> pp ty
       $+$ pp frs
 
-instance Printable ArgumentRef where
+instance Printable FuncArgDecl where
   pp (Unspecified t) = pp t
   pp (ByRef t)       = text "ByRef" <+> pp t
   pp (ByVal t)       = text "ByVal" <+> pp t
 
-instance Printable TypeField where
-  pp (TypeField n ref) = text n <+> text "As" <+> pp ref
-  pp (TypeFieldArray n ref) = text n <> text "()" <+> text "As" <+> pp ref
-  pp (TypeFieldArrayWithUpperBound n b ref) = text n <> text "("
+instance Printable TypeDecl where
+  pp (TypeDecl n ref) = text n <+> text "As" <+> pp ref
+  pp (TypeDeclArray n ref) = text n <> text "()" <+> text "As" <+> pp ref
+  pp (TypeDeclArrayWithUpperBound n b ref) = text n <> text "("
                                               <> int b
                                               <> text ")"
                                               <+> text "As" <+> pp ref
-  pp (TypeFieldArrayWithBounds n l u ref) = text n <> text "("
+  pp (TypeDeclArrayWithBounds n l u ref) = text n <> text "("
                                             <> int l <+> text "To" <+> int u
                                             <> text ")"
                                             <+> text "As" <+> pp ref
@@ -162,7 +162,7 @@ instance Printable [Stmt] where
                                                   $+$ nest 4 (pp bodyss)
                                                   $+$ text "Next" <+> text loopvar
                                                   $+$ pp ss
-  pp ((StmtWhileLoop stmts expr):ss) = text "Do"
+  pp ((StmtDoStatementsLoopWhileCond stmts expr):ss) = text "Do"
                                        $+$ nest 4 (pp stmts)
                                        $+$ text "Loop While"
                                        <+> pp expr

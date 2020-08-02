@@ -4,17 +4,17 @@ import Prelude hiding ((<), (>), LT, GT)
 
 type Name = String
 
-data Module = Mod [Attribute]
-                  [Option]
+data Module = Mod [ModuleAttribute]
+                  [ModuleOption]
                   [Declaration]
   deriving (Show, Eq)
 
 data Declaration
-  = DllFuncReference Visibility Name String [ArgumentRef] TypeRef
-  | TypeDef Visibility Name [TypeField]
+  = DllFunc Visibility Name String [FuncArgDecl] TypeRef
+  | UserTypeDecl Visibility Name [TypeDecl]
   | GlobalVarDecl Visibility Name TypeRef
-  | FuncDecl Visibility Name [ArgumentRef] TypeRef [Stmt]
-  | SubDecl  Visibility Name [ArgumentRef]         [Stmt]
+  | FuncDecl Visibility Name [FuncArgDecl] TypeRef [Stmt]
+  | SubDecl  Visibility Name [FuncArgDecl]         [Stmt]
   deriving (Show, Eq)
 
 data Visibility
@@ -22,17 +22,17 @@ data Visibility
   | Private
   deriving (Show, Eq)
 
-data ArgumentRef
-  = ByVal       TypeField
-  | ByRef       TypeField
-  | Unspecified TypeField
+data FuncArgDecl
+  = ByVal       TypeDecl
+  | ByRef       TypeDecl
+  | Unspecified TypeDecl
   deriving (Show, Eq)
 
-data TypeField
-  = TypeField Name TypeRef
-  | TypeFieldArray Name TypeRef
-  | TypeFieldArrayWithUpperBound Name Int TypeRef
-  | TypeFieldArrayWithBounds Name Int Int TypeRef
+data TypeDecl
+  = TypeDecl Name TypeRef
+  | TypeDeclArray Name TypeRef
+  | TypeDeclArrayWithUpperBound Name Int TypeRef
+  | TypeDeclArrayWithBounds Name Int Int TypeRef
   deriving (Show, Eq)
 
 data TypeRef
@@ -43,11 +43,11 @@ data TypeRef
   | TUDT Name
   deriving (Show, Eq)
 
-data Attribute
-  = Attribute Name Lit
+data ModuleAttribute
+  = ModuleAttribute Name Lit
   deriving (Show, Eq)
 
-data Option
+data ModuleOption
   = OptionExplicit
   deriving (Show, Eq, Ord)
 
@@ -56,7 +56,7 @@ data WithAssignment
   deriving (Show, Eq)
 
 data Stmt
-  = StmtDecl [TypeField]
+  = StmtDecl [TypeDecl]
   | StmtReturn
   | StmtWith Lhs [WithAssignment]
   | StmtAssign Lhs Expr
@@ -65,7 +65,7 @@ data Stmt
   | StmtNakedFunctionCall Lhs [Expr]
   | StmtIfThenElse Expr [Stmt] [Stmt]
   | StmtFor Name Expr Expr (Maybe Expr) [Stmt]
-  | StmtWhileLoop [Stmt] Expr
+  | StmtDoStatementsLoopWhileCond [Stmt] Expr
   deriving (Eq,Show)
 
 data Lhs
@@ -81,7 +81,6 @@ data Expr
   | EAccess [Name] -- a.b.c
   | EOp Binop Expr Expr
   | ENeg Expr
-  -- todo funcall
   deriving (Show, Eq)
 
 data Lit
