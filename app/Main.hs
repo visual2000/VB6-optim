@@ -77,7 +77,7 @@ parseProject baseDir filename p = let ini = parseIni p in
 combineModules :: [Module] -> Module
 combineModules ms =
   let allDecls = (concat [ decls | (Mod _ _ decls) <- ms ]) in
-    Mod [Attribute "VB_Name" (LString "Monolith")]
+    Mod [Attribute "VB_Name" (LString newModuleName)]
         [OptionExplicit]
         (
           getDllFuncRefs allDecls
@@ -96,6 +96,7 @@ copyOtherFiles p dest =
 
 projectFile = "/Users/paul/Public/BasicTrace/BasicTrace.vbp"
 outDirectory = "./output"
+newModuleName = "Monolith"
 
 parseModuleList :: FilePath -> [FilePath] -> IO [Module]
 parseModuleList baseDir fs = mapM parseFile (map (\f -> baseDir </> f) fs)
@@ -114,10 +115,10 @@ doTheThing project dest = do
   let allmodulefiles = modules project in
     do allparsedmodules <- parseModuleList (baseDirectory project) allmodulefiles
        let bigModule = combineModules allparsedmodules in
-         writeFile (dest </> "Monolith.bas") (printModule bigModule)
+         writeFile (dest </> newModuleName ++ ".bas") (printModule bigModule)
   let oldini = originalIni project
       newglobals = filter (\(k,v) -> T.unpack k /= "Module") $ iniGlobals oldini
-      newini = oldini { iniGlobals = (T.pack "Module", T.pack "Monolith; Monolith.bas"):newglobals } in
+      newini = oldini { iniGlobals = (T.pack "Module", T.pack$newModuleName ++ "; " ++ newModuleName ++ ".bas"):newglobals } in
     writeFile (dest </> (projectName project) ++ ".vbp") (ourPrintIni newini)
 
 main :: IO ()
