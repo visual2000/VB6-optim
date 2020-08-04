@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d2d513cf78087d56051a4e7ef1e4f7f46634838e2e2c0e5b0ecf3d92b6a648f5
+-- hash: a7e68d8e5731af9efa44e7c32458a6219fb8985ebb58e5916401304ee7ddd562
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -39,6 +39,7 @@ library
       Paths_VB6_optim
   hs-source-dirs:
       src
+  ghc-options: -Wall -Werror -fwarn-incomplete-uni-patterns
   build-depends:
       AspectAG ==0.7.0.0
     , array
