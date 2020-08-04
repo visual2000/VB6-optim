@@ -4,11 +4,13 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d4e349dd86103f5c47a136363f8483770ed2043ce2fa00ef8be2bfc978e5a268
+-- hash: d2d513cf78087d56051a4e7ef1e4f7f46634838e2e2c0e5b0ecf3d92b6a648f5
 
 name:           VB6-optim
 version:        0.1.0.0
+synopsis:       Code transformation and optimisation for Visual Basic 6
 description:    Please see the README on GitHub at <https://github.com/visual2000/VB6-optim#readme>
+category:       Language Tools
 homepage:       https://github.com/visual2000/VB6-optim#readme
 bug-reports:    https://github.com/visual2000/VB6-optim/issues
 author:         Paul
