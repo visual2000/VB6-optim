@@ -37,39 +37,6 @@ packages:
       sha256: 65e2c597dd20e0a985f42a5cbc526a39122aebb347b7c399e414f560b18579be
   original:
     hackage: uulib-0.9.24@sha256:152da205e22befdeeb65e734990142d578456efb6e14e46bfd22e4cb63cd374d,1801
-- completed:
-    name: AspectAG
-    version: 0.7.0.0
-    git: https://github.com/toothbrush/AspectAG.git
-    pantry-tree:
-      size: 3545
-      sha256: 626377713f0b10d5e966df81c3d6f7711881abc2eac70e0b0e499223e460ca62
-    commit: e9339ff21250579f06f498863ed8d594a03db83d
-  original:
-    git: https://github.com/toothbrush/AspectAG.git
-    commit: e9339ff21250579f06f498863ed8d594a03db83d
-- completed:
-    name: require
-    version: 0.6.0.0
-    git: https://github.com/toothbrush/require.git
-    pantry-tree:
-      size: 544
-      sha256: 1e2204f0745e2798cde5c56ad02169119e321013ee3a3aa4be9590177588a324
-    commit: 909828d9a0f284b88e5296b7f76ed79efb5f51a1
-  original:
-    git: https://github.com/toothbrush/require.git
-    commit: 909828d9a0f284b88e5296b7f76ed79efb5f51a1
-- completed:
-    name: poly-rec
-    version: 0.7.0.0
-    git: https://github.com/toothbrush/polyrec.git
-    pantry-tree:
-      size: 580
-      sha256: a1497b7dcd3c650856c034811fab68e2725f2f42ed684948f94a3120bf60a686
-    commit: 7245d2334671068be5683880ffe07b06e1891cfb
-  original:
-    git: https://github.com/toothbrush/polyrec.git
-    commit: 7245d2334671068be5683880ffe07b06e1891cfb
 snapshots:
 - completed:
     size: 532379

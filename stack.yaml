@@ -52,12 +52,6 @@ extra-deps:
   subdirs:
     - uuagc/trunk/cabal-plugin
 - uulib-0.9.24@sha256:152da205e22befdeeb65e734990142d578456efb6e14e46bfd22e4cb63cd374d,1801
-- git: https://github.com/toothbrush/AspectAG.git
-  commit: e9339ff21250579f06f498863ed8d594a03db83d
-- git: https://github.com/toothbrush/require.git
-  commit: 909828d9a0f284b88e5296b7f76ed79efb5f51a1
-- git: https://github.com/toothbrush/polyrec.git
-  commit: 7245d2334671068be5683880ffe07b06e1891cfb
 
 # Override default flag values for local packages and extra-deps
 # flags: {}

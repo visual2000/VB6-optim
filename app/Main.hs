@@ -22,8 +22,6 @@ import AG
 
 import System.IO
 
-import TryAAG (tryAAG)
-
 -- import Text.PrettyPrint
 
 parseStringToModule :: String -> IO Module
