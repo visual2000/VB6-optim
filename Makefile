@@ -1,6 +1,7 @@
 .PHONY: all
 all:
 	stack build
+	rm -rf output/
 	stack exec VB6-optim-exe
 
 .PHONY: test
