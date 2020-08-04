@@ -6,9 +6,20 @@ author:              "Paul"
 maintainer:          "paul@inktvis.org"
 copyright:           "Copyright (c) 2020 Paul D."
 
+build-type: Custom
+custom-setup:
+  dependencies:
+    - Cabal
+    - base
+    - uuagc >= 0.9
+    - uuagc-cabal >= 0.9
+
 extra-source-files:
 - README.md
 - ChangeLog.md
+- src/AG.ag
+- src/AG/Base.ag
+- uuagc_options
 
 # Metadata used when publishing your package
 synopsis:            Code transformation and optimisation for Visual Basic 6
@@ -36,11 +47,19 @@ dependencies:
 
 library:
   source-dirs: src
+  # Hpack doesn't know about generated modules, so we have to add a
+  # list here.  They get added to `exposed-modules'.
+  generated-exposed-modules:
+    - AG
   ghc-options:
   - -Wall
   - -Werror
   - -fwarn-incomplete-uni-patterns
 
+  # default-extensions for the benefit of AGs, which don't allow
+  # language extension specifications
+  other-extensions: CPP
+  default-extensions:  StandaloneDeriving
   dependencies:
   - array
   - containers

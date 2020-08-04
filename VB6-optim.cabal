@@ -1,10 +1,10 @@
-cabal-version: 1.12
+cabal-version: 2.0
 
 -- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bb4c1c934b46a788d18c94d442c6d558d8c928358d9dd543186a7ae489977c07
+-- hash: f593769ae23efbd10951bc5b70cfbe60421635536d8e9cf34efbdc2e9cf4db95
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -18,14 +18,24 @@ maintainer:     paul@inktvis.org
 copyright:      Copyright (c) 2020 Paul D.
 license:        BSD3
 license-file:   LICENSE
-build-type:     Simple
+build-type:     Custom
 extra-source-files:
     README.md
     ChangeLog.md
+    src/AG.ag
+    src/AG/Base.ag
+    uuagc_options
 
 source-repository head
   type: git
   location: https://github.com/visual2000/VB6-optim
+
+custom-setup
+  setup-depends:
+      Cabal
+    , base
+    , uuagc >=0.9
+    , uuagc-cabal >=0.9
 
 library
   exposed-modules:
@@ -36,10 +46,15 @@ library
       Syntax
       TryAAG
       Util
+      AG
   other-modules:
       Paths_VB6_optim
+  autogen-modules:
+      AG
   hs-source-dirs:
       src
+  default-extensions: StandaloneDeriving
+  other-extensions: CPP
   ghc-options: -Wall -Werror -fwarn-incomplete-uni-patterns
   build-depends:
       AspectAG ==0.7.0.0

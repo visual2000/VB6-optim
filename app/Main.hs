@@ -18,6 +18,8 @@ import Data.Ini
 import qualified Data.Text    as T
 import qualified Data.Text.IO as T
 
+import AG
+
 import System.IO
 
 import TryAAG (tryAAG)
@@ -138,4 +140,4 @@ processProject project dest = do
 --           exitSuccess
 
 
-main = print $ tryAAG
+main = print $ something

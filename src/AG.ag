@@ -1,0 +1,3 @@
+module {AG} {} {}
+
+include "AG/Base.ag"

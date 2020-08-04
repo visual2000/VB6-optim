@@ -1,0 +1,72 @@
+-- possible types for our components
+data DType
+     | DBool
+     | DInt
+     | DString
+     | DPicture
+
+-- type Declarations = [Declaration]
+
+-- data Specification
+--      | S name :: String
+--          ds   :: Declarations
+
+-- data Declaration
+--    | Source      name  :: String
+--                  ty    :: DType
+--    | Action      name  :: String
+--                  ty    :: DType
+--    | Context     name  :: String
+--      	         ty    :: DType
+--                  contr :: ContextInteraction
+--    | Controller  name  :: String
+--     		 contr :: ControllerInteraction
+
+-- data ContextInteraction
+--      | WhenRequired     get :: Get
+--      | WhenProvided    name :: String
+--                         get :: Get
+-- 		        pub :: Publish
+
+-- data ControllerInteraction
+--      | WhenContext      name :: String
+--                         act  :: String
+
+-- type Get = maybe String
+
+-- data Publish
+--      | AlwaysPublish
+--      | MaybePublish
+
+{
+-- jtype :: DType -> RefType
+-- jtype t = case t of
+--      DBool    -> wrap "Boolean"
+--      DInt     -> wrap "Integer"
+--      DString  -> wrap "String"
+--      DPicture -> wrap "Bitmap"
+--   where
+--     wrap :: String -> RefType
+--     wrap s = ClassRefType (ClassType [(Ident s,[])])
+
+deriving instance Eq DType
+deriving instance Show DType
+
+-- deriving instance Eq Declaration
+-- deriving instance Show Declaration
+
+-- deriving instance Eq ContextInteraction
+-- deriving instance Show ContextInteraction
+
+-- deriving instance Eq Publish
+
+-- instance Show Publish where
+--   show AlwaysPublish = "always_publish"
+--   show MaybePublish  = "maybe_publish"
+
+-- deriving instance Eq ControllerInteraction
+-- deriving instance Show ControllerInteraction
+
+something :: String
+something = show DBool
+}
