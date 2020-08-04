@@ -11,6 +11,13 @@ type WithAssignments = [WithAssignment]
 type Exprs = [Expr]
 type Names = [Name]
 
+data ModuleAttribute
+  | ModuleAttribute name :: Name
+                    lit :: Lit
+
+data ModuleOption
+  | OptionExplicit
+
 data Module
      | Mod     attributes :: ModuleAttributes
                options :: ModuleOptions
@@ -67,12 +74,6 @@ data TypeRef
   | TString
   | TUDT  name :: Name
 
-data ModuleAttribute
-  | ModuleAttribute name :: Name
-                    lit :: Lit
-
-data ModuleOption
-  | OptionExplicit
 
 data WithAssignment
   | WithAssignment  left :: Lhs

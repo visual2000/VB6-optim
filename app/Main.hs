@@ -107,35 +107,34 @@ formatVbpProjectConfig i = let globals = iniGlobals i in
                                ++ "\n"
                                ++ (T.unpack $ printIniWith (WriteIniSettings EqualsKeySeparator) i)
 
-reDimify :: Module -> String
-reDimify m = "asdf"
-
-
 processProject :: Project -> FilePath -> IO()
 processProject project dest = do
   createDirectory dest
   copyOtherFiles project dest
   do mods <- parseModuleList (baseDirectory project) (modules project)
-     sequence_ [ putStrLn $ reDimify mod | mod <- mods ]
+     sequence_ [ print $ getDims mod | mod <- mods ]
      writeFile (dest </> newModuleName ++ ".bas") (printModule (combineModules mods))
   let ini = originalIni project
       globalsMinusModules = filter (\(k,v) -> T.unpack k /= "Module") $ iniGlobals ini
       newini = ini { iniGlobals = (T.pack "Module", T.pack $ newModuleName ++ "; " ++ newModuleName ++ ".bas"):globalsMinusModules } in
     writeFile (dest </> projectName project ++ ".vbp") (formatVbpProjectConfig newini)
 
--- main :: IO ()
--- main = do fileContents <- T.readFile projectFile
---           hPutStrLn stderr $ "Reading project " ++ projectFile ++ "..."
---           absDir <- makeAbsolute projectFile
---           let p = parseProject (takeDirectory absDir) projectFile fileContents
---           case p of
---             Nothing -> do hPutStrLn stderr "Couldn't parse project file.\n"
---                           exitFailure
---             Just proj -> do hPutStrLn stderr "...done."
---                             sequence [ putStrLn $ "Found module: " ++ m | m <- modules proj ]
---                             sequence [ putStrLn $ "Found other source: " ++ m | m <- otherAssets proj ]
---                             processProject proj outDirectory
---           exitSuccess
+main :: IO ()
+main = do fileContents <- T.readFile projectFile
+          hPutStrLn stderr $ "Reading project " ++ projectFile ++ "..."
+          absDir <- makeAbsolute projectFile
+          let p = parseProject (takeDirectory absDir) projectFile fileContents
+          case p of
+            Nothing -> do hPutStrLn stderr "Couldn't parse project file.\n"
+                          exitFailure
+            Just proj -> do hPutStrLn stderr "...done."
+                            sequence [ putStrLn $ "Found module: " ++ m | m <- modules proj ]
+                            sequence [ putStrLn $ "Found other source: " ++ m | m <- otherAssets proj ]
+                            processProject proj outDirectory
+          exitSuccess
 
 
-main = print $ "hello"
+getDims :: Module -> [(TypeDecl, Name)]
+getDims m = dims_Syn_Module (wrapAG m)
+
+wrapAG m = wrap_Module (sem_Module m) Inh_Module{}

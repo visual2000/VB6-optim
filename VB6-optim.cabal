@@ -4,7 +4,7 @@ cabal-version: 2.0
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e77ce250b9b21f2b77f36db9a0d3db83fcd0b6d44aa7d5b40037fa69cec90954
+-- hash: a261110bf7032020ecda43e2b4affc5d9fb5e442357be037a3d742e51d91bc96
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -24,6 +24,7 @@ extra-source-files:
     ChangeLog.md
     src/AG.ag
     src/AG/Base.ag
+    src/AG/DimLift.ag
     uuagc_options
 
 source-repository head
