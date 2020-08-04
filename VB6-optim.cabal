@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a7e68d8e5731af9efa44e7c32458a6219fb8985ebb58e5916401304ee7ddd562
+-- hash: 7c3e48b21cb5a4c45324ceac2c2b1a26a5c1235bb961097ce7d484f066284be7
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -34,6 +34,7 @@ library
       Parser
       Printer
       Syntax
+      TryAAG
       Util
   other-modules:
       Paths_VB6_optim
@@ -51,6 +52,7 @@ library
     , pretty
     , regex-compat
     , require ==0.6.0.0
+    , singletons
     , text
   default-language: Haskell2010
 
@@ -76,6 +78,7 @@ executable VB6-optim-exe
     , pretty
     , regex-compat
     , require ==0.6.0.0
+    , singletons
     , text
   default-language: Haskell2010
 
@@ -100,5 +103,6 @@ test-suite VB6-optim-test
     , pretty
     , regex-compat
     , require ==0.6.0.0
+    , singletons
     , text
   default-language: Haskell2010
