@@ -12,7 +12,7 @@ module Lexer (
   lexStringToTokens
 ) where
 
-import Syntax
+import AG
 
 import Control.Monad.Except
 }

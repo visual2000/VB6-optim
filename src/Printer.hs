@@ -2,10 +2,10 @@
 module Printer where
 
 import Text.PrettyPrint
-import Prelude hiding ((<>), GT, LT)
+import Prelude hiding ((<>))
 
 import Util
-import Syntax
+import AG
 
 printModule :: Module -> String
 printModule m = eolsToCRLF $ (render . pp) m ++ "\n"
@@ -190,8 +190,8 @@ instance Printable Binop where
   pp Sub = char '-'
   pp Mul = char '*'
   pp Div = char '/'
-  pp GT  = char '>'
-  pp LT  = char '<'
+  pp GrT  = char '>'
+  pp LTh  = char '<'
   pp GEQ = text ">="
   pp LEQ = text "<="
   pp And = text "And"

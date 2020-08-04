@@ -3,7 +3,7 @@ module Main where
 import Lib
 import Util
 
-import Syntax
+import AG
 import Printer (Printable, printModule)
 import Parser (parseModule, parseTokens)
 
@@ -138,4 +138,4 @@ processProject project dest = do
 --           exitSuccess
 
 
-main = print $ something
+main = print $ "hello"

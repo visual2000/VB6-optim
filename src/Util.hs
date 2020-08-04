@@ -1,7 +1,7 @@
 module Util where
 
 import Text.Regex
-import Syntax
+import AG
 
 eolsToCRLF :: String -> String
 eolsToCRLF i = subRegex (mkRegex "\n") i "\r\n"

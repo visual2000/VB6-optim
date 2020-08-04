@@ -8,12 +8,11 @@ module Parser (
 ) where
 
 import Lexer
-import Syntax
+import AG
 
 import Control.Monad.Except
 import Data.Either
 
-import Prelude hiding (LT, GT)
 }
 
 -- Entry point
@@ -209,8 +208,8 @@ Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
      | '-' Expr                   { ENeg $2 }
      | Expr 'And' Expr            { EOp And $1 $3 }
      | Expr 'Or' Expr             { EOp Or $1 $3 }
-     | Expr '<' Expr              { EOp LT $1 $3 }
-     | Expr '>' Expr              { EOp GT $1 $3 }
+     | Expr '<' Expr              { EOp LTh $1 $3 }
+     | Expr '>' Expr              { EOp GrT $1 $3 }
      | Expr '<=' Expr             { EOp LEQ $1 $3 }
      | Expr '>=' Expr             { EOp GEQ $1 $3 }
      | Expr '+' Expr              { EOp Add $1 $3 }

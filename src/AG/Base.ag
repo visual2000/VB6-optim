@@ -1,72 +1,161 @@
--- possible types for our components
-data DType
-     | DBool
-     | DInt
-     | DString
-     | DPicture
+{
+type Name = String
+}
+type ModuleAttributes = [ModuleAttribute]
+type ModuleOptions = [ModuleOption]
+type Declarations = [Declaration]
+type FuncArgDecls = [FuncArgDecl]
+type TypeDecls = [TypeDecl]
+type Stmts = [Stmt]
+type WithAssignments = [WithAssignment]
+type Exprs = [Expr]
+type Names = [Name]
 
--- type Declarations = [Declaration]
+data Module
+     | Mod     attributes :: ModuleAttributes
+               options :: ModuleOptions
+               decls :: Declarations
 
--- data Specification
---      | S name :: String
---          ds   :: Declarations
+data Declaration
+  | DllFunc         visibility :: Visibility
+                    name :: Name
+                    library :: String
+                    args :: FuncArgDecls
+                    ty :: TypeRef
+  | UserTypeDecl    visibility :: Visibility
+                    name :: Name
+                    typedecls :: TypeDecls
+  | GlobalVarDecl   visibility :: Visibility
+                    name :: Name
+                    ty :: TypeRef
+  | FuncDecl        visibility :: Visibility
+                    name :: Name
+                    args :: FuncArgDecls
+                    ty :: TypeRef
+                    statements :: Stmts
+  | SubDecl         visibility :: Visibility
+                    name :: Name
+                    args :: FuncArgDecls
+                    statements :: Stmts
 
--- data Declaration
---    | Source      name  :: String
---                  ty    :: DType
---    | Action      name  :: String
---                  ty    :: DType
---    | Context     name  :: String
---      	         ty    :: DType
---                  contr :: ContextInteraction
---    | Controller  name  :: String
---     		 contr :: ControllerInteraction
+data Visibility
+  | Public
+  | Private
 
--- data ContextInteraction
---      | WhenRequired     get :: Get
---      | WhenProvided    name :: String
---                         get :: Get
--- 		        pub :: Publish
+data FuncArgDecl
+  | ByVal       ty :: TypeDecl
+  | ByRef       ty :: TypeDecl
+  | Unspecified ty :: TypeDecl
 
--- data ControllerInteraction
---      | WhenContext      name :: String
---                         act  :: String
+data TypeDecl
+  | TypeDecl                       name :: Name
+                                   ty :: TypeRef
+  | TypeDeclArray                  name :: Name
+                                   ty :: TypeRef
+  | TypeDeclArrayWithUpperBound    name :: Name
+                                   ubound :: Int
+                                   ty :: TypeRef
+  | TypeDeclArrayWithBounds        name :: Name
+                                   lbound :: Int
+                                   ubound :: Int
+                                   ty :: TypeRef
 
--- type Get = maybe String
+data TypeRef
+  | TDouble
+  | TInt
+  | TBoolean
+  | TString
+  | TUDT  name :: Name
 
--- data Publish
---      | AlwaysPublish
---      | MaybePublish
+data ModuleAttribute
+  | ModuleAttribute name :: Name
+                    lit :: Lit
+
+data ModuleOption
+  | OptionExplicit
+
+data WithAssignment
+  | WithAssignment  left :: Lhs
+                    expr :: Expr
+
+data Stmt
+  | StmtDecl             typedecls :: TypeDecls
+  | StmtReturn
+  | StmtWith             left :: Lhs
+                         withs :: WithAssignments
+  | StmtAssign           left :: Lhs
+                         expr :: Expr
+  | StmtSetAssign        left :: Lhs
+                         expr :: Expr
+  | StmtLSetAssign       left :: Lhs
+                         expr :: Expr
+  | StmtNakedFunctionCall     left :: Lhs
+                              exprs :: Exprs
+  | StmtIfThenElse       expr :: Expr
+                         truestatements :: Stmts
+                         falsestatements :: Stmts
+  | StmtFor              name :: Name
+                         from :: Expr
+                         to :: Expr
+                         step :: (Maybe Expr)
+                         statements :: Stmts
+  | StmtDoStatementsLoopWhileCond  statements :: Stmts
+                                   condition :: Expr
+
+data Lhs
+  | NameLhs    name :: Name -- just a variable
+  | FieldLhs   name :: Name
+               left :: Lhs -- a.b.c = ..
+  | ArrayLhs   name :: Name
+               index :: Int -- a[0] = 3
+
+data Expr
+  | ELit       lit :: Lit
+  | EVar       name :: Name
+  | ECall      left :: Lhs
+               exprs :: Exprs
+  | EAccess    names :: Names -- a.b.c
+  | EOp        binop :: Binop
+               e1 :: Expr
+               e2 :: Expr
+  | ENeg       expr :: Expr
+
+data Lit
+  | LInt       val :: Int
+  | LBool      val :: Bool
+  | LString    val :: String
+  | LDouble    val :: Double
+
+data Binop | Add | Sub | Mul | Div | Eql
+           | GrT | LTh | GEQ | LEQ | And | Or
 
 {
--- jtype :: DType -> RefType
--- jtype t = case t of
---      DBool    -> wrap "Boolean"
---      DInt     -> wrap "Integer"
---      DString  -> wrap "String"
---      DPicture -> wrap "Bitmap"
---   where
---     wrap :: String -> RefType
---     wrap s = ClassRefType (ClassType [(Ident s,[])])
-
-deriving instance Eq DType
-deriving instance Show DType
-
--- deriving instance Eq Declaration
--- deriving instance Show Declaration
-
--- deriving instance Eq ContextInteraction
--- deriving instance Show ContextInteraction
-
--- deriving instance Eq Publish
-
--- instance Show Publish where
---   show AlwaysPublish = "always_publish"
---   show MaybePublish  = "maybe_publish"
-
--- deriving instance Eq ControllerInteraction
--- deriving instance Show ControllerInteraction
-
-something :: String
-something = show DBool
+deriving instance Eq Binop
+deriving instance Eq Declaration
+deriving instance Eq Expr
+deriving instance Eq FuncArgDecl
+deriving instance Eq Lhs
+deriving instance Eq Lit
+deriving instance Eq Module
+deriving instance Eq ModuleAttribute
+deriving instance Eq ModuleOption
+deriving instance Eq Stmt
+deriving instance Eq TypeDecl
+deriving instance Eq TypeRef
+deriving instance Eq Visibility
+deriving instance Eq WithAssignment
+deriving instance Show Binop
+deriving instance Show Declaration
+deriving instance Show Expr
+deriving instance Show FuncArgDecl
+deriving instance Show Lhs
+deriving instance Show Lit
+deriving instance Show Module
+deriving instance Show ModuleAttribute
+deriving instance Show ModuleOption
+deriving instance Show Stmt
+deriving instance Show TypeDecl
+deriving instance Show TypeRef
+deriving instance Show Visibility
+deriving instance Show WithAssignment
 }

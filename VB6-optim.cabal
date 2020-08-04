@@ -4,7 +4,7 @@ cabal-version: 2.0
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4b7bc374e0fcf63d003718e59526ab197f2c62add30de59fdda2abfae04dc968
+-- hash: e77ce250b9b21f2b77f36db9a0d3db83fcd0b6d44aa7d5b40037fa69cec90954
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -43,7 +43,6 @@ library
       Lib
       Parser
       Printer
-      Syntax
       Util
       AG
   other-modules:
