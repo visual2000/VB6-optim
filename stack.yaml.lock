@@ -5,6 +5,39 @@
 
 packages:
 - completed:
+    subdir: uuagc/trunk
+    name: uuagc
+    version: 0.9.52.2
+    git: https://github.com/toothbrush/uuagc.git
+    pantry-tree:
+      size: 26679
+      sha256: 1a65c19484beedfc7316dcf9cd15d4940de90089880b89bd1d11c8c7b69a9ecb
+    commit: 305d436434efdd58b9331b86a4faf4999de43d02
+  original:
+    subdir: uuagc/trunk
+    git: https://github.com/toothbrush/uuagc.git
+    commit: 305d436434efdd58b9331b86a4faf4999de43d02
+- completed:
+    subdir: uuagc/trunk/cabal-plugin
+    name: uuagc-cabal
+    version: 1.1.0.0
+    git: https://github.com/toothbrush/uuagc.git
+    pantry-tree:
+      size: 1234
+      sha256: 9837ba8e57195ebbbba241316b30b9fbb85e88c2b95fd60c4c5578e6a1e3a3dc
+    commit: 305d436434efdd58b9331b86a4faf4999de43d02
+  original:
+    subdir: uuagc/trunk/cabal-plugin
+    git: https://github.com/toothbrush/uuagc.git
+    commit: 305d436434efdd58b9331b86a4faf4999de43d02
+- completed:
+    hackage: uulib-0.9.24@sha256:152da205e22befdeeb65e734990142d578456efb6e14e46bfd22e4cb63cd374d,1801
+    pantry-tree:
+      size: 2343
+      sha256: 65e2c597dd20e0a985f42a5cbc526a39122aebb347b7c399e414f560b18579be
+  original:
+    hackage: uulib-0.9.24@sha256:152da205e22befdeeb65e734990142d578456efb6e14e46bfd22e4cb63cd374d,1801
+- completed:
     name: AspectAG
     version: 0.7.0.0
     git: https://github.com/toothbrush/AspectAG.git

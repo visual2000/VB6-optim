@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7c3e48b21cb5a4c45324ceac2c2b1a26a5c1235bb961097ce7d484f066284be7
+-- hash: bb4c1c934b46a788d18c94d442c6d558d8c928358d9dd543186a7ae489977c07
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -54,6 +54,7 @@ library
     , require ==0.6.0.0
     , singletons
     , text
+    , uuagc >=0.9
   default-language: Haskell2010
 
 executable VB6-optim-exe
@@ -80,6 +81,7 @@ executable VB6-optim-exe
     , require ==0.6.0.0
     , singletons
     , text
+    , uuagc >=0.9
   default-language: Haskell2010
 
 test-suite VB6-optim-test
@@ -105,4 +107,5 @@ test-suite VB6-optim-test
     , require ==0.6.0.0
     , singletons
     , text
+    , uuagc >=0.9
   default-language: Haskell2010
