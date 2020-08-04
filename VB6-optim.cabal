@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: c5d8ad435882155760fd25aa492b974ce4ab35a5593a294bfb794fb79b930e6b
+-- hash: d4e349dd86103f5c47a136363f8483770ed2043ce2fa00ef8be2bfc978e5a268
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -38,13 +38,16 @@ library
   hs-source-dirs:
       src
   build-depends:
-      array
+      AspectAG ==0.7.0.0
+    , array
     , base >=4.7 && <5
     , containers
     , ini
     , mtl
+    , poly-rec ==0.7.0.0
     , pretty
     , regex-compat
+    , require ==0.6.0.0
     , text
   default-language: Haskell2010
 
@@ -56,7 +59,8 @@ executable VB6-optim-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      VB6-optim
+      AspectAG ==0.7.0.0
+    , VB6-optim
     , array
     , base >=4.7 && <5
     , containers
@@ -65,8 +69,10 @@ executable VB6-optim-exe
     , haskeline
     , ini
     , mtl
+    , poly-rec ==0.7.0.0
     , pretty
     , regex-compat
+    , require ==0.6.0.0
     , text
   default-language: Haskell2010
 
@@ -79,14 +85,17 @@ test-suite VB6-optim-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      VB6-optim
+      AspectAG ==0.7.0.0
+    , VB6-optim
     , array
     , base >=4.7 && <5
     , containers
     , hspec
     , ini
     , mtl
+    , poly-rec ==0.7.0.0
     , pretty
     , regex-compat
+    , require ==0.6.0.0
     , text
   default-language: Haskell2010

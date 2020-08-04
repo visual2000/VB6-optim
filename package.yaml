@@ -20,13 +20,16 @@ extra-source-files:
 description:         Please see the README on GitHub at <https://github.com/visual2000/VB6-optim#readme>
 
 dependencies:
+- AspectAG == 0.7.0.0
 - array
 - base >= 4.7 && < 5
 - containers
 - ini
 - mtl
+- poly-rec == 0.7.0.0
 - pretty
 - regex-compat
+- require == 0.6.0.0
 - text
 
 library:
