@@ -25,6 +25,7 @@ instance Printable Module where
                             , text "' The end"
                             ]
 
+blank :: Doc
 blank = text "' ---"
 
 instance Printable [ModuleAttribute] where
