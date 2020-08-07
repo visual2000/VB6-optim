@@ -4,6 +4,7 @@ type Name = String
 type Declarations          = [Declaration]
 type Exprs                 = [Expr]
 type FuncArgDecls          = [FuncArgDecl]
+type MExpr                 = maybe Expr
 type ModuleAttributes      = [ModuleAttribute]
 type ModuleOptions         = [ModuleOption]
 type Names                 = [Name]
@@ -118,7 +119,7 @@ data Stmt
   | StmtFor              name :: Name
                          from :: Expr
                          to :: Expr
-                         step :: (Maybe Expr)
+                         step :: MExpr
                          statements :: Stmts
   | StmtDoStatementsLoopWhileCond  statements :: Stmts
                                    condition :: Expr
@@ -183,4 +184,10 @@ deriving instance Show TypeRef
 deriving instance Show UserTypeDeclField
 deriving instance Show Visibility
 deriving instance Show WithAssignment
+
+getName :: StmtTypeDecl -> Name
+getName (StmtTypeDecl                    name     _) = name
+getName (StmtTypeDeclArray               name     _) = name
+getName (StmtTypeDeclArrayWithUpperBound name _ _  ) = name
+getName (StmtTypeDeclArrayWithBounds     name _ _ _) = name
 }

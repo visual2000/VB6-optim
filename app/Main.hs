@@ -22,8 +22,6 @@ import AG
 
 import System.IO
 
--- import Text.PrettyPrint
-
 parseStringToModule :: String -> IO Module
 parseStringToModule input = do
   let tokens = parseTokens input
@@ -113,6 +111,7 @@ processProject project dest = do
   copyOtherFiles project dest
   do mods <- parseModuleList (baseDirectory project) (modules project)
      sequence_ [ print $ getDims mod | mod <- mods ]
+     sequence_ [ putStrLn $ printModule $ getDimLifted mod | mod <- mods ]
      writeFile (dest </> newModuleName ++ ".bas") (printModule (combineModules mods))
   let ini = originalIni project
       globalsMinusModules = filter (\(k,v) -> T.unpack k /= "Module") $ iniGlobals ini
@@ -136,5 +135,8 @@ main = do fileContents <- T.readFile projectFile
 
 getDims :: Module -> [(StmtTypeDecl, Name)]
 getDims m = dims_Syn_Module (wrapAG m)
+
+getDimLifted :: Module -> Module
+getDimLifted m = dim_lifted_Syn_Module (wrapAG m)
 
 wrapAG m = wrap_Module (sem_Module m) Inh_Module{}

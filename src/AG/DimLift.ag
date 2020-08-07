@@ -1,3 +1,20 @@
+attr Stmts Stmt StmtTypeDecls StmtTypeDecl
+  inh defining_function :: Name
+
+attr Stmts Stmt Lhs WithAssignments WithAssignment Exprs MExpr Expr Binop Names
+  inh list_of_replacements :: {[(Name, Name)]}
+
+sem Declaration
+  | SubDecl  statements.defining_function = @name
+             statements.list_of_replacements = map extractNameReplacements @statements.dims
+  | FuncDecl statements.defining_function = @name
+             statements.list_of_replacements = map extractNameReplacements @statements.dims
+
+{
+extractNameReplacements :: (StmtTypeDecl, Name) -> (Name, Name)
+extractNameReplacements (from, to) = (getName from, to)
+}
+
 attr Module Declarations Declaration Stmts Stmt
   -- at the top level we're interested in a mapping from old, local
   -- variable names, to new, globally-unique names.
@@ -10,15 +27,48 @@ attr StmtTypeDecl
 sem StmtTypeDecls
   syn dims use {:} {[]} :: {[(StmtTypeDecl, Name)]}
 
-attr Stmts Stmt StmtTypeDecls StmtTypeDecl
-  inh defining_function :: Name
-
-sem Declaration
-  | SubDecl  statements.defining_function = @name
-  | FuncDecl statements.defining_function = @name
-
 sem StmtTypeDecl
   | StmtTypeDecl lhs.dims                    = (@self, "dim_" ++ @lhs.defining_function ++ "_" ++ @name)
   | StmtTypeDeclArray lhs.dims               = (@self, "dim_" ++ @lhs.defining_function ++ "_" ++ @name)
   | StmtTypeDeclArrayWithUpperBound lhs.dims = (@self, "dim_" ++ @lhs.defining_function ++ "_" ++ @name)
   | StmtTypeDeclArrayWithBounds lhs.dims     = (@self, "dim_" ++ @lhs.defining_function ++ "_" ++ @name)
+
+attr Module ModuleAttributes ModuleOptions ModuleAttribute ModuleOption
+  syn dim_lifted :: self
+attr Declarations
+  syn dim_lifted :: self
+attr Declaration Visibility FuncArgDecls FuncArgDecl FuncArgDeclField TypeRef UserTypeDeclFields UserTypeDeclField
+  syn dim_lifted :: self
+
+attr Stmt
+  syn dim_lifted :: Stmts -- because we want to be able to add & remove
+
+attr Stmts
+  syn dim_lifted use {++} {[]} :: Stmts
+
+attr Lhs WithAssignments WithAssignment Exprs MExpr Expr Lit Binop Names
+  syn dim_lifted :: self
+
+sem Stmt
+  | StmtDecl lhs.dim_lifted = []
+  | StmtReturn lhs.dim_lifted = [@self]
+  | StmtWith lhs.dim_lifted = [StmtWith @left.dim_lifted @withs.dim_lifted]
+  | StmtAssign lhs.dim_lifted = [StmtAssign @left.dim_lifted @expr.dim_lifted]
+  | StmtSetAssign lhs.dim_lifted = [StmtSetAssign @left.dim_lifted @expr.dim_lifted]
+  | StmtLSetAssign lhs.dim_lifted = [StmtLSetAssign @left.dim_lifted @expr.dim_lifted]
+  | StmtNakedFunctionCall lhs.dim_lifted = [StmtNakedFunctionCall @left.dim_lifted @exprs.dim_lifted]
+  | StmtIfThenElse lhs.dim_lifted = [StmtIfThenElse @expr.dim_lifted @truestatements.dim_lifted @falsestatements.dim_lifted]
+  | StmtFor lhs.dim_lifted = [StmtFor @name @from.dim_lifted @to.dim_lifted @step.dim_lifted @statements.dim_lifted]
+  | StmtDoStatementsLoopWhileCond lhs.dim_lifted = [StmtDoStatementsLoopWhileCond @statements.dim_lifted @condition.dim_lifted]
+
+
+sem Lhs
+  | NameLhs lhs.dim_lifted = NameLhs (rename (@lhs.list_of_replacements) @name)
+
+
+{
+rename :: [(Name, Name)] -> Name -> Name
+rename reps name = case lookup name reps of
+                     Just rep -> rep
+                     Nothing  -> name
+}
