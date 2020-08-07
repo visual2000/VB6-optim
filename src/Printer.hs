@@ -194,7 +194,7 @@ instance Printable [Stmt] where
 instance Printable Lhs where
   pp (NameLhs n) = text n
   pp (FieldLhs n lhs) = text n <> char '.' <> pp lhs
-  pp (ArrayLhs n i) = text n <> lparen <> int i <> rparen
+  pp (ArrayLhs n i) = text n <> lparen <> pp i <> rparen
 
 instance Printable Expr where
   pp (ELit l) = pp l

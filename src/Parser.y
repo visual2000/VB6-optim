@@ -207,7 +207,7 @@ With : '.' Lhs '=' Expr eol { WithAssignment $2 $4 }
 
 Lhs : VAR             { NameLhs $1 }
     | VAR '.' Lhs     { FieldLhs $1 $3 }
-    | VAR '(' INT ')' { ArrayLhs $1 $3 }
+    | VAR '(' INT ')' { ArrayLhs $1 (ELit (LInt $3)) }
 
 FNCallRef : VAR                { NameLhs $1 }
           | VAR '.' FNCallRef  { FieldLhs $1 $3 }

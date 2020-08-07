@@ -141,7 +141,7 @@ data Lhs
   | FieldLhs   name :: Name
                left :: Lhs -- a.b.c = ..
   | ArrayLhs   name :: Name
-               index :: Int -- a[0] = 3
+               index :: Expr -- a[0] = 3
 
 data Expr
   | ELit       lit :: Lit
