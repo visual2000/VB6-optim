@@ -81,14 +81,26 @@ instance Printable FuncArgDecl where
   pp (ByRef t)       = text "ByRef" <+> pp t
   pp (ByVal t)       = text "ByVal" <+> pp t
 
-instance Printable TypeDecl where
-  pp (TypeDecl n ref) = text n <+> text "As" <+> pp ref
-  pp (TypeDeclArray n ref) = text n <> text "()" <+> text "As" <+> pp ref
-  pp (TypeDeclArrayWithUpperBound n b ref) = text n <> text "("
+instance Printable FuncArgDeclField where
+  pp (FuncArgDeclField n ref) = text n <+> text "As" <+> pp ref
+  pp (FuncArgDeclFieldArray n ref) = text n <> text "()" <+> text "As" <+> pp ref
+
+instance Printable UserTypeDeclField where
+  pp (UserTypeDeclField n ref) = text n <+> text "As" <+> pp ref
+  pp (UserTypeDeclFieldArray n ref) = text n <> text "()" <+> text "As" <+> pp ref
+  pp (UserTypeDeclFieldArrayWithUpperBound n b ref) = text n <> text "("
                                               <> int b
                                               <> text ")"
                                               <+> text "As" <+> pp ref
-  pp (TypeDeclArrayWithBounds n l u ref) = text n <> text "("
+
+instance Printable StmtTypeDecl where
+  pp (StmtTypeDecl n ref) = text n <+> text "As" <+> pp ref
+  pp (StmtTypeDeclArray n ref) = text n <> text "()" <+> text "As" <+> pp ref
+  pp (StmtTypeDeclArrayWithUpperBound n b ref) = text n <> text "("
+                                              <> int b
+                                              <> text ")"
+                                              <+> text "As" <+> pp ref
+  pp (StmtTypeDeclArrayWithBounds n l u ref) = text n <> text "("
                                             <> int l <+> text "To" <+> int u
                                             <> text ")"
                                             <+> text "As" <+> pp ref

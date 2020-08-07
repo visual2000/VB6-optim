@@ -134,7 +134,7 @@ main = do fileContents <- T.readFile projectFile
           exitSuccess
 
 
-getDims :: Module -> [(TypeDecl, Name)]
+getDims :: Module -> [(StmtTypeDecl, Name)]
 getDims m = dims_Syn_Module (wrapAG m)
 
 wrapAG m = wrap_Module (sem_Module m) Inh_Module{}

@@ -1,17 +1,17 @@
 attr Module Declarations Declaration Stmts Stmt
   -- at the top level we're interested in a mapping from old, local
   -- variable names, to new, globally-unique names.
-  syn dims use {++} {[]} :: {[(TypeDecl, Name)]}
+  syn dims use {++} {[]} :: {[(StmtTypeDecl, Name)]}
 
-attr TypeDecl
+attr StmtTypeDecl
   -- the `name' field is a new name.
-  syn dims :: { (TypeDecl, Name) }
+  syn dims :: { (StmtTypeDecl, Name) }
 
-sem TypeDecls
-  syn dims use {:} {[]} :: {[(TypeDecl, Name)]}
+sem StmtTypeDecls
+  syn dims use {:} {[]} :: {[(StmtTypeDecl, Name)]}
 
-sem TypeDecl
-  | TypeDecl lhs.dims = (@self, "newname")
-  | TypeDeclArray lhs.dims = (@self, "newname")
-  | TypeDeclArrayWithUpperBound lhs.dims = (@self, "newname")
-  | TypeDeclArrayWithBounds lhs.dims = (@self, "newname")
+sem StmtTypeDecl
+  | StmtTypeDecl lhs.dims = (@self, "newname")
+  | StmtTypeDeclArray lhs.dims = (@self, "newname")
+  | StmtTypeDeclArrayWithUpperBound lhs.dims = (@self, "newname")
+  | StmtTypeDeclArrayWithBounds lhs.dims = (@self, "newname")

@@ -1,15 +1,16 @@
 {
 type Name = String
 }
-type ModuleAttributes = [ModuleAttribute]
-type ModuleOptions = [ModuleOption]
-type Declarations = [Declaration]
-type FuncArgDecls = [FuncArgDecl]
-type TypeDecls = [TypeDecl]
-type Stmts = [Stmt]
-type WithAssignments = [WithAssignment]
-type Exprs = [Expr]
-type Names = [Name]
+type Declarations          = [Declaration]
+type Exprs                 = [Expr]
+type FuncArgDecls          = [FuncArgDecl]
+type ModuleAttributes      = [ModuleAttribute]
+type ModuleOptions         = [ModuleOption]
+type Names                 = [Name]
+type StmtTypeDecls         = [StmtTypeDecl]
+type Stmts                 = [Stmt]
+type UserTypeDeclFields    = [UserTypeDeclField]
+type WithAssignments       = [WithAssignment]
 
 data ModuleAttribute
   | ModuleAttribute name :: Name
@@ -20,29 +21,33 @@ data ModuleOption
 
 data Module
      | Mod     attributes :: ModuleAttributes
-               options :: ModuleOptions
-               decls :: Declarations
+               options    :: ModuleOptions
+               decls      :: Declarations
 
 data Declaration
   | DllFunc         visibility :: Visibility
-                    name :: Name
-                    library :: String
-                    args :: FuncArgDecls
-                    ty :: TypeRef
+                    name       :: Name
+                    library    :: String
+                    args       :: FuncArgDecls
+                    ty         :: TypeRef
+
   | UserTypeDecl    visibility :: Visibility
-                    name :: Name
-                    typedecls :: TypeDecls
+                    name       :: Name
+                    typedecls  :: UserTypeDeclFields
+
   | GlobalVarDecl   visibility :: Visibility
-                    name :: Name
-                    ty :: TypeRef
+                    name       :: Name
+                    ty         :: TypeRef
+
   | FuncDecl        visibility :: Visibility
-                    name :: Name
-                    args :: FuncArgDecls
-                    ty :: TypeRef
+                    name       :: Name
+                    args       :: FuncArgDecls
+                    ty         :: TypeRef
                     statements :: Stmts
+
   | SubDecl         visibility :: Visibility
-                    name :: Name
-                    args :: FuncArgDecls
+                    name       :: Name
+                    args       :: FuncArgDecls
                     statements :: Stmts
 
 data Visibility
@@ -50,29 +55,44 @@ data Visibility
   | Private
 
 data FuncArgDecl
-  | ByVal       ty :: TypeDecl
-  | ByRef       ty :: TypeDecl
-  | Unspecified ty :: TypeDecl
+  | ByVal       ty :: FuncArgDeclField
+  | ByRef       ty :: FuncArgDeclField
+  | Unspecified ty :: FuncArgDeclField
 
-data TypeDecl
-  | TypeDecl                       name :: Name
-                                   ty :: TypeRef
-  | TypeDeclArray                  name :: Name
-                                   ty :: TypeRef
-  | TypeDeclArrayWithUpperBound    name :: Name
-                                   ubound :: Int
-                                   ty :: TypeRef
-  | TypeDeclArrayWithBounds        name :: Name
-                                   lbound :: Int
-                                   ubound :: Int
-                                   ty :: TypeRef
+data FuncArgDeclField
+  | FuncArgDeclField              name   :: Name
+                                  ty     :: TypeRef
+  | FuncArgDeclFieldArray         name   :: Name
+                                  ty     :: TypeRef
+
+data UserTypeDeclField
+  | UserTypeDeclField              name   :: Name
+                                   ty     :: TypeRef
+  | UserTypeDeclFieldArray         name   :: Name
+                                   ty     :: TypeRef
+  | UserTypeDeclFieldArrayWithUpperBound    name   :: Name
+                                            ubound :: Int
+                                            ty     :: TypeRef
+
+data StmtTypeDecl
+  | StmtTypeDecl                       name   :: Name
+                                       ty     :: TypeRef
+  | StmtTypeDeclArray                  name   :: Name
+                                       ty     :: TypeRef
+  | StmtTypeDeclArrayWithUpperBound    name   :: Name
+                                       ubound :: Int
+                                       ty     :: TypeRef
+  | StmtTypeDeclArrayWithBounds        name   :: Name
+                                       lbound :: Int
+                                       ubound :: Int
+                                       ty     :: TypeRef
 
 data TypeRef
   | TDouble
   | TInt
   | TBoolean
   | TString
-  | TUDT  name :: Name
+  | TUDT     name :: Name
 
 
 data WithAssignment
@@ -80,7 +100,7 @@ data WithAssignment
                     expr :: Expr
 
 data Stmt
-  | StmtDecl             typedecls :: TypeDecls
+  | StmtDecl             typedecls :: StmtTypeDecls
   | StmtReturn
   | StmtWith             left :: Lhs
                          withs :: WithAssignments
@@ -135,28 +155,32 @@ deriving instance Eq Binop
 deriving instance Eq Declaration
 deriving instance Eq Expr
 deriving instance Eq FuncArgDecl
+deriving instance Eq FuncArgDeclField
 deriving instance Eq Lhs
 deriving instance Eq Lit
 deriving instance Eq Module
 deriving instance Eq ModuleAttribute
 deriving instance Eq ModuleOption
 deriving instance Eq Stmt
-deriving instance Eq TypeDecl
+deriving instance Eq StmtTypeDecl
 deriving instance Eq TypeRef
+deriving instance Eq UserTypeDeclField
 deriving instance Eq Visibility
 deriving instance Eq WithAssignment
 deriving instance Show Binop
 deriving instance Show Declaration
 deriving instance Show Expr
 deriving instance Show FuncArgDecl
+deriving instance Show FuncArgDeclField
 deriving instance Show Lhs
 deriving instance Show Lit
 deriving instance Show Module
 deriving instance Show ModuleAttribute
 deriving instance Show ModuleOption
 deriving instance Show Stmt
-deriving instance Show TypeDecl
+deriving instance Show StmtTypeDecl
 deriving instance Show TypeRef
+deriving instance Show UserTypeDeclField
 deriving instance Show Visibility
 deriving instance Show WithAssignment
 }

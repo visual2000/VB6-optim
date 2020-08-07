@@ -102,7 +102,8 @@ TopLevelDeclarations : {- empty -}        { [] }
 
 TopLevelDeclaration : Visibility 'Type' VAR eol
                                      UserTypeDeclFields
-                                 'End' 'Type' eol      { UserTypeDecl $1 $3 $5 }
+                                 'End' 'Type' eol
+                                       { UserTypeDecl $1 $3 $5 }
                     | Visibility 'Declare' 'Function'
                          VAR 'Lib'
                          STR '(' FnDeclArgs ')' 'As' TypeRef eol
@@ -119,9 +120,9 @@ Visibility : 'Private' { Private }
            | 'Public'  { Public }
 
 UserTypeDeclFields : UserTypeDeclField                 { [$1] }
-              | UserTypeDeclField UserTypeDeclFields   { $1 : $2 }
+                   | UserTypeDeclField UserTypeDeclFields   { $1 : $2 }
 
-UserTypeDeclField : DimDeclArg eol { $1 }
+UserTypeDeclField : UserTypeDeclArg eol { $1 }
 
 ModuleAttributes : {- empty -}          { [] }
            | ModuleAttribute ModuleAttributes { $1 : $2 }
@@ -139,27 +140,34 @@ TypeRef : 'Double'  { TDouble }
         | 'Boolean' { TBoolean }
         | VAR       { TUDT $1 }
 
-FnDeclArgs : {- empty -}               { [] }
-           | FnDeclArg                 { [$1] } -- TODO disallow trailing ','
-           | FnDeclArg ',' FnDeclArgs  { $1 : $3 }
+FnDeclArgs : {- empty -}                        { [] }
+           | FnDeclArg                          { [$1] }
+           | FnDeclArg ',' FnDeclArgsContinued  { $1 : $3 }
 
-FnDeclArg : VAR 'As' TypeRef             { Unspecified $ TypeDecl $1 $3 }
-          | VAR '(' ')' 'As' TypeRef     { Unspecified $ TypeDeclArray $1 $5 }
-          | 'ByRef' VAR 'As' TypeRef             { ByRef $ TypeDecl $2 $4 }
-          | 'ByRef' VAR '(' ')' 'As' TypeRef     { ByRef $ TypeDeclArray $2 $6 }
-          | 'ByVal' VAR 'As' TypeRef             { ByVal $ TypeDecl $2 $4 }
-          | 'ByVal' VAR '(' ')' 'As' TypeRef     { ByVal $ TypeDeclArray $2 $6 }
+FnDeclArgsContinued : FnDeclArg                          { [$1] }
+                    | FnDeclArg ',' FnDeclArgsContinued  { $1 : $3 }
 
-DimDeclArgs : {- empty -}               { [] }
-            | DimDeclArg                 { [$1] } -- TODO disallow trailing ','
+FnDeclArg : VAR 'As' TypeRef                     { Unspecified $ FuncArgDeclField $1 $3 }
+          | VAR '(' ')' 'As' TypeRef             { Unspecified $ FuncArgDeclFieldArray $1 $5 }
+          | 'ByRef' VAR 'As' TypeRef             { ByRef $ FuncArgDeclField $2 $4 }
+          | 'ByRef' VAR '(' ')' 'As' TypeRef     { ByRef $ FuncArgDeclFieldArray $2 $6 }
+          | 'ByVal' VAR 'As' TypeRef             { ByVal $ FuncArgDeclField $2 $4 }
+          | 'ByVal' VAR '(' ')' 'As' TypeRef     { ByVal $ FuncArgDeclFieldArray $2 $6 }
+
+DimDeclArgs : DimDeclArg                  { [$1] }
             | DimDeclArg ',' DimDeclArgs  { $1 : $3 }
 
-DimDeclArg : VAR 'As' TypeRef            { TypeDecl $1 $3 }
-           | VAR '(' ')' 'As' TypeRef    { TypeDeclArray $1 $5 }
+UserTypeDeclArg : VAR 'As' TypeRef            { UserTypeDeclField $1 $3 }
+                | VAR '(' ')' 'As' TypeRef    { UserTypeDeclFieldArray $1 $5 }
+                | VAR '(' INT ')' 'As' TypeRef
+                                              { UserTypeDeclFieldArrayWithUpperBound $1 $3 $6 }
+
+DimDeclArg : VAR 'As' TypeRef            { StmtTypeDecl $1 $3 }
+           | VAR '(' ')' 'As' TypeRef    { StmtTypeDeclArray $1 $5 }
            | VAR '(' INT ')' 'As' TypeRef
-                                         { TypeDeclArrayWithUpperBound $1 $3 $6 }
+                                         { StmtTypeDeclArrayWithUpperBound $1 $3 $6 }
            | VAR '(' INT 'To' INT ')' 'As' TypeRef
-                                         { TypeDeclArrayWithBounds $1 $3 $5 $8 }
+                                         { StmtTypeDeclArrayWithBounds $1 $3 $5 $8 }
 
 Statements : {- empty -}              { [] }
            | Statement Statements     { $1 : $2 }
