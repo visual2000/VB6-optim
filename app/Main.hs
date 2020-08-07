@@ -112,6 +112,7 @@ processProject project dest = do
   do mods <- parseModuleList (baseDirectory project) (modules project)
      sequence_ [ print $ getDims mod | mod <- mods ]
      sequence_ [ putStrLn $ printModule $ getDimLifted mod | mod <- mods ]
+     -- sequence_ [ print $ getDimLifted mod | mod <- mods ]
      writeFile (dest </> newModuleName ++ ".bas") (printModule (combineModules mods))
   let ini = originalIni project
       globalsMinusModules = filter (\(k,v) -> T.unpack k /= "Module") $ iniGlobals ini

@@ -58,12 +58,26 @@ sem Stmt
   | StmtLSetAssign lhs.dim_lifted = [StmtLSetAssign @left.dim_lifted @expr.dim_lifted]
   | StmtNakedFunctionCall lhs.dim_lifted = [StmtNakedFunctionCall @left.dim_lifted @exprs.dim_lifted]
   | StmtIfThenElse lhs.dim_lifted = [StmtIfThenElse @expr.dim_lifted @truestatements.dim_lifted @falsestatements.dim_lifted]
-  | StmtFor lhs.dim_lifted = [StmtFor @name @from.dim_lifted @to.dim_lifted @step.dim_lifted @statements.dim_lifted]
+  | StmtFor lhs.dim_lifted = [StmtFor (rename (@lhs.list_of_replacements) @name) @from.dim_lifted @to.dim_lifted @step.dim_lifted @statements.dim_lifted]
   | StmtDoStatementsLoopWhileCond lhs.dim_lifted = [StmtDoStatementsLoopWhileCond @statements.dim_lifted @condition.dim_lifted]
 
+sem Exprs
+  | Cons lhs.dim_lifted = @hd.dim_lifted : @tl.dim_lifted
+
+sem Names
+  | Cons lhs.dim_lifted = (rename (@lhs.list_of_replacements) @hd) : @tl.dim_lifted
 
 sem Lhs
   | NameLhs lhs.dim_lifted = NameLhs (rename (@lhs.list_of_replacements) @name)
+  | FieldLhs lhs.dim_lifted = FieldLhs (rename (@lhs.list_of_replacements) @name) @left.dim_lifted
+  | ArrayLhs lhs.dim_lifted = ArrayLhs (rename (@lhs.list_of_replacements) @name) @index
+
+sem Expr
+  | EVar lhs.dim_lifted = EVar (rename (@lhs.list_of_replacements) @name)
+  | ECall lhs.dim_lifted = ECall @left.dim_lifted @exprs.dim_lifted
+  | EAccess lhs.dim_lifted = EAccess @names.dim_lifted
+  | EOp lhs.dim_lifted = EOp @binop.dim_lifted @e1.dim_lifted @e2.dim_lifted
+  | ENeg lhs.dim_lifted = ENeg @expr.dim_lifted
 
 
 {
