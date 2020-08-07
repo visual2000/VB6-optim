@@ -114,7 +114,7 @@ TopLevelDeclaration : Visibility 'Type' VAR eol
                     | Visibility 'Sub' VAR '(' FnDeclArgs ')' eol
                                      Statements
                                  'End' 'Sub' eol      { SubDecl $1 $3 $5 $8 }
-                    | Visibility VAR 'As' TypeRef eol  { GlobalVarDecl $1 $2 $4 }
+                    | Visibility VAR 'As' TypeRef eol  { GlobalVarDecl $1 (GlobalTypeDecl $2 $4) } -- TODO support arrays
 
 Visibility : 'Private' { Private }
            | 'Public'  { Public }

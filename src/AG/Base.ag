@@ -37,8 +37,7 @@ data Declaration
                     typedecls  :: UserTypeDeclFields
 
   | GlobalVarDecl   visibility :: Visibility
-                    name       :: Name
-                    ty         :: TypeRef
+                    decl       :: GlobalTypeDecl
 
   | FuncDecl        visibility :: Visibility
                     name       :: Name
@@ -84,6 +83,19 @@ data StmtTypeDecl
                                        ubound :: Int
                                        ty     :: TypeRef
   | StmtTypeDeclArrayWithBounds        name   :: Name
+                                       lbound :: Int
+                                       ubound :: Int
+                                       ty     :: TypeRef
+
+data GlobalTypeDecl
+  | GlobalTypeDecl                     name   :: Name
+                                       ty     :: TypeRef
+  | GlobalTypeDeclArray                name   :: Name
+                                       ty     :: TypeRef
+  | GlobalTypeDeclArrayWithUpperBound  name   :: Name
+                                       ubound :: Int
+                                       ty     :: TypeRef
+  | GlobalTypeDeclArrayWithBounds      name   :: Name
                                        lbound :: Int
                                        ubound :: Int
                                        ty     :: TypeRef
@@ -164,6 +176,7 @@ deriving instance Eq ModuleAttribute
 deriving instance Eq ModuleOption
 deriving instance Eq Stmt
 deriving instance Eq StmtTypeDecl
+deriving instance Eq GlobalTypeDecl
 deriving instance Eq TypeRef
 deriving instance Eq UserTypeDeclField
 deriving instance Eq Visibility
@@ -180,6 +193,7 @@ deriving instance Show ModuleAttribute
 deriving instance Show ModuleOption
 deriving instance Show Stmt
 deriving instance Show StmtTypeDecl
+deriving instance Show GlobalTypeDecl
 deriving instance Show TypeRef
 deriving instance Show UserTypeDeclField
 deriving instance Show Visibility

@@ -37,7 +37,7 @@ attr Module ModuleAttributes ModuleOptions ModuleAttribute ModuleOption
   syn dim_lifted :: self
 attr Declarations
   syn dim_lifted :: self
-attr Declaration Visibility FuncArgDecls FuncArgDecl FuncArgDeclField TypeRef UserTypeDeclFields UserTypeDeclField
+attr Declaration Visibility FuncArgDecls FuncArgDecl FuncArgDeclField TypeRef UserTypeDeclFields UserTypeDeclField GlobalTypeDecl
   syn dim_lifted :: self
 
 attr Stmt
@@ -48,6 +48,25 @@ attr Stmts
 
 attr Lhs WithAssignments WithAssignment Exprs MExpr Expr Lit Binop Names
   syn dim_lifted :: self
+
+sem Module
+  | Mod lhs.dim_lifted = Mod @attributes.dim_lifted
+                             @options.dim_lifted
+                             (globalisedDecls @decls.dims
+                              ++ @decls.dim_lifted)
+
+{
+globalisedDecls :: [(StmtTypeDecl, Name)] -> [Declaration]
+globalisedDecls [] = []
+globalisedDecls ((StmtTypeDecl n t, nn):rs) =
+  (GlobalVarDecl Public (GlobalTypeDecl nn t)):globalisedDecls rs
+globalisedDecls ((StmtTypeDeclArray n t, nn):rs) =
+  (GlobalVarDecl Public (GlobalTypeDeclArray nn t)):globalisedDecls rs
+globalisedDecls ((StmtTypeDeclArrayWithUpperBound n u t, nn):rs) =
+  (GlobalVarDecl Public (GlobalTypeDeclArrayWithUpperBound nn u t)):globalisedDecls rs
+globalisedDecls ((StmtTypeDeclArrayWithBounds n l u t, nn):rs) =
+  (GlobalVarDecl Public (GlobalTypeDeclArrayWithBounds nn l u t)):globalisedDecls rs
+}
 
 sem Stmt
   | StmtDecl lhs.dim_lifted = []

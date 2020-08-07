@@ -49,11 +49,9 @@ instance Printable [Declaration] where
     $+$ nest 4 (pp subss)
     $+$ text "End Sub"
     $+$ pp sds
-  pp ((GlobalVarDecl v n t) : gds) =
+  pp ((GlobalVarDecl v d) : gds) =
     text (show v)
-    <+> text n
-    <+> text "As"
-    <+> pp t
+    <+> pp d
     $+$ pp gds
   pp ((UserTypeDecl v n fs) : ts) = (text (show v) <+> text "Type" <+> text n)
                                $+$ nest 4 (vcat (map pp fs))
@@ -92,6 +90,18 @@ instance Printable UserTypeDeclField where
                                               <> int b
                                               <> text ")"
                                               <+> text "As" <+> pp ref
+
+instance Printable GlobalTypeDecl where
+  pp (GlobalTypeDecl n ref) = text n <+> text "As" <+> pp ref
+  pp (GlobalTypeDeclArray n ref) = text n <> text "()" <+> text "As" <+> pp ref
+  pp (GlobalTypeDeclArrayWithUpperBound n b ref) = text n <> text "("
+                                              <> int b
+                                              <> text ")"
+                                              <+> text "As" <+> pp ref
+  pp (GlobalTypeDeclArrayWithBounds n l u ref) = text n <> text "("
+                                            <> int l <+> text "To" <+> int u
+                                            <> text ")"
+                                            <+> text "As" <+> pp ref
 
 instance Printable StmtTypeDecl where
   pp (StmtTypeDecl n ref) = text n <+> text "As" <+> pp ref
