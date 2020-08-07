@@ -10,8 +10,15 @@ attr StmtTypeDecl
 sem StmtTypeDecls
   syn dims use {:} {[]} :: {[(StmtTypeDecl, Name)]}
 
+attr Stmts Stmt StmtTypeDecls StmtTypeDecl
+  inh defining_function :: Name
+
+sem Declaration
+  | SubDecl  statements.defining_function = @name
+  | FuncDecl statements.defining_function = @name
+
 sem StmtTypeDecl
-  | StmtTypeDecl lhs.dims = (@self, "newname")
-  | StmtTypeDeclArray lhs.dims = (@self, "newname")
-  | StmtTypeDeclArrayWithUpperBound lhs.dims = (@self, "newname")
-  | StmtTypeDeclArrayWithBounds lhs.dims = (@self, "newname")
+  | StmtTypeDecl lhs.dims                    = (@self, "dim_" ++ @lhs.defining_function ++ "_" ++ @name)
+  | StmtTypeDeclArray lhs.dims               = (@self, "dim_" ++ @lhs.defining_function ++ "_" ++ @name)
+  | StmtTypeDeclArrayWithUpperBound lhs.dims = (@self, "dim_" ++ @lhs.defining_function ++ "_" ++ @name)
+  | StmtTypeDeclArrayWithBounds lhs.dims     = (@self, "dim_" ++ @lhs.defining_function ++ "_" ++ @name)
