@@ -3,12 +3,20 @@ attr Stmts Stmt StmtTypeDecls StmtTypeDecl
 
 attr Stmts Stmt Lhs WithAssignments WithAssignment Exprs MExpr Expr Binop Names
   inh list_of_replacements :: {[(Name, Name)]}
+  inh my_recursion_counter :: String
+
+attr Lhs Exprs MExpr Expr Binop Names Lit
+  syn copy :: self
 
 sem Declaration
   | SubDecl  statements.defining_function = @name
              statements.list_of_replacements = map extractNameReplacements @statements.dims
+             loc.my_recursion_counter = "rec_depth_" ++ @name
+             statements.my_recursion_counter = @loc.my_recursion_counter
   | FuncDecl statements.defining_function = @name
              statements.list_of_replacements = map extractNameReplacements @statements.dims
+             loc.my_recursion_counter = "rec_depth_" ++ @name
+             statements.my_recursion_counter = @loc.my_recursion_counter
 
 {
 extractNameReplacements :: (StmtTypeDecl, Name) -> (Name, Name)
@@ -68,9 +76,28 @@ globalisedDecls ((StmtTypeDeclArrayWithBounds n l u t, nn):rs) =
   (GlobalVarDecl Public (GlobalTypeDeclArrayWithBounds nn l u t)):globalisedDecls rs
 }
 
+sem Declaration
+  | FuncDecl lhs.dims = [(StmtTypeDecl "hack - will disappear" TInt, @name ++ "_rec_depth")] ++ @statements.dims
+  | SubDecl  lhs.dims = [(StmtTypeDecl "hack - will disappear" TInt, @name ++ "_rec_depth")] ++ @statements.dims
+
+sem Declaration
+  | FuncDecl lhs.dim_lifted = FuncDecl @visibility.dim_lifted
+                                       @name
+                                       @args.dim_lifted
+                                       @ty.dim_lifted
+                                    $
+                              [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Add (EVar @loc.my_recursion_counter) (ELit (LInt 1)))]
+                              ++ @statements.dim_lifted
+  | SubDecl  lhs.dim_lifted = SubDecl @visibility.dim_lifted
+                                      @name
+                                      @args.dim_lifted
+                                    $
+                              [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Add (EVar @loc.my_recursion_counter) (ELit (LInt 1)))]
+                              ++ @statements.dim_lifted
+
 sem Stmt
   | StmtDecl lhs.dim_lifted = []
-  | StmtReturn lhs.dim_lifted = [@self]
+  | StmtReturn lhs.dim_lifted = [StmtAssign (NameLhs @lhs.my_recursion_counter) (EOp Sub (EVar @lhs.my_recursion_counter) (ELit (LInt 1))), @self]
   | StmtWith lhs.dim_lifted = [StmtWith @left.dim_lifted @withs.dim_lifted]
   | StmtAssign lhs.dim_lifted = [StmtAssign @left.dim_lifted @expr.dim_lifted]
   | StmtSetAssign lhs.dim_lifted = [StmtSetAssign @left.dim_lifted @expr.dim_lifted]
@@ -83,25 +110,25 @@ sem Stmt
 sem Exprs
   | Cons lhs.dim_lifted = @hd.dim_lifted : @tl.dim_lifted
 
-sem Names
-  | Cons lhs.dim_lifted = (rename (@lhs.list_of_replacements) @hd) : @tl.dim_lifted
-
 sem Lhs
-  | NameLhs lhs.dim_lifted = NameLhs (rename (@lhs.list_of_replacements) @name)
+  | NameLhs lhs.dim_lifted  = ArrayLhs (rename (@lhs.list_of_replacements) @name) (EVar @lhs.my_recursion_counter)
   | FieldLhs lhs.dim_lifted = FieldLhs (rename (@lhs.list_of_replacements) @name) @left.dim_lifted
-  | ArrayLhs lhs.dim_lifted = ArrayLhs (rename (@lhs.list_of_replacements) @name) @index
+  | ArrayLhs lhs.dim_lifted = ArrayLhs (rename (@lhs.list_of_replacements) @name) @index.dim_lifted
 
 sem Expr
-  | EVar lhs.dim_lifted = EVar (rename (@lhs.list_of_replacements) @name)
-  | ECall lhs.dim_lifted = ECall @left.dim_lifted @exprs.dim_lifted
+  | EVar lhs.dim_lifted = ECall (NameLhs $ (rename (@lhs.list_of_replacements) @name)) [EVar "fooooo" ] -- @lhs.my_recursion_counter]
+  | ECall lhs.dim_lifted = ECall @left.copy @exprs.dim_lifted
   | EAccess lhs.dim_lifted = EAccess @names.dim_lifted
   | EOp lhs.dim_lifted = EOp @binop.dim_lifted @e1.dim_lifted @e2.dim_lifted
   | ENeg lhs.dim_lifted = ENeg @expr.dim_lifted
+
+sem Names
+  | Cons lhs.dim_lifted = (rename (@lhs.list_of_replacements) @hd) : @tl.dim_lifted
 
 
 {
 rename :: [(Name, Name)] -> Name -> Name
 rename reps name = case lookup name reps of
-                     Just rep -> rep
+                     Just rep -> rep ++ "(rec_depth)"
                      Nothing  -> name
 }
