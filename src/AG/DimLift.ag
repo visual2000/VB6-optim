@@ -57,28 +57,29 @@ attr Stmts
 attr Lhss Lhs WithAssignments WithAssignment Exprs MExpr Expr Lit Binop
   syn dim_lifted :: self
 
+attr Declarations Declaration
+  syn rec_counters use {++} {[]} :: Declarations
+
 sem Module
   | Mod lhs.dim_lifted = Mod @attributes.dim_lifted
                              @options.dim_lifted
                              (globalisedDecls @decls.dims
+                              ++ @decls.rec_counters
                               ++ @decls.dim_lifted)
 
 {
 globalisedDecls :: [(StmtTypeDecl, Name)] -> [Declaration]
 globalisedDecls [] = []
 globalisedDecls ((StmtTypeDecl n t, nn):rs) =
-  (GlobalVarDecl Public (GlobalTypeDecl nn t)):globalisedDecls rs
-globalisedDecls ((StmtTypeDeclArray n t, nn):rs) =
-  (GlobalVarDecl Public (GlobalTypeDeclArray nn t)):globalisedDecls rs
-globalisedDecls ((StmtTypeDeclArrayWithUpperBound n u t, nn):rs) =
-  (GlobalVarDecl Public (GlobalTypeDeclArrayWithUpperBound nn u t)):globalisedDecls rs
-globalisedDecls ((StmtTypeDeclArrayWithBounds n l u t, nn):rs) =
-  (GlobalVarDecl Public (GlobalTypeDeclArrayWithBounds nn l u t)):globalisedDecls rs
+  (GlobalVarDecl Public (GlobalTypeDeclArrayWithBounds nn 0 10 t)):globalisedDecls rs
+globalisedDecls ((StmtTypeDeclArray n t, nn):rs) = error "Please don't use arrays in function scope."
+globalisedDecls ((StmtTypeDeclArrayWithUpperBound n u t, nn):rs) = error "Please don't use arrays in function scope."
+globalisedDecls ((StmtTypeDeclArrayWithBounds n l u t, nn):rs) = error "Please don't use arrays in function scope."
 }
 
 sem Declaration
-  | FuncDecl lhs.dims = [(StmtTypeDecl "hack - will disappear" TInt, @name ++ "_rec_depth")] ++ @statements.dims
-  | SubDecl  lhs.dims = [(StmtTypeDecl "hack - will disappear" TInt, @name ++ "_rec_depth")] ++ @statements.dims
+  | FuncDecl lhs.rec_counters = [GlobalVarDecl Public $ GlobalTypeDecl @loc.my_recursion_counter TInt]
+  | SubDecl  lhs.rec_counters = [GlobalVarDecl Public $ GlobalTypeDecl @loc.my_recursion_counter TInt]
 
 sem Declaration
   | FuncDecl lhs.dim_lifted = FuncDecl @visibility.dim_lifted
@@ -102,7 +103,7 @@ sem Stmt
   | StmtAssign lhs.dim_lifted = [StmtAssign @left.dim_lifted @expr.dim_lifted]
   | StmtSetAssign lhs.dim_lifted = [StmtSetAssign @left.dim_lifted @expr.dim_lifted]
   | StmtLSetAssign lhs.dim_lifted = [StmtLSetAssign @left.dim_lifted @expr.dim_lifted]
-  | StmtCall lhs.dim_lifted = []
+  | StmtCall lhs.dim_lifted = [StmtCall @left.dim_lifted @exprs.dim_lifted]
   | StmtIfThenElse lhs.dim_lifted = [StmtIfThenElse @expr.dim_lifted @truestatements.dim_lifted @falsestatements.dim_lifted]
   | StmtFor lhs.dim_lifted = [StmtFor @counter.dim_lifted @from.dim_lifted @to.dim_lifted @step.dim_lifted @statements.dim_lifted]
   | StmtDoStatementsLoopWhileCond lhs.dim_lifted = [StmtDoStatementsLoopWhileCond @statements.dim_lifted @condition.dim_lifted]
