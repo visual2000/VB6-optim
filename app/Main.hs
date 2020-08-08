@@ -135,6 +135,8 @@ main = do fileContents <- T.readFile projectFile
                             processProject proj outDirectory
           exitSuccess
 
+-- TODO warn/bail if final statement in Func isn't a return/Exit
+-- Function (because we use that to keep track of recursion depth).
 
 getDims :: Module -> [(StmtTypeDecl, Name)]
 getDims m = dims_Syn_Module (wrapAG m)
