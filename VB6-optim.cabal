@@ -4,7 +4,7 @@ cabal-version: 2.0
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a261110bf7032020ecda43e2b4affc5d9fb5e442357be037a3d742e51d91bc96
+-- hash: 5c5f2af3bff33e458a4383da13aa162c0e8b859b691d7b666a24a8a6a3fa7358
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -54,7 +54,7 @@ library
       src
   default-extensions: StandaloneDeriving
   other-extensions: CPP
-  ghc-options: -Wall -Werror -fwarn-incomplete-uni-patterns
+  ghc-options: -Wall -Werror -Wno-unused-matches -fwarn-incomplete-uni-patterns
   build-depends:
       array
     , base >=4.7 && <5

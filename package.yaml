@@ -51,6 +51,7 @@ library:
   ghc-options:
   - -Wall
   - -Werror
+  - -Wno-unused-matches
   - -fwarn-incomplete-uni-patterns
 
   # default-extensions for the benefit of AGs, which don't allow
