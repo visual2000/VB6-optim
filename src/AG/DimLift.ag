@@ -71,15 +71,15 @@ sem Module
 globalisedDecls :: [(StmtTypeDecl, Name)] -> [Declaration]
 globalisedDecls [] = []
 globalisedDecls ((StmtTypeDecl n t, nn):rs) =
-  (GlobalVarDecl Public (GlobalTypeDeclArrayWithBounds nn 0 10 t)):globalisedDecls rs
+  (GlobalVarDecl Private (GlobalTypeDeclArrayWithBounds nn 0 100 t)):globalisedDecls rs
 globalisedDecls ((StmtTypeDeclArray n t, nn):rs) = error "Please don't use arrays in function scope."
 globalisedDecls ((StmtTypeDeclArrayWithUpperBound n u t, nn):rs) = error "Please don't use arrays in function scope."
 globalisedDecls ((StmtTypeDeclArrayWithBounds n l u t, nn):rs) = error "Please don't use arrays in function scope."
 }
 
 sem Declaration
-  | FuncDecl lhs.rec_counters = [GlobalVarDecl Public $ GlobalTypeDecl @loc.my_recursion_counter TInt]
-  | SubDecl  lhs.rec_counters = [GlobalVarDecl Public $ GlobalTypeDecl @loc.my_recursion_counter TInt]
+  | FuncDecl lhs.rec_counters = [GlobalVarDecl Private $ GlobalTypeDecl @loc.my_recursion_counter TInt]
+  | SubDecl  lhs.rec_counters = [GlobalVarDecl Private $ GlobalTypeDecl @loc.my_recursion_counter TInt]
 
 sem Declaration
   | FuncDecl lhs.dim_lifted = FuncDecl @visibility.dim_lifted
@@ -88,7 +88,7 @@ sem Declaration
                                        @ty.dim_lifted
                                     $
                               [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Add (EVar @loc.my_recursion_counter) (ELit (LInt 1)))
-                              ,StmtIfThenElse (EOp GrT (EVar @loc.my_recursion_counter) (ELit (LInt 10)))
+                              ,StmtIfThenElse (EOp GrT (EVar @loc.my_recursion_counter) (ELit (LInt 100)))
                                               [ StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Sub (EVar @loc.my_recursion_counter) (ELit (LInt 1)))
                                               , StmtReturn]
                                               []
