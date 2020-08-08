@@ -115,7 +115,7 @@ processProject project dest = do
      sequence_ [ print $ getDims mod | mod <- mods ]
      sequence_ [ putStrLn $ printModule $ getDimLifted mod | mod <- mods ]
      -- sequence_ [ print $ getDimLifted mod | mod <- mods ]
-     writeFile (dest </> newModuleName ++ ".bas") (printModule (combineModules mods))
+     writeFile (dest </> newModuleName ++ ".bas") (printModule (getDimLifted (combineModules mods)))
   let ini = originalIni project
       globalsMinusModules = filter (\(k,v) -> T.unpack k /= "Module") $ iniGlobals ini
       newini = ini { iniGlobals = (T.pack "Module", T.pack $ newModuleName ++ "; " ++ newModuleName ++ ".bas"):globalsMinusModules } in
