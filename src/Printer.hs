@@ -147,9 +147,10 @@ instance Printable [Stmt] where
                                     <+> equals
                                     <+> pp expr
                                     $+$ pp ss
-  pp ((StmtNakedFunctionCall l args):ss) =
-    pp l
-    <+> hcat (punctuate (text ", ") (map pp args))
+  pp ((StmtCall l args):ss) =
+    text "Call"
+    <+> pp l
+    <+> parens (hcat (punctuate (text ", ") (map pp args)))
     $+$ pp ss
   pp ((StmtIfThenElse cond ifss []):ss) = text "If"
                                               <+> pp cond

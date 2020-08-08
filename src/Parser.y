@@ -28,6 +28,7 @@ import Data.Either
 -- Token Names
 %token
     'Declare'     { Token _ (TokenDeclare) }
+    'Call'        { Token _ (TokenCall) }
     'Lib'         { Token _ (TokenLib) }
     'LSet'        { Token _ (TokenLSet) }
     'Set'         { Token _ (TokenSet) }
@@ -194,11 +195,14 @@ Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
                 Statements
             'Next' VAR eol                { StmtFor $2 $4 $6 Nothing $8 }
           | 'Exit' 'Function' eol         { StmtReturn }
-          -- FIXME FNCallRef rule is causing a shift/reduce conflict.
-          | FNCallRef ExprList eol        { StmtNakedFunctionCall $1 $2 }
+          | 'Call' FNCallRef FNCallArgumentList eol
+                                          { StmtCall $2 $3 }
           | 'Do' eol
                 Statements
             'Loop' 'While' Expr eol       { StmtDoStatementsLoopWhileCond $3 $6 }
+
+FNCallArgumentList : {- empty -}          { [] }
+                   | '(' ExprList ')'     { $2 }
 
 Withs : With { [$1] }
       | With Withs { $1 : $2 }

@@ -123,8 +123,8 @@ data Stmt
                          expr :: Expr
   | StmtLSetAssign       left :: Lhs
                          expr :: Expr
-  | StmtNakedFunctionCall     left :: Lhs
-                              exprs :: Exprs
+  | StmtCall             left :: Lhs
+                         exprs :: Exprs
   | StmtIfThenElse       expr :: Expr
                          truestatements :: Stmts
                          falsestatements :: Stmts
