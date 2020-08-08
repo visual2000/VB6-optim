@@ -4,6 +4,7 @@ type Name = String
 type Declarations          = [Declaration]
 type Exprs                 = [Expr]
 type FuncArgDecls          = [FuncArgDecl]
+type Lhss                  = [Lhs]
 type MExpr                 = maybe Expr
 type ModuleAttributes      = [ModuleAttribute]
 type ModuleOptions         = [ModuleOption]
@@ -137,11 +138,10 @@ data Stmt
                                    condition :: Expr
 
 data Lhs
-  | NameLhs    name :: Name -- just a variable
-  | FieldLhs   name :: Name
-               left :: Lhs -- a.b.c = ..
+  | NameLhs    name :: Name -- simplest case, just a variable
+  | FieldLhs   left :: Lhss -- dot-separated things a.b.c = ..
   | ArrayLhs   name :: Name
-               index :: Expr -- a[0] = 3
+               index :: Exprs -- a[0][1] = 3
 
 data Expr
   | ELit       lit :: Lit

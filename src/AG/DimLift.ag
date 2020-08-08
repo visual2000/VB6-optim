@@ -1,11 +1,11 @@
 attr Stmts Stmt StmtTypeDecls StmtTypeDecl
   inh defining_function :: Name
 
-attr Stmts Stmt Lhs WithAssignments WithAssignment Exprs MExpr Expr Binop Names
+attr Stmts Stmt Lhss Lhs WithAssignments WithAssignment Exprs MExpr Expr Binop Names
   inh list_of_replacements :: {[(Name, Name)]}
   inh my_recursion_counter :: String
 
-attr Lhs Exprs MExpr Expr Binop Names Lit
+attr Lhss Lhs Exprs MExpr Expr Binop Names Lit
   syn copy :: self
 
 sem Declaration
@@ -54,7 +54,7 @@ attr Stmt
 attr Stmts
   syn dim_lifted use {++} {[]} :: Stmts
 
-attr Lhs WithAssignments WithAssignment Exprs MExpr Expr Lit Binop Names
+attr Lhss Lhs WithAssignments WithAssignment Exprs MExpr Expr Lit Binop Names
   syn dim_lifted :: self
 
 sem Module
@@ -111,10 +111,10 @@ sem Stmt
 sem Exprs
   | Cons lhs.dim_lifted = @hd.dim_lifted : @tl.dim_lifted
 
-sem Lhs
-  | NameLhs lhs.dim_lifted  = ArrayLhs (rename (@lhs.list_of_replacements) @name) (EVar @lhs.my_recursion_counter)
-  | FieldLhs lhs.dim_lifted = FieldLhs (rename (@lhs.list_of_replacements) @name) @left.dim_lifted
-  | ArrayLhs lhs.dim_lifted = ArrayLhs (rename (@lhs.list_of_replacements) @name) @index.dim_lifted
+-- sem Lhs
+--   | NameLhs lhs.dim_lifted  = ArrayLhs (rename (@lhs.list_of_replacements) @name) (EVar @lhs.my_recursion_counter)
+--   | FieldLhs lhs.dim_lifted = FieldLhs (rename (@lhs.list_of_replacements) @name) @left.dim_lifted
+--   | ArrayLhs lhs.dim_lifted = ArrayLhs (rename (@lhs.list_of_replacements) @name) @index.dim_lifted
 
 sem Expr
   | EVar lhs.dim_lifted = ECall (NameLhs $ (rename (@lhs.list_of_replacements) @name)) [EVar "fooooo" ] -- @lhs.my_recursion_counter]

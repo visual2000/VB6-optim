@@ -115,7 +115,7 @@ TopLevelDeclaration : Visibility 'Type' VAR eol
                     | Visibility 'Sub' VAR '(' FnDeclArgs ')' eol
                                      Statements
                                  'End' 'Sub' eol      { SubDecl $1 $3 $5 $8 }
-                    | Visibility VAR 'As' TypeRef eol  { GlobalVarDecl $1 (GlobalTypeDecl $2 $4) } -- TODO support arrays
+                    | Visibility GlobalVarDecl eol  { GlobalVarDecl $1 $2 }
 
 Visibility : 'Private' { Private }
            | 'Public'  { Public }
@@ -163,6 +163,13 @@ UserTypeDeclArg : VAR 'As' TypeRef            { UserTypeDeclField $1 $3 }
                 | VAR '(' INT ')' 'As' TypeRef
                                               { UserTypeDeclFieldArrayWithUpperBound $1 $3 $6 }
 
+GlobalVarDecl : VAR 'As' TypeRef            { GlobalTypeDecl $1 $3 }
+              | VAR '(' ')' 'As' TypeRef    { GlobalTypeDeclArray $1 $5 }
+              | VAR '(' INT ')' 'As' TypeRef
+                                            { GlobalTypeDeclArrayWithUpperBound $1 $3 $6 }
+              | VAR '(' INT 'To' INT ')' 'As' TypeRef
+                                            { GlobalTypeDeclArrayWithBounds $1 $3 $5 $8 }
+
 DimDeclArg : VAR 'As' TypeRef            { StmtTypeDecl $1 $3 }
            | VAR '(' ')' 'As' TypeRef    { StmtTypeDeclArray $1 $5 }
            | VAR '(' INT ')' 'As' TypeRef
@@ -209,12 +216,19 @@ Withs : With { [$1] }
 
 With : '.' Lhs '=' Expr eol { WithAssignment $2 $4 }
 
-Lhs : VAR             { NameLhs $1 }
-    | VAR '.' Lhs     { FieldLhs $1 $3 }
-    | VAR '(' INT ')' { ArrayLhs $1 (ELit (LInt $3)) }
+Lhs : VAR                           { NameLhs $1 }
+    | DottedLhs                     { FieldLhs $1 }
+    | VAR '(' NonEmptyExprList ')'
+                                    { ArrayLhs $1 $3 }
 
-FNCallRef : VAR                { NameLhs $1 }
-          | VAR '.' FNCallRef  { FieldLhs $1 $3 }
+DottedLhs : Lhs '.' Lhs
+                                    { $1 : [$3] }
+
+DottedFuncCall : VAR '.' DottedFuncCall
+                                    { NameLhs $1 : $3 }
+               | VAR                { [NameLhs $1] }
+
+FNCallRef : DottedFuncCall        { FieldLhs $1 }
 
 Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
      | '-' Expr                   { ENeg $2 }
