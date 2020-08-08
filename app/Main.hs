@@ -28,14 +28,14 @@ parseStringToModule input = do
   case tokens of
     Left err -> do
       putStrLn err
-      return $ error "asdf"
+      return $ error "Lexing error."
     Right lexedTokens -> do
       -- putStrLn ("Tokens: " ++ show lexedTokens)
       let ast = parseModule lexedTokens
       case ast of
         Left err -> do
           putStrLn (err input)
-          return $ error "asdf"
+          return $ error "Parsing error."
         Right ast -> do
           -- putStrLn ("Syntax: " ++ show ast)
           return ast
