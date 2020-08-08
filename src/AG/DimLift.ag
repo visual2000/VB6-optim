@@ -87,18 +87,18 @@ sem Declaration
                                        @args.dim_lifted
                                        @ty.dim_lifted
                                     $
-                              [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Add (EVar @loc.my_recursion_counter) (ELit (LInt 1)))]
-                              ++ @statements.dim_lifted
-  | SubDecl  lhs.dim_lifted = SubDecl @visibility.dim_lifted
-                                      @name
-                                      @args.dim_lifted
-                                    $
-                              [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Add (EVar @loc.my_recursion_counter) (ELit (LInt 1)))]
+                              [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Add (EVar @loc.my_recursion_counter) (ELit (LInt 1)))
+                              ,StmtIfThenElse (EOp GrT (EVar @loc.my_recursion_counter) (ELit (LInt 10)))
+                                              [ StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Sub (EVar @loc.my_recursion_counter) (ELit (LInt 1)))
+                                              , StmtReturn]
+                                              []
+                              ]
                               ++ @statements.dim_lifted
 
 sem Stmt
   | StmtDecl lhs.dim_lifted = []
-  | StmtReturn lhs.dim_lifted = [StmtAssign (NameLhs @lhs.my_recursion_counter) (EOp Sub (EVar @lhs.my_recursion_counter) (ELit (LInt 1))), @self]
+  | StmtReturn lhs.dim_lifted = [StmtAssign (NameLhs @lhs.my_recursion_counter) (EOp Sub (EVar @lhs.my_recursion_counter) (ELit (LInt 1))),
+                                 @self]
   | StmtWith lhs.dim_lifted = [StmtWith @left.dim_lifted @withs.dim_lifted]
   | StmtAssign lhs.dim_lifted = [StmtAssign @left.dim_lifted @expr.dim_lifted]
   | StmtSetAssign lhs.dim_lifted = [StmtSetAssign @left.dim_lifted @expr.dim_lifted]
