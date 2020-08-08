@@ -150,7 +150,7 @@ instance Printable [Stmt] where
   pp ((StmtCall l args):ss) =
     text "Call"
     <+> pp l
-    <+> parens (hcat (punctuate (text ", ") (map pp args)))
+    <> parens (hcat (punctuate (text ", ") (map pp args)))
     $+$ pp ss
   pp ((StmtIfThenElse cond ifss []):ss) = text "If"
                                               <+> pp cond
