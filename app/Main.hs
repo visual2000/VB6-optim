@@ -94,6 +94,7 @@ copyOtherFiles p dest =
 
 projectFile = "/Users/paul/src/BasicTrace/BasicTrace.vbp"
 outDirectory = "./output"
+cleanTargetDir = True
 newModuleName = "Monolith"
 
 parseModuleList :: FilePath -> [FilePath] -> IO [Module]
@@ -107,6 +108,7 @@ formatVbpProjectConfig i = let globals = iniGlobals i in
 
 processProject :: Project -> FilePath -> IO()
 processProject project dest = do
+  if cleanTargetDir then removeDirectoryRecursive dest else return ()
   createDirectory dest
   copyOtherFiles project dest
   do mods <- parseModuleList (baseDirectory project) (modules project)
