@@ -8,7 +8,6 @@ type Lhss                  = [Lhs]
 type MExpr                 = maybe Expr
 type ModuleAttributes      = [ModuleAttribute]
 type ModuleOptions         = [ModuleOption]
-type Names                 = [Name]
 type StmtTypeDecls         = [StmtTypeDecl]
 type Stmts                 = [Stmt]
 type UserTypeDeclFields    = [UserTypeDeclField]
@@ -129,7 +128,7 @@ data Stmt
   | StmtIfThenElse       expr :: Expr
                          truestatements :: Stmts
                          falsestatements :: Stmts
-  | StmtFor              name :: Name
+  | StmtFor              counter :: Lhs
                          from :: Expr
                          to :: Expr
                          step :: MExpr
@@ -148,7 +147,7 @@ data Expr
   | EVar       name :: Name
   | ECall      left :: Lhs
                exprs :: Exprs
-  | EAccess    names :: Names -- a.b.c
+  | EAccess    names :: Lhss -- a.b.c
   | EOp        binop :: Binop
                e1 :: Expr
                e2 :: Expr

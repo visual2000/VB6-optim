@@ -167,16 +167,16 @@ instance Printable [Stmt] where
                                               $+$ text "End If"
                                               $+$ pp ss
   pp ((StmtFor loopvar from to Nothing bodyss):ss) = text "For"
-                                                  <+> text loopvar
+                                                  <+> pp loopvar
                                                   <+> equals
                                                   <+> pp from
                                                   <+> text "To"
                                                   <+> pp to
                                                   $+$ nest 4 (pp bodyss)
-                                                  $+$ text "Next" <+> text loopvar
+                                                  $+$ text "Next" <+> pp loopvar
                                                   $+$ pp ss
   pp ((StmtFor loopvar from to (Just step) bodyss):ss) = text "For"
-                                                  <+> text loopvar
+                                                  <+> pp loopvar
                                                   <+> equals
                                                   <+> pp from
                                                   <+> text "To"
@@ -184,7 +184,7 @@ instance Printable [Stmt] where
                                                   <+> text "Step"
                                                   <+> pp step
                                                   $+$ nest 4 (pp bodyss)
-                                                  $+$ text "Next" <+> text loopvar
+                                                  $+$ text "Next" <+> pp loopvar
                                                   $+$ pp ss
   pp ((StmtDoStatementsLoopWhileCond stmts expr):ss) = text "Do"
                                        $+$ nest 4 (pp stmts)
@@ -204,7 +204,7 @@ instance Printable Expr where
                         <> lparen
                         <> hcat (punctuate (text ", ") (map pp args))
                         <> rparen
-  pp (EAccess ns) = hcat $ punctuate (char '.') (map text ns)
+  pp (EAccess lhss) = hcat $ punctuate (char '.') (map pp lhss)
   pp (EOp b e1 e2) = lparen <> pp e1 <+> pp b <+> pp e2 <> rparen
   pp (ENeg e) = char '-' <> pp e
 

@@ -195,10 +195,10 @@ Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
           | 'If' Expr 'Then' eol
                 Statements
             'End' 'If' eol                { StmtIfThenElse $2 $5 [] }
-          | 'For' VAR '=' Expr 'To' Expr 'Step' Expr eol
+          | 'For' Lhs '=' Expr 'To' Expr 'Step' Expr eol
                 Statements
             'Next' VAR eol                { StmtFor $2 $4 $6 (Just $8) $10 }
-          | 'For' VAR '=' Expr 'To' Expr eol
+          | 'For' Lhs '=' Expr 'To' Expr eol
                 Statements
             'Next' VAR eol                { StmtFor $2 $4 $6 Nothing $8 }
           | 'Exit' 'Function' eol         { StmtReturn }
@@ -244,10 +244,7 @@ Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
      | Expr '/' Expr              { EOp Div $1 $3 }
      | '(' Expr ')'               { $2 }
      | Lit                        { ELit $1 }
-     | VariableAccess             { EAccess $1 }
-
-VariableAccess : VAR                    { [ $1 ] }
-               | VAR '.' VariableAccess { $1 : $3 }
+     | DottedFuncCall             { EAccess $1 }
 
 ExprList : {-empty -}         { [] }
          | NonEmptyExprList   { $1 }

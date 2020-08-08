@@ -1,11 +1,11 @@
 attr Stmts Stmt StmtTypeDecls StmtTypeDecl
   inh defining_function :: Name
 
-attr Stmts Stmt Lhss Lhs WithAssignments WithAssignment Exprs MExpr Expr Binop Names
+attr Stmts Stmt Lhss Lhs WithAssignments WithAssignment Exprs MExpr Expr Binop
   inh list_of_replacements :: {[(Name, Name)]}
   inh my_recursion_counter :: String
 
-attr Lhss Lhs Exprs MExpr Expr Binop Names Lit
+attr Lhss Lhs Exprs MExpr Expr Binop Lit
   syn copy :: self
 
 sem Declaration
@@ -54,7 +54,7 @@ attr Stmt
 attr Stmts
   syn dim_lifted use {++} {[]} :: Stmts
 
-attr Lhss Lhs WithAssignments WithAssignment Exprs MExpr Expr Lit Binop Names
+attr Lhss Lhs WithAssignments WithAssignment Exprs MExpr Expr Lit Binop
   syn dim_lifted :: self
 
 sem Module
@@ -105,31 +105,40 @@ sem Stmt
   | StmtCall lhs.dim_lifted = []
   -- | StmtNakedFunctionCall lhs.dim_lifted = [StmtNakedFunctionCall @left.dim_lifted @exprs.dim_lifted]
   | StmtIfThenElse lhs.dim_lifted = [StmtIfThenElse @expr.dim_lifted @truestatements.dim_lifted @falsestatements.dim_lifted]
-  | StmtFor lhs.dim_lifted = [StmtFor (rename (@lhs.list_of_replacements) @name) @from.dim_lifted @to.dim_lifted @step.dim_lifted @statements.dim_lifted]
+  | StmtFor lhs.dim_lifted = [StmtFor @counter.dim_lifted @from.dim_lifted @to.dim_lifted @step.dim_lifted @statements.dim_lifted]
   | StmtDoStatementsLoopWhileCond lhs.dim_lifted = [StmtDoStatementsLoopWhileCond @statements.dim_lifted @condition.dim_lifted]
 
-sem Exprs
+sem Exprs Lhss
   | Cons lhs.dim_lifted = @hd.dim_lifted : @tl.dim_lifted
 
--- sem Lhs
---   | NameLhs lhs.dim_lifted  = ArrayLhs (rename (@lhs.list_of_replacements) @name) (EVar @lhs.my_recursion_counter)
---   | FieldLhs lhs.dim_lifted = FieldLhs (rename (@lhs.list_of_replacements) @name) @left.dim_lifted
---   | ArrayLhs lhs.dim_lifted = ArrayLhs (rename (@lhs.list_of_replacements) @name) @index.dim_lifted
+sem Lhs
+  | NameLhs lhs.dim_lifted  = handleNameLhs @lhs.list_of_replacements @lhs.my_recursion_counter @name
+  | FieldLhs lhs.dim_lifted = FieldLhs @left.dim_lifted
+  | ArrayLhs lhs.dim_lifted = handleArrayLhs @lhs.list_of_replacements @lhs.my_recursion_counter @name @index.dim_lifted
 
 sem Expr
-  | EVar lhs.dim_lifted = ECall (NameLhs $ (rename (@lhs.list_of_replacements) @name)) [EVar "fooooo" ] -- @lhs.my_recursion_counter]
-  | ECall lhs.dim_lifted = ECall @left.copy @exprs.dim_lifted
+  | EVar lhs.dim_lifted = handleEVar @lhs.list_of_replacements @lhs.my_recursion_counter @name
+  | ECall lhs.dim_lifted = ECall @left.dim_lifted @exprs.dim_lifted
   | EAccess lhs.dim_lifted = EAccess @names.dim_lifted
   | EOp lhs.dim_lifted = EOp @binop.dim_lifted @e1.dim_lifted @e2.dim_lifted
   | ENeg lhs.dim_lifted = ENeg @expr.dim_lifted
 
-sem Names
-  | Cons lhs.dim_lifted = (rename (@lhs.list_of_replacements) @hd) : @tl.dim_lifted
-
-
 {
-rename :: [(Name, Name)] -> Name -> Name
-rename reps name = case lookup name reps of
-                     Just rep -> rep ++ "(rec_depth)"
-                     Nothing  -> name
+handleArrayLhs :: [(Name, Name)] -> Name -> Name -> [Expr] -> Lhs
+handleArrayLhs reps recursion_counter name exprs =
+  case lookup name reps of
+    Just rep -> ArrayLhs rep ((EVar recursion_counter) : exprs)
+    Nothing  -> ArrayLhs name exprs
+
+handleNameLhs :: [(Name, Name)] -> Name -> Name -> Lhs
+handleNameLhs reps recursion_counter name =
+  case lookup name reps of
+    Just rep -> ArrayLhs rep [EVar recursion_counter]
+    Nothing  -> NameLhs name
+
+handleEVar :: [(Name, Name)] -> Name -> Name -> Expr
+handleEVar reps recursion_counter name =
+  case lookup name reps of
+    Just rep -> ECall (NameLhs rep) [EVar recursion_counter]
+    Nothing  -> EVar name
 }
