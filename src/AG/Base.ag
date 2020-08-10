@@ -11,7 +11,6 @@ type ModuleOptions         = [ModuleOption]
 type StmtTypeDecls         = [StmtTypeDecl]
 type Stmts                 = [Stmt]
 type UserTypeDeclFields    = [UserTypeDeclField]
-type WithAssignments       = [WithAssignment]
 
 data ModuleAttribute
   | ModuleAttribute name :: Name
@@ -42,7 +41,7 @@ data Declaration
   | FuncDecl        visibility :: Visibility
                     name       :: Name
                     args       :: FuncArgDecls
-                    ty         :: TypeRef
+                    ty         :: TypeRef -- TODO support functions returning arrays
                     statements :: Stmts
 
   | SubDecl         visibility :: Visibility
@@ -107,16 +106,9 @@ data TypeRef
   | TString
   | TUDT     name :: Name
 
-
-data WithAssignment
-  | WithAssignment  left :: Lhs
-                    expr :: Expr
-
 data Stmt
   | StmtDecl             typedecls :: StmtTypeDecls
   | StmtReturn
-  | StmtWith             left :: Lhs
-                         withs :: WithAssignments
   | StmtAssign           left :: Lhs
                          expr :: Expr
   | StmtSetAssign        left :: Lhs
@@ -179,7 +171,6 @@ deriving instance Eq GlobalTypeDecl
 deriving instance Eq TypeRef
 deriving instance Eq UserTypeDeclField
 deriving instance Eq Visibility
-deriving instance Eq WithAssignment
 deriving instance Show Binop
 deriving instance Show Declaration
 deriving instance Show Expr
@@ -196,7 +187,6 @@ deriving instance Show GlobalTypeDecl
 deriving instance Show TypeRef
 deriving instance Show UserTypeDeclField
 deriving instance Show Visibility
-deriving instance Show WithAssignment
 
 getName :: StmtTypeDecl -> Name
 getName (StmtTypeDecl                    name     _) = name

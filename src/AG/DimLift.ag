@@ -1,7 +1,7 @@
 attr Stmts Stmt StmtTypeDecls StmtTypeDecl
   inh defining_function :: Name
 
-attr Stmts Stmt Lhss Lhs WithAssignments WithAssignment Exprs MExpr Expr Binop
+attr Stmts Stmt Lhss Lhs Exprs MExpr Expr Binop
   inh list_of_replacements :: {[(Name, Name)]}
   inh my_recursion_counter :: String
 
@@ -54,7 +54,7 @@ attr Stmt
 attr Stmts
   syn dim_lifted use {++} {[]} :: Stmts
 
-attr Lhss Lhs WithAssignments WithAssignment Exprs MExpr Expr Lit Binop
+attr Lhss Lhs Exprs MExpr Expr Lit Binop
   syn dim_lifted :: self
 
 attr Declarations Declaration
@@ -99,7 +99,6 @@ sem Stmt
   | StmtDecl lhs.dim_lifted = []
   | StmtReturn lhs.dim_lifted = [StmtAssign (NameLhs @lhs.my_recursion_counter) (EOp Sub (EVar @lhs.my_recursion_counter) (ELit (LInt 1))),
                                  @self]
-  | StmtWith lhs.dim_lifted = [StmtWith @left.dim_lifted @withs.dim_lifted]
   | StmtAssign lhs.dim_lifted = [StmtAssign @left.dim_lifted @expr.dim_lifted]
   | StmtSetAssign lhs.dim_lifted = [StmtSetAssign @left.dim_lifted @expr.dim_lifted]
   | StmtLSetAssign lhs.dim_lifted = [StmtLSetAssign @left.dim_lifted @expr.dim_lifted]

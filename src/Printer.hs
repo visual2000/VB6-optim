@@ -115,23 +115,12 @@ instance Printable StmtTypeDecl where
                                             <> text ")"
                                             <+> text "As" <+> pp ref
 
-instance Printable [WithAssignment] where
-  pp [] = empty
-  pp ((WithAssignment l e):ws) = char '.' <> pp l
-                                 <+> char '='
-                                 <+> pp e
-                                 $+$ pp ws
-
 instance Printable [Stmt] where
   pp [] = empty
   pp (StmtReturn : ss) = text "Exit Function"
                          $+$ pp ss
   pp ((StmtDecl typefields):ss) = text "Dim"
                             <+> hcat (punctuate (text ", ") (map pp typefields))
-                            $+$ pp ss
-  pp ((StmtWith l as):ss) = text "With" <+> pp l
-                            $+$ nest 4 (pp as)
-                            $+$ text "End With"
                             $+$ pp ss
   pp ((StmtAssign l expr):ss) = pp l
                                 <+> equals

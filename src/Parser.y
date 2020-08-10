@@ -37,7 +37,6 @@ import Data.Either
     'ByRef'       { Token _ (TokenByRef) }
     'ByVal'       { Token _ (TokenByVal) }
     'Type'        { Token _ (TokenType) }
-    'With'        { Token _ (TokenWith) }
     'End'         { Token _ (TokenEnd) }
     'For'         { Token _ (TokenFor) }
     'To'          { Token _ (TokenTo) }
@@ -189,9 +188,6 @@ Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
             'Else' eol
                 Statements
             'End' 'If' eol                { StmtIfThenElse $2 $5 $8 }
-          | 'With' Lhs eol
-                Withs
-            'End' 'With' eol              { StmtWith $2 $4 }
           | 'If' Expr 'Then' eol
                 Statements
             'End' 'If' eol                { StmtIfThenElse $2 $5 [] }
@@ -210,11 +206,6 @@ Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
 
 FNCallArgumentList : {- empty -}          { [] }
                    | '(' ExprList ')'     { $2 }
-
-Withs : With { [$1] }
-      | With Withs { $1 : $2 }
-
-With : '.' Lhs '=' Expr eol { WithAssignment $2 $4 }
 
 Lhs : VAR                           { NameLhs $1 }
     | DottedLhs                     { FieldLhs $1 }
