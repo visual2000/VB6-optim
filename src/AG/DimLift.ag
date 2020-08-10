@@ -1,4 +1,4 @@
-attr Stmts Stmt StmtTypeDecls StmtTypeDecl
+attr FuncArgDecls FuncArgDecl FuncArgDeclField Stmts Stmt StmtTypeDecls StmtTypeDecl
   inh defining_function :: Name
 
 attr Stmts Stmt Lhss Lhs Exprs MExpr Expr Binop
@@ -9,11 +9,17 @@ attr Lhss Lhs Exprs MExpr Expr Binop Lit
   syn copy :: self
 
 sem Declaration
+  | DllFunc  args.defining_function = @name
+             args.argument_counter = 0
   | SubDecl  statements.defining_function = @name
+             args.defining_function = @name
+             args.argument_counter = 0
              statements.list_of_replacements = map extractNameReplacements @statements.dims
              loc.my_recursion_counter = "rec_depth_" ++ @name
              statements.my_recursion_counter = @loc.my_recursion_counter
   | FuncDecl statements.defining_function = @name
+             args.defining_function = @name
+             args.argument_counter = 0
              statements.list_of_replacements = map extractNameReplacements @statements.dims
              loc.my_recursion_counter = "rec_depth_" ++ @name
              statements.my_recursion_counter = @loc.my_recursion_counter
@@ -28,11 +34,25 @@ attr Module Declarations Declaration Stmts Stmt
   -- variable names, to new, globally-unique names.
   syn dims use {++} {[]} :: {[(StmtTypeDecl, Name)]}
 
-attr StmtTypeDecl
+attr FuncArgDecls
+  chn argument_counter :: Int
+
+attr FuncArgDecl FuncArgDeclField
+  inh argument_counter :: Int
+
+sem FuncArgDecls
+  | Cons hd.argument_counter = @loc.num
+         loc.num :: uniqueref argument_counter
+
+sem FuncArgDeclField
+  | FuncArgDeclField lhs.dims = (StmtTypeDecl @name @ty.self, "arg_" ++ @lhs.defining_function ++ "_" ++ show @lhs.argument_counter)
+  | FuncArgDeclFieldArray lhs.dims = error "Array arguments are not yet implemented"
+
+attr StmtTypeDecl FuncArgDecl FuncArgDeclField
   -- the `name' field is a new name.
   syn dims :: { (StmtTypeDecl, Name) }
 
-sem StmtTypeDecls
+sem StmtTypeDecls FuncArgDecls
   syn dims use {:} {[]} :: {[(StmtTypeDecl, Name)]}
 
 sem StmtTypeDecl
