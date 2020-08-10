@@ -10,32 +10,39 @@ attr Module Declarations Declaration
 attr Declarations Declaration Stmts Stmt Exprs MExpr Expr
   syn dim_callsites use {++} {[]} :: {[Declaration]}
 
+attr Module Declarations Declaration Stmts Stmt Exprs MExpr Expr Lhss Lhs
+  chn counter :: Int
+
 sem Declaration
   | FuncDecl      lhs.collect_signatures = [(@name, @ty.self)]
 
 sem Module
   | Mod decls.signatures = @decls.collect_signatures
 
--- sem Declaration
-  -- | FuncDecl statements.signatures = @lhs.collect_signatures
-  -- | SubDecl  statements.signatures = @lhs.collect_signatures
-
 sem Expr
-  | ECall lhs.dim_callsites = trace (show @lhs.signatures) $ callSiteDecl @left.self @lhs.signatures
-  -- | EAccess lhs.dim_callsites = [] -- TODO wrong
-  -- | EOp   lhs.dim_callsites = [] -- TODO wrong
-  -- | ENeg  lhs.dim_callsites = [] -- TODO wrong
+  | ECall lhs.dim_callsites = trace (show @lhs.signatures) $ callSiteDecl @left.self @loc.return_name @lhs.signatures
+          loc.num :: uniqueref counter
+          loc.return_name = returnName @left.self @loc.num
 
 {
-callSiteDecl :: Lhs -> [(Name, TypeRef)] -> [Declaration]
-callSiteDecl (NameLhs nm) fs            =
+nextUnique :: Int -> (Int, Int)
+nextUnique u = (u+1, u)
+
+returnName :: Lhs -> Int -> Name
+returnName (NameLhs nm)            num = "return_" ++ nm ++ "_" ++ show num
+returnName (FieldLhs [NameLhs nm]) num = "return_" ++ nm ++ "_" ++ show num
+returnName (FieldLhs lhss)         num = "" -- oops.
+returnName (ArrayLhs nm idxs)      num = error "Array function call not supported"
+
+callSiteDecl :: Lhs -> Name -> [(Name, TypeRef)] -> [Declaration]
+callSiteDecl (NameLhs nm) return_name fs        =
                                          case lookup nm fs of
                                                         Nothing -> []
-                                                        Just ty  -> [GlobalVarDecl Private $ GlobalTypeDecl nm ty]
-callSiteDecl (FieldLhs [NameLhs nm]) fs =
+                                                        Just ty  -> [GlobalVarDecl Private $ GlobalTypeDecl return_name ty]
+callSiteDecl (FieldLhs [NameLhs nm]) return_name fs =
                                          case lookup nm fs of
                                                         Nothing -> []
-                                                        Just ty  -> [GlobalVarDecl Private $ GlobalTypeDecl nm ty]
-callSiteDecl (FieldLhs lhss) fs = []
-callSiteDecl (ArrayLhs nm idxs) fs = error "Array function call not supported"
+                                                        Just ty  -> [GlobalVarDecl Private $ GlobalTypeDecl return_name ty]
+callSiteDecl (FieldLhs lhss) return_name fs    = []
+callSiteDecl (ArrayLhs nm idxs) return_name fs = error "Array function call not supported"
 }

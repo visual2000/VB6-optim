@@ -113,10 +113,9 @@ processProject project dest = do
   createDirectory dest
   copyOtherFiles project dest
   do mods <- parseModuleList (baseDirectory project) (modules project)
-     sequence_ [ print $ getDims mod | mod <- mods ]
-     sequence_ [ putStrLn $ printModule $ getDimLifted mod | mod <- mods ]
-     -- sequence_ [ print $ getDimLifted mod | mod <- mods ]
-     writeFile (dest </> newModuleName ++ ".bas") (printModule (getDimLifted (combineModules mods)))
+     let finalModule = printModule (getDimLifted (combineModules mods)) in
+       do putStrLn finalModule
+          writeFile (dest </> newModuleName ++ ".bas") finalModule
   let ini = originalIni project
       globalsMinusModules = filter (\(k,v) -> T.unpack k /= "Module") $ iniGlobals ini
       newini = ini { iniGlobals = (T.pack "Module", T.pack $ newModuleName ++ "; " ++ newModuleName ++ ".bas"):globalsMinusModules } in
@@ -139,10 +138,7 @@ main = do fileContents <- T.readFile projectFile
 -- TODO warn/bail if final statement in Func isn't a return/Exit
 -- Function (because we use that to keep track of recursion depth).
 
-getDims :: Module -> [(StmtTypeDecl, Name)]
-getDims m = dims_Syn_Module (wrapAG m)
-
 getDimLifted :: Module -> Module
 getDimLifted m = dim_lifted_Syn_Module (wrapAG m)
 
-wrapAG m = wrap_Module (sem_Module m) Inh_Module{}
+wrapAG m = wrap_Module (sem_Module m) Inh_Module{counter_Inh_Module=0}
