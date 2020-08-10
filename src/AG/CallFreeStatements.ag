@@ -1,0 +1,34 @@
+attr Stmts Stmt Exprs MExpr Expr Lhss Lhs
+  inh signatures :: {[(Name, TypeRef)]}
+
+attr Declaration
+  syn signatures :: {[(Name, TypeRef)]}
+
+attr Expr
+  syn dim_callsites :: {[GlobalTypeDecl]}
+
+sem Declaration
+  | FuncDecl      lhs.signatures = [(@name, @ty.self)]
+                  statements.signatures = [] -- @lhs.signatures
+  | SubDecl       lhs.signatures = []
+                  statements.signatures = [] -- @lhs.signatures
+  | DllFunc       lhs.signatures = []
+  | UserTypeDecl  lhs.signatures = []
+  | GlobalVarDecl lhs.signatures = []
+
+sem Expr
+  | ECall lhs.dim_callsites = callSiteDecl @left.self @lhs.signatures
+  | ELit  lhs.dim_callsites = []
+  | EVar  lhs.dim_callsites = []
+  | EAccess lhs.dim_callsites = [] -- TODO wrong
+  | EOp   lhs.dim_callsites = [] -- TODO wrong
+  | ENeg  lhs.dim_callsites = [] -- TODO wrong
+
+{
+callSiteDecl :: Lhs -> [(Name, TypeRef)] -> [GlobalTypeDecl]
+callSiteDecl (NameLhs nm) fs = case lookup nm fs of
+                                 Nothing -> []
+                                 Just ty  -> [GlobalTypeDecl nm ty]
+callSiteDecl (FieldLhs lhss) fs = error "FieldLhs function call not supported"
+callSiteDecl (ArrayLhs nm idxs) fs = error "Array function call not supported"
+}
