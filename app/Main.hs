@@ -113,7 +113,7 @@ processProject project dest = do
   createDirectory dest
   copyOtherFiles project dest
   do mods <- parseModuleList (baseDirectory project) (modules project)
-     let finalModule = printModule (getDimLifted (combineModules mods)) in
+     let finalModule = printModule $ (getCallsiteFree . getDimLifted) (combineModules mods) in
        do putStrLn finalModule
           writeFile (dest </> newModuleName ++ ".bas") finalModule
   let ini = originalIni project
@@ -140,5 +140,8 @@ main = do fileContents <- T.readFile projectFile
 
 getDimLifted :: Module -> Module
 getDimLifted m = dim_lifted_Syn_Module (wrapAG m)
+
+getCallsiteFree :: Module -> Module
+getCallsiteFree m = with_initialising_Syn_Module (wrapAG m)
 
 wrapAG m = wrap_Module (sem_Module m) Inh_Module{counter_Inh_Module=0}

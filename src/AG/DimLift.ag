@@ -64,7 +64,6 @@ sem Module
   | Mod lhs.dim_lifted = Mod @attributes.dim_lifted
                              @options.dim_lifted
                              (globalisedDecls @decls.dims
-                              ++ @decls.dim_callsites
                               ++ @decls.rec_counters
                               ++ @decls.dim_lifted)
 
