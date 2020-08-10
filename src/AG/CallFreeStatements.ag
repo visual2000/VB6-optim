@@ -1,34 +1,41 @@
-attr Stmts Stmt Exprs MExpr Expr Lhss Lhs
+{
+import Debug.Trace
+}
+attr Declarations Declaration Stmts Stmt Exprs MExpr Expr Lhss Lhs
   inh signatures :: {[(Name, TypeRef)]}
 
-attr Declaration
-  syn signatures :: {[(Name, TypeRef)]}
+attr Module Declarations Declaration
+  syn collect_signatures use {++} {[]} :: {[(Name, TypeRef)]}
 
-attr Expr
-  syn dim_callsites :: {[GlobalTypeDecl]}
+attr Declarations Declaration Stmts Stmt Exprs MExpr Expr
+  syn dim_callsites use {++} {[]} :: {[Declaration]}
 
 sem Declaration
-  | FuncDecl      lhs.signatures = [(@name, @ty.self)]
-                  statements.signatures = [] -- @lhs.signatures
-  | SubDecl       lhs.signatures = []
-                  statements.signatures = [] -- @lhs.signatures
-  | DllFunc       lhs.signatures = []
-  | UserTypeDecl  lhs.signatures = []
-  | GlobalVarDecl lhs.signatures = []
+  | FuncDecl      lhs.collect_signatures = [(@name, @ty.self)]
+
+sem Module
+  | Mod decls.signatures = @decls.collect_signatures
+
+-- sem Declaration
+  -- | FuncDecl statements.signatures = @lhs.collect_signatures
+  -- | SubDecl  statements.signatures = @lhs.collect_signatures
 
 sem Expr
-  | ECall lhs.dim_callsites = callSiteDecl @left.self @lhs.signatures
-  | ELit  lhs.dim_callsites = []
-  | EVar  lhs.dim_callsites = []
-  | EAccess lhs.dim_callsites = [] -- TODO wrong
-  | EOp   lhs.dim_callsites = [] -- TODO wrong
-  | ENeg  lhs.dim_callsites = [] -- TODO wrong
+  | ECall lhs.dim_callsites = trace (show @lhs.signatures) $ callSiteDecl @left.self @lhs.signatures
+  -- | EAccess lhs.dim_callsites = [] -- TODO wrong
+  -- | EOp   lhs.dim_callsites = [] -- TODO wrong
+  -- | ENeg  lhs.dim_callsites = [] -- TODO wrong
 
 {
-callSiteDecl :: Lhs -> [(Name, TypeRef)] -> [GlobalTypeDecl]
-callSiteDecl (NameLhs nm) fs = case lookup nm fs of
-                                 Nothing -> []
-                                 Just ty  -> [GlobalTypeDecl nm ty]
-callSiteDecl (FieldLhs lhss) fs = error "FieldLhs function call not supported"
+callSiteDecl :: Lhs -> [(Name, TypeRef)] -> [Declaration]
+callSiteDecl (NameLhs nm) fs            =
+                                         case lookup nm fs of
+                                                        Nothing -> []
+                                                        Just ty  -> [GlobalVarDecl Private $ GlobalTypeDecl nm ty]
+callSiteDecl (FieldLhs [NameLhs nm]) fs =
+                                         case lookup nm fs of
+                                                        Nothing -> []
+                                                        Just ty  -> [GlobalVarDecl Private $ GlobalTypeDecl nm ty]
+callSiteDecl (FieldLhs lhss) fs = []
 callSiteDecl (ArrayLhs nm idxs) fs = error "Array function call not supported"
 }
