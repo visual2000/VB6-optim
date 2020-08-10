@@ -14,13 +14,13 @@ sem Declaration
   | SubDecl  statements.defining_function = @name
              args.defining_function = @name
              args.argument_counter = 0
-             statements.list_of_replacements = map extractNameReplacements @statements.dims
+             statements.list_of_replacements = map extractNameReplacements @lhs.all_local_dims
              loc.my_recursion_counter = "rec_depth_" ++ @name
              statements.my_recursion_counter = @loc.my_recursion_counter
   | FuncDecl statements.defining_function = @name
              args.defining_function = @name
              args.argument_counter = 0
-             statements.list_of_replacements = map extractNameReplacements @statements.dims
+             statements.list_of_replacements = map extractNameReplacements @lhs.all_local_dims
              loc.my_recursion_counter = "rec_depth_" ++ @name
              statements.my_recursion_counter = @loc.my_recursion_counter
 
@@ -33,6 +33,12 @@ attr Module Declarations Declaration Stmts Stmt
   -- at the top level we're interested in a mapping from old, local
   -- variable names, to new, globally-unique names.
   syn dims use {++} {[]} :: {[(StmtTypeDecl, Name)]}
+
+attr Declaration
+  inh all_local_dims :: {[(StmtTypeDecl, Name)]}
+
+sem Declarations
+  | Cons hd.all_local_dims = @hd.dims
 
 attr FuncArgDecls
   chn argument_counter :: Int
@@ -102,10 +108,10 @@ sem Declaration
   | SubDecl  lhs.rec_counters = [GlobalVarDecl Private $ GlobalTypeDecl @loc.my_recursion_counter TInt]
 
 sem Declaration
-  | FuncDecl lhs.dim_lifted = FuncDecl @visibility.dim_lifted
+  | FuncDecl lhs.dim_lifted = FuncDecl @visibility.self
                                        @name
-                                       @args.dim_lifted
-                                       @ty.dim_lifted
+                                       [] -- we do this differently now!
+                                       @ty.self
                                     $
                               [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Add (EVar @loc.my_recursion_counter) (ELit (LInt 1)))
                               ,StmtIfThenElse (EOp GrT (EVar @loc.my_recursion_counter) (ELit (LInt 100)))
@@ -114,6 +120,10 @@ sem Declaration
                                               []
                               ]
                               ++ @statements.dim_lifted
+  | SubDecl  lhs.dim_lifted = SubDecl @visibility.self
+                                      @name
+                                      [] -- we do this differently now!
+                                      @statements.dim_lifted
 
 sem Stmt
   | StmtDecl lhs.dim_lifted = []
