@@ -3,6 +3,10 @@ all:
 	stack build
 	stack exec VB6-optim-exe
 
+.PHONY: clean
+clean:
+	stack clean
+
 .PHONY: test
 test:
 	stack test
