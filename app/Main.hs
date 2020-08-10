@@ -92,8 +92,9 @@ copyOtherFiles p dest =
       base = baseDirectory p in
     do sequence_ [ copyFile (base </> f) (dest </> f) | f <- otherAssets p ]
 
-projectFile = "/Users/paul/src/BasicTrace/BasicTrace.vbp"
-outDirectory = "./output"
+projectFile = "/Users/paul/Public/BasicTrace/BasicTrace.vbp"
+-- projectFile = "/Users/paul/Public/Microbenchmarks/Microbenchmarks.vbp"
+outDirectory = "/Users/paul/Public/OptimTrace"
 cleanTargetDir = True
 newModuleName = "Monolith"
 
