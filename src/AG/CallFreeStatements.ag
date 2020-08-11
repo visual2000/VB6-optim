@@ -74,11 +74,18 @@ sem Stmt
 attr Exprs MExpr Expr
   syn initialise_please use {++} {[]} :: Stmts
 
+attr Exprs Expr
+  syn callargs_initialise_please use {++} {[]} :: Exprs
+
 attr Exprs MExpr Expr Lhss Lhs Binop
   syn with_initialising :: self
 
 sem Expr
-  | ECall lhs.initialise_please = @exprs.initialise_please ++ @loc.preassign_stmt
+  | ECall lhs.initialise_please = @exprs.initialise_please ++ @loc.set_args ++ @loc.preassign_stmt
+          loc.set_args       = if isOurFunction @left.self @lhs.signatures then
+                                 map (StmtAssign (NameLhs "something")) @exprs.callargs_initialise_please
+                               else
+                                 []
           loc.preassign_stmt = if isOurFunction @left.self @lhs.signatures then
                                  [StmtAssign (NameLhs @loc.return_name) (ECall @left.self @exprs.with_initialising)]
                                else
@@ -87,6 +94,17 @@ sem Expr
                                     EVar @loc.return_name
                                   else
                                     @self
+
+-- sem Exprs
+--   | Cons lhs.callargs_initialise_please = zipWith (\num expr -> StmtAssign (NameLhs$"something" ++ show num) expr) ([1..]::[Int]) @self
+--   | Nil  lhs.callargs_initialise_please = []
+
+sem Expr
+  | ECall lhs.callargs_initialise_please = [(EVar @loc.return_name)]
+  | EVar  lhs.callargs_initialise_please = [@loc.with_initialising]
+  | ELit  lhs.callargs_initialise_please = [@loc.with_initialising]
+  | EOp   lhs.callargs_initialise_please = [@loc.with_initialising]
+  | ENeg  lhs.callargs_initialise_please = [@loc.with_initialising]
 
 {
 nextUnique :: Int -> (Int, Int)
