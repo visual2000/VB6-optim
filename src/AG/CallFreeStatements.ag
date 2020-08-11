@@ -12,6 +12,7 @@ attr Module Declarations Declaration Stmts Stmt Exprs MExpr Expr Lhss Lhs
 
 sem Declaration
   | FuncDecl      lhs.collect_signatures = [(@name, @ty.self)]
+--  | SubDecl       lhs.collect_signatures = [(@name, TBoolean)]
 
 sem Module
   | Mod decls.signatures = @decls.collect_signatures
@@ -49,7 +50,10 @@ sem Stmt
        ++ [StmtLSetAssign @left.self @expr.with_initialising]
   | StmtCall       lhs.with_initialising =
      @exprs.initialise_please
-       ++ [StmtCall @left.self @exprs.with_initialising]
+       ++ if isOurFunction @left.self @lhs.signatures then
+                                 [StmtCall @left.self []]
+                               else
+                                 [StmtCall @left.self @exprs.with_initialising]
   | StmtIfThenElse lhs.with_initialising =
      @expr.initialise_please
        ++ [StmtIfThenElse @expr.with_initialising
@@ -74,37 +78,23 @@ sem Stmt
 attr Exprs MExpr Expr
   syn initialise_please use {++} {[]} :: Stmts
 
-attr Exprs Expr
-  syn callargs_initialise_please use {++} {[]} :: Exprs
-
 attr Exprs MExpr Expr Lhss Lhs Binop
   syn with_initialising :: self
 
 sem Expr
   | ECall lhs.initialise_please = @exprs.initialise_please ++ @loc.set_args ++ @loc.preassign_stmt
           loc.set_args       = if isOurFunction @left.self @lhs.signatures then
-                                 map (StmtAssign (NameLhs "something")) @exprs.callargs_initialise_please
+                                 zipWith (\ e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EVar (recDepthName @left.self)]) e) @exprs.with_initialising [0..]
                                else
                                  []
           loc.preassign_stmt = if isOurFunction @left.self @lhs.signatures then
-                                 [StmtAssign (NameLhs @loc.return_name) (ECall @left.self @exprs.with_initialising)]
+                                 [StmtAssign (NameLhs @loc.return_name) (ECall @left.self [])]
                                else
                                  []
   | ECall lhs.with_initialising = if isOurFunction @left.self @lhs.signatures then
                                     EVar @loc.return_name
                                   else
                                     @self
-
--- sem Exprs
---   | Cons lhs.callargs_initialise_please = zipWith (\num expr -> StmtAssign (NameLhs$"something" ++ show num) expr) ([1..]::[Int]) @self
---   | Nil  lhs.callargs_initialise_please = []
-
-sem Expr
-  | ECall lhs.callargs_initialise_please = [(EVar @loc.return_name)]
-  | EVar  lhs.callargs_initialise_please = [@loc.with_initialising]
-  | ELit  lhs.callargs_initialise_please = [@loc.with_initialising]
-  | EOp   lhs.callargs_initialise_please = [@loc.with_initialising]
-  | ENeg  lhs.callargs_initialise_please = [@loc.with_initialising]
 
 {
 nextUnique :: Int -> (Int, Int)
@@ -120,11 +110,20 @@ isOurFunction (FieldLhs [NameLhs nm]) fs = case lookup nm fs of
 isOurFunction (FieldLhs lhss) fs    = False
 isOurFunction (ArrayLhs nm idxs) fs = False
 
+functionName :: Lhs -> Name
+functionName (NameLhs nm)            = nm
+functionName (FieldLhs [NameLhs nm]) = nm
+functionName (FieldLhs lhss)         = "" -- oops.
+functionName (ArrayLhs nm idxs)      = error "Array function call not supported"
+
+argumentName :: Lhs -> Int -> Name
+argumentName lhs num = "arg_" ++ functionName lhs ++ "_" ++ show num
+
 returnName :: Lhs -> Int -> Name
-returnName (NameLhs nm)            num = "return_" ++ nm ++ "_" ++ show num
-returnName (FieldLhs [NameLhs nm]) num = "return_" ++ nm ++ "_" ++ show num
-returnName (FieldLhs lhss)         num = "" -- oops.
-returnName (ArrayLhs nm idxs)      num = error "Array function call not supported"
+returnName lhs num = "return_" ++ functionName lhs ++ "_" ++ show num
+
+recDepthName :: Lhs -> Name
+recDepthName lhs = "rec_depth_" ++ functionName lhs
 
 callSiteDecl :: Lhs -> Name -> [(Name, TypeRef)] -> [Declaration]
 callSiteDecl (NameLhs nm) return_name fs        =

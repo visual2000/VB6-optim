@@ -142,7 +142,7 @@ sem Exprs Lhss
 
 sem Lhs
   | NameLhs lhs.dim_lifted  = handleNameLhs @lhs.list_of_replacements @lhs.my_recursion_counter @name
-  | FieldLhs lhs.dim_lifted = FieldLhs @left.dim_lifted
+  | FieldLhs lhs.dim_lifted = FieldLhs ((head @left.dim_lifted) : tail @left.self) -- FIXME über hacky
   | ArrayLhs lhs.dim_lifted = handleArrayLhs @lhs.list_of_replacements @lhs.my_recursion_counter @name @index.dim_lifted
 
 sem Expr
