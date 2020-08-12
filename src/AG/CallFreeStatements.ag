@@ -1,3 +1,7 @@
+{
+import Data.List.Utils (uniq)
+}
+
 attr Declarations Declaration Stmts Stmt Exprs MExpr Expr Lhss Lhs
   inh signatures :: {[(Name, TypeRef)]}
   inh sub_signatures :: {[Name]}

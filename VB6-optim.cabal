@@ -1,10 +1,10 @@
 cabal-version: 2.0
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 371977c5aa94ba2c643bd9f85e4ef8e10032473fa66a3fb4a9a42290d02757dc
+-- hash: e78ba3ad271b841973a36b8cc176889ef8a6cfb88a916b8e511ad61313939011
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -57,7 +57,8 @@ library
   other-extensions: CPP
   ghc-options: -Wall -Werror -Wno-unused-matches -fwarn-incomplete-uni-patterns
   build-depends:
-      array
+      MissingH
+    , array
     , base >=4.7 && <5
     , containers
     , ini
@@ -76,7 +77,8 @@ executable VB6-optim-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      VB6-optim
+      MissingH
+    , VB6-optim
     , array
     , base >=4.7 && <5
     , containers
@@ -100,7 +102,8 @@ test-suite VB6-optim-test
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      VB6-optim
+      MissingH
+    , VB6-optim
     , array
     , base >=4.7 && <5
     , containers

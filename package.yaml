@@ -31,6 +31,7 @@ category:            Language Tools
 description:         Please see the README on GitHub at <https://github.com/visual2000/VB6-optim#readme>
 
 dependencies:
+- MissingH
 - array
 - base >= 4.7 && < 5
 - containers
