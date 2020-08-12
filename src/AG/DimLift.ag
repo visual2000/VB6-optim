@@ -129,13 +129,21 @@ sem Stmt
   | StmtDecl lhs.dim_lifted = []
   | StmtReturn lhs.dim_lifted = [StmtAssign (NameLhs @lhs.my_recursion_counter) (EOp Sub (EVar @lhs.my_recursion_counter) (ELit (LInt 1))),
                                  @self]
-  | StmtAssign lhs.dim_lifted = [StmtAssign @left.dim_lifted @expr.dim_lifted]
+  | StmtAssign lhs.dim_lifted = if isReturnStatement @left.self @lhs.signatures @lhs.defining_function then
+                                  [StmtAssign (NameLhs $ returnName @left.self 0) @expr.dim_lifted] -- This transforms VB's return syntax of Func = val; Exit Func into our return_.. = val variables.
+                                else
+                                  [StmtAssign @left.dim_lifted @expr.dim_lifted]
   | StmtSetAssign lhs.dim_lifted = [StmtSetAssign @left.dim_lifted @expr.dim_lifted]
   | StmtLSetAssign lhs.dim_lifted = [StmtLSetAssign @left.dim_lifted @expr.dim_lifted]
   | StmtCall lhs.dim_lifted = [StmtCall @left.dim_lifted @exprs.dim_lifted]
   | StmtIfThenElse lhs.dim_lifted = [StmtIfThenElse @expr.dim_lifted @truestatements.dim_lifted @falsestatements.dim_lifted]
   | StmtFor lhs.dim_lifted = [StmtFor @counter.dim_lifted @from.dim_lifted @to.dim_lifted @step.dim_lifted @statements.dim_lifted]
   | StmtDoStatementsLoopWhileCond lhs.dim_lifted = [StmtDoStatementsLoopWhileCond @statements.dim_lifted @condition.dim_lifted]
+
+{
+isReturnStatement :: Lhs -> [(Name, TypeRef)] -> Name -> Bool
+isReturnStatement lhs fs n = isOurFunction lhs fs && functionName lhs == n
+}
 
 sem Exprs Lhss
   | Cons lhs.dim_lifted = @hd.dim_lifted : @tl.dim_lifted
@@ -148,7 +156,7 @@ sem Lhs
 sem Expr
   | EVar lhs.dim_lifted = handleEVar @lhs.list_of_replacements @lhs.my_recursion_counter @name
   | ECall lhs.dim_lifted = ECall @left.dim_lifted @exprs.dim_lifted
-  | EAccess lhs.dim_lifted = EAccess @names.dim_lifted
+  | EAccess lhs.dim_lifted = EAccess ((head @names.dim_lifted) : tail @names.self) -- FIXME über hacky
   | EOp lhs.dim_lifted = EOp @binop.dim_lifted @e1.dim_lifted @e2.dim_lifted
   | ENeg lhs.dim_lifted = ENeg @expr.dim_lifted
 
