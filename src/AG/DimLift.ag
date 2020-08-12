@@ -114,7 +114,7 @@ sem Declaration
                                        @ty.self
                                     $
                               [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Add (EVar @loc.my_recursion_counter) (ELit (LInt 1)))
-                              ,StmtIfThenElse (EOp GrT (EVar @loc.my_recursion_counter) (ELit (LInt 100)))
+                              ,StmtIfThenElse (EOp GrT (EVar @loc.my_recursion_counter) (ELit (LInt $ 100 - 1)))
                                               [ StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Sub (EVar @loc.my_recursion_counter) (ELit (LInt 1)))
                                               , StmtReturn]
                                               []
