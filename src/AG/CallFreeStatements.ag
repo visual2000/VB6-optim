@@ -68,7 +68,8 @@ sem Stmt
                                                                        [StmtCall @left.self []]
                                                                      else
                                                                        [StmtCall @left.self @exprs.with_initialising]
-                   loc.set_args       = if isOurSub @left.self @lhs.sub_signatures then
+                   loc.set_args       = if isOurFunction @left.self @lhs.signatures
+                                           || isOurSub @left.self @lhs.sub_signatures then
                                           zipWith (\ e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EOp Add (EVar (recDepthName @left.self)) (ELit (LInt 1))]) e) @exprs.with_initialising [0..]
                                         else
                                           []
