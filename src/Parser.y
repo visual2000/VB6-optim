@@ -208,12 +208,9 @@ FNCallArgumentList : {- empty -}          { [] }
                    | '(' ExprList ')'     { $2 }
 
 Lhs : VAR                           { NameLhs $1 }
-    | DottedLhs                     { FieldLhs $1 }
+    | Lhs '.' Lhs                   { FieldLhs ($1 : [$3]) }
     | VAR '(' NonEmptyExprList ')'
                                     { ArrayLhs $1 $3 }
-
-DottedLhs : Lhs '.' Lhs
-                                    { $1 : [$3] }
 
 DottedFuncCall : VAR '.' DottedFuncCall
                                     { NameLhs $1 : $3 }
