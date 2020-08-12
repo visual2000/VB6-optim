@@ -50,6 +50,9 @@ sem FuncArgDecls
   | Cons hd.argument_counter = @loc.num
          loc.num :: uniqueref argument_counter
 
+sem Declaration
+  | DllFunc lhs.dims = [] -- don't provide spurious arg_ExternalFunc_0 variables.
+
 sem FuncArgDeclField
   | FuncArgDeclField lhs.dims = (StmtTypeDecl @name @ty.self, "arg_" ++ @lhs.defining_function ++ "_" ++ show @lhs.argument_counter)
   | FuncArgDeclFieldArray lhs.dims = error "Array arguments are not yet implemented"
