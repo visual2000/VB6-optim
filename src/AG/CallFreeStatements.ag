@@ -59,7 +59,7 @@ sem Stmt
                                                                      else
                                                                        [StmtCall @left.self @exprs.with_initialising]
                    loc.set_args       = if isOurSub @left.self @lhs.sub_signatures then
-                                          zipWith (\ e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EVar (recDepthName @left.self)]) e) @exprs.with_initialising [0..]
+                                          zipWith (\ e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EOp Add (EVar (recDepthName @left.self)) (ELit (LInt 1))]) e) @exprs.with_initialising [0..]
                                         else
                                           []
   | StmtIfThenElse lhs.with_initialising =
@@ -92,7 +92,7 @@ attr Exprs MExpr Expr Lhss Lhs Binop
 sem Expr
   | ECall lhs.initialise_please = @exprs.initialise_please ++ @loc.set_args ++ @loc.preassign_stmt
           loc.set_args       = if isOurFunction @left.self @lhs.signatures then
-                                 zipWith (\ e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EVar (recDepthName @left.self)]) e) @exprs.with_initialising [0..]
+                                 zipWith (\ e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EOp Add (EVar (recDepthName @left.self)) (ELit (LInt 1))]) e) @exprs.with_initialising [0..]
                                else
                                  []
           loc.preassign_stmt = if isOurFunction @left.self @lhs.signatures then
