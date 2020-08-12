@@ -7,6 +7,7 @@ import AG
 import Printer (Printable, printModule)
 import Parser (parseModule, parseTokens)
 
+import Control.Monad (when)
 import Control.Monad.Trans
 import Control.Monad.Except
 import System.Console.Haskeline
@@ -17,8 +18,6 @@ import System.FilePath
 import Data.Ini
 import qualified Data.Text    as T
 import qualified Data.Text.IO as T
-
-import AG
 
 import System.IO
 
@@ -109,7 +108,7 @@ formatVbpProjectConfig i = let globals = iniGlobals i in
 
 processProject :: Project -> FilePath -> IO()
 processProject project dest = do
-  if cleanTargetDir then removeDirectoryRecursive dest else return ()
+  when cleanTargetDir $ doesDirectoryExist dest >>= \exist -> when exist $ removeDirectoryRecursive dest
   createDirectory dest
   copyOtherFiles project dest
   do mods <- parseModuleList (baseDirectory project) (modules project)
@@ -130,8 +129,8 @@ main = do fileContents <- T.readFile projectFile
             Nothing -> do hPutStrLn stderr "Couldn't parse project file.\n"
                           exitFailure
             Just proj -> do hPutStrLn stderr "...done."
-                            sequence [ putStrLn $ "Found module: " ++ m | m <- modules proj ]
-                            sequence [ putStrLn $ "Found other source: " ++ m | m <- otherAssets proj ]
+                            sequence_ [ putStrLn $ "Found module: " ++ m | m <- modules proj ]
+                            sequence_ [ putStrLn $ "Found other source: " ++ m | m <- otherAssets proj ]
                             processProject proj outDirectory
           exitSuccess
 
