@@ -81,7 +81,7 @@ sem Stmt
      [StmtDoStatementsLoopWhileCond
         (@statements.with_initialising
          ++ @condition.initialise_please)
-        @condition.self]
+        @condition.with_initialising]
 
 attr Exprs MExpr Expr
   syn initialise_please use {++} {[]} :: Stmts
