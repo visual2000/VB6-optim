@@ -105,7 +105,9 @@ sem Expr
                                else
                                  []
           loc.preassign_stmt = if isOurFunction @left.self @lhs.signatures then
-                                 [StmtAssign (NameLhs @loc.return_name) (ECall @left.self [])]
+                                 [StmtCall @left.self []]
+                                 -- note that now, the return value is set at the end of the function's body.
+                                 -- [StmtAssign (NameLhs @loc.return_name) (ECall @left.self [])]
                                else
                                  []
   | ECall lhs.with_initialising = if isOurFunction @left.self @lhs.signatures then
