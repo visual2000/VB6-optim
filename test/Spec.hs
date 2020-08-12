@@ -67,15 +67,6 @@ parseFile f = do
           return ast
 
 parseAndPrettyPrintFile :: FilePath -> IO String
-parseAndPrettyPrintFile f = do
-  contents <- readFile f
-  let toks = parseTokens contents
-  case toks of
-    Left err -> error "halp"
-    Right toks' -> do
-      let mod = parseModule toks'
-      case mod of
-        Left err -> error "Halp"
-        Right ast -> do
-          let result = printModule ast
-          return result
+parseAndPrettyPrintFile f = do mod <- parseFile f
+                               let result = printModule mod
+                               return result
