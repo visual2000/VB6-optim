@@ -24,6 +24,11 @@ sem Module
   | Mod decls.signatures = @decls.collect_signatures
   | Mod decls.sub_signatures = @decls.collect_sub_names
 
+-- NOTE we should probably declare a "return variable" for each
+-- function, not just when they're called... that's a hold-over from
+-- when we thought we wanted a return variable per call site. whereas
+-- actually we want one return variable (e.g., return_TVec3_init) and
+-- numbered call-site labels and a jump back function.
 sem Expr
   | ECall lhs.dim_callsites = callSiteDecl @left.self @loc.return_name @lhs.signatures ++ @exprs.dim_callsites
           loc.num :: uniqueref counter
@@ -35,7 +40,7 @@ attr Module ModuleAttributes ModuleOptions ModuleAttribute ModuleOption Visibili
 sem Module
   | Mod lhs.with_initialising = Mod @attributes.self
                                     @options.self
-                                    (@decls.dim_callsites
+                                    (uniq @decls.dim_callsites
                                      ++ @decls.with_initialising)
 
 attr Stmts
@@ -138,7 +143,8 @@ argumentName :: Lhs -> Int -> Name
 argumentName lhs num = "arg_" ++ functionName lhs ++ "_" ++ show num
 
 returnName :: Lhs -> Int -> Name
-returnName lhs num = "return_" ++ functionName lhs ++ "_" ++ show num
+returnName lhs num = "return_" ++ functionName lhs -- ++ "_" ++ show num
+  -- TODO we need to keep track of call and return sites.
 
 recDepthName :: Lhs -> Name
 recDepthName lhs = "rec_depth_" ++ functionName lhs
