@@ -54,11 +54,15 @@ parseFile f = do
   contents <- readFile f
   let toks = parseTokens contents
   case toks of
-    Left err -> error "halp"
+    Left err -> do
+      putStrLn err
+      return $ error "Lexing error."
     Right toks' -> do
       let mod = parseModule toks'
       case mod of
-        Left err -> error "Halp"
+        Left err -> do
+          putStrLn (err contents)
+          return $ error "Parsing error."
         Right ast -> do
           return ast
 
