@@ -123,7 +123,10 @@ sem Declaration
   | SubDecl  lhs.dim_lifted = SubDecl @visibility.self
                                       @name
                                       [] -- we do this differently now!
-                                      @statements.dim_lifted
+                                      $  -- TODO Idea: we can assume Sub don't go into recursion, so we can avoid all the recursion counter gymnastics.
+                                         [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Add (EVar @loc.my_recursion_counter) (ELit (LInt 1)))]
+                                      ++ @statements.dim_lifted
+                                      ++ [StmtAssign (NameLhs @loc.my_recursion_counter) (EOp Sub (EVar @loc.my_recursion_counter) (ELit (LInt 1)))]
 
 sem Stmt
   | StmtDecl lhs.dim_lifted = []
