@@ -61,10 +61,10 @@ Public Function try_it_out() As TVec3
     arg_scalarMultiply_0((rec_depth_scalarMultiply + 1)) = dim_try_it_out_blue(rec_depth_try_it_out)
     arg_scalarMultiply_1((rec_depth_scalarMultiply + 1)) = dim_try_it_out_t(rec_depth_try_it_out)
     Call scalarMultiply()
+    arg_add_0((rec_depth_add + 1)) = return_scalarMultiply
     arg_scalarMultiply_0((rec_depth_scalarMultiply + 1)) = dim_try_it_out_white(rec_depth_try_it_out)
     arg_scalarMultiply_1((rec_depth_scalarMultiply + 1)) = (1.0 - dim_try_it_out_t(rec_depth_try_it_out))
     Call scalarMultiply()
-    arg_add_0((rec_depth_add + 1)) = return_scalarMultiply
     arg_add_1((rec_depth_add + 1)) = return_scalarMultiply
     Call add()
     return_try_it_out = return_add
