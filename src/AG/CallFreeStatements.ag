@@ -10,7 +10,7 @@ attr Module Declarations Declaration
   syn collect_signatures use {++} {[]} :: {[(Name, TypeRef)]}
   syn collect_sub_names  use {++} {[]} :: {[Name]}
 
-attr Declarations Declaration Stmts Stmt Exprs MExpr Expr
+attr Declarations Declaration
   syn dim_callsites use {++} {[]} :: {[Declaration]}
 
 attr Module Declarations Declaration Stmts Stmt Exprs MExpr Expr Lhss Lhs
@@ -18,6 +18,8 @@ attr Module Declarations Declaration Stmts Stmt Exprs MExpr Expr Lhss Lhs
 
 sem Declaration
   | FuncDecl      lhs.collect_signatures = [(@name, @ty.self)]
+                  lhs.dim_callsites = [GlobalVarDecl Private $ GlobalTypeDecl @loc.return_name @ty.self]
+                  loc.return_name = returnName (NameLhs @name)
   | SubDecl       lhs.collect_sub_names  = [@name]
 
 sem Module
@@ -30,9 +32,8 @@ sem Module
 -- actually we want one return variable (e.g., return_TVec3_init) and
 -- numbered call-site labels and a jump back function.
 sem Expr
-  | ECall lhs.dim_callsites = callSiteDecl @left.self @loc.return_name @lhs.signatures ++ @exprs.dim_callsites
-          loc.num :: uniqueref counter
-          loc.return_name = returnName @left.self @loc.num
+  | ECall loc.num :: uniqueref counter
+          loc.return_name = returnName @left.self -- @loc.num
 
 attr Module ModuleAttributes ModuleOptions ModuleAttribute ModuleOption Visibility FuncArgDecls FuncArgDecl FuncArgDeclField TypeRef UserTypeDeclFields UserTypeDeclField GlobalTypeDecl Declarations Declaration Lit
   syn with_initialising :: self
@@ -144,8 +145,8 @@ functionName (ArrayLhs nm idxs)      = error "Array function call not supported"
 argumentName :: Lhs -> Int -> Name
 argumentName lhs num = "arg_" ++ functionName lhs ++ "_" ++ show num
 
-returnName :: Lhs -> Int -> Name
-returnName lhs num = "return_" ++ functionName lhs -- ++ "_" ++ show num
+returnName :: Lhs -> Name
+returnName lhs = "return_" ++ functionName lhs
   -- TODO we need to keep track of call and return sites.
 
 recDepthName :: Lhs -> Name

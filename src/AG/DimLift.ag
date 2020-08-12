@@ -130,7 +130,7 @@ sem Stmt
   | StmtReturn lhs.dim_lifted = [StmtAssign (NameLhs @lhs.my_recursion_counter) (EOp Sub (EVar @lhs.my_recursion_counter) (ELit (LInt 1))),
                                  @self]
   | StmtAssign lhs.dim_lifted = if isReturnStatement @left.self @lhs.signatures @lhs.defining_function then
-                                  [StmtAssign (NameLhs $ returnName @left.self 0) @expr.dim_lifted] -- This transforms VB's return syntax of Func = val; Exit Func into our return_.. = val variables.
+                                  [StmtAssign (NameLhs $ returnName @left.self) @expr.dim_lifted] -- This transforms VB's return syntax of Func = val; Exit Func into our return_.. = val variables.
                                 else
                                   [StmtAssign @left.dim_lifted @expr.dim_lifted]
   | StmtSetAssign lhs.dim_lifted = [StmtSetAssign @left.dim_lifted @expr.dim_lifted]
