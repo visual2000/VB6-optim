@@ -104,7 +104,7 @@ compareToLiteral f lit = do contents <- readFile f
 
 compareToExpected f f_expect = do original <- parseFile f
                                   expected <- parseFile f_expect
-                                  myShowModule (optimiseModule expected) `shouldBe` myShowModule original
+                                  myShowModule (optimiseModule original) `shouldBe` myShowModule expected
 
 myShowModule :: Module -> TestString
 myShowModule = TestString . printModule
