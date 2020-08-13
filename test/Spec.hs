@@ -37,9 +37,39 @@ main = hspec $ do
       compareToExpected "examples/ReturnValOrdering.bas" "examples/ReturnValOrdering.expect.bas"
 
   describe "statement parsing" $ do
-    it "manages simple statements" $ do
-      parsed <- (tryParse rawParseStatement "x = foo\n")
-      parsed `shouldBe` (StmtAssign (NameLhs "x") (EVar "foo"))
+    it "manages simple assignment" $ do
+      parsed <- tryParse rawParseStatement "x = foo\n"
+      parsed `shouldBe` StmtAssign (NameLhs "x") (EVar "foo")
+
+    it "manages assignment of fields" $ do
+      parsed <- tryParse rawParseStatement "x.y.z = foo\n"
+      parsed `shouldBe` StmtAssign (FieldLhs [NameLhs "x",
+                                              NameLhs "y",
+                                              NameLhs "z"]) (EVar "foo")
+
+    it "manages assignment of arrays" $ do
+      parsed <- tryParse rawParseStatement "x(1, 4) = foo\n"
+      parsed `shouldBe` StmtAssign (ArrayLhs "x" [ELit (LInt 1),
+                                                  ELit (LInt 4)]) (EVar "foo")
+
+    it "manages assignment of arrays mixed with fields" $ do
+      parsed <- tryParse rawParseStatement "x.y(3, 5) = foo\n"
+      parsed `shouldBe` StmtAssign (FieldLhs [NameLhs "x",
+                                              ArrayLhs "y" [ELit (LInt 3),
+                                                            ELit (LInt 5)]]) (EVar "foo")
+
+    it "manages assignment of arrays mixed with fields, non-constant values" $ do
+      parsed <- tryParse rawParseStatement "x.y(LBound(y), (z + 4)) = foo\n"
+      parsed `shouldBe` StmtAssign (FieldLhs [NameLhs "x",
+                                              ArrayLhs "y" [ECall (NameLhs "LBound") [EVar "y"],
+                                                            EOp Add (EVar "z") (ELit (LInt 4))]]) (EVar "foo")
+
+    it "parses assignment from function call" $ do
+      parsed <- tryParse rawParseStatement "return_add = TVec3_init((arg_add_0(rec_depth_add).x + arg_add_1(rec_depth_add).x), (arg_add_0(rec_depth_add).y + arg_add_1(rec_depth_add).y), (arg_add_0(rec_depth_add).z + arg_add_1(rec_depth_add).z))\n"
+      parsed `shouldBe` StmtReturn
+
+
+
 
 tryParse :: ([Token] -> Except (String -> String) a) -> String -> IO a
 tryParse parseWith str = case parseTokens str of
