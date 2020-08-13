@@ -44,8 +44,8 @@ main = hspec $ do
     it "manages assignment of fields" $ do
       parsed <- tryParse rawParseStatement "x.y.z = foo\n"
       parsed `shouldBe` StmtAssign (FieldLhs [NameLhs "x",
-                                              NameLhs "y",
-                                              NameLhs "z"]) (EVar "foo")
+                                              FieldLhs [NameLhs "y",
+                                                        NameLhs "z"]]) (EVar "foo")
 
     it "manages assignment of arrays" $ do
       parsed <- tryParse rawParseStatement "x(1, 4) = foo\n"
@@ -66,8 +66,18 @@ main = hspec $ do
 
     it "parses assignment from function call" $ do
       parsed <- tryParse rawParseStatement "return_add = TVec3_init((arg_add_0(rec_depth_add).x + arg_add_1(rec_depth_add).x), (arg_add_0(rec_depth_add).y + arg_add_1(rec_depth_add).y), (arg_add_0(rec_depth_add).z + arg_add_1(rec_depth_add).z))\n"
-      parsed `shouldBe` StmtReturn
-
+      parsed `shouldBe`
+        StmtAssign (NameLhs "return_add")
+                     (ECall (NameLhs "TVec3_init")
+                      [EOp Add
+                       (EAccess [ArrayLhs "arg_add_0" [EVar "rec_depth_add"],NameLhs "x"])
+                       (EAccess [ArrayLhs "arg_add_1" [EVar "rec_depth_add"],NameLhs "x"]),
+                       EOp Add
+                       (EAccess [ArrayLhs "arg_add_0" [EVar "rec_depth_add"],NameLhs "y"])
+                       (EAccess [ArrayLhs "arg_add_1" [EVar "rec_depth_add"],NameLhs "y"]),
+                       EOp Add
+                       (EAccess [ArrayLhs "arg_add_0" [EVar "rec_depth_add"],NameLhs "z"])
+                       (EAccess [ArrayLhs "arg_add_1" [EVar "rec_depth_add"],NameLhs "z"])])
 
 
 

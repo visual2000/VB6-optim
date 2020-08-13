@@ -92,7 +92,8 @@ import Data.Either
 %left '<' '>' '=' '<=' '>='
 %left '+' '-'
 %left '*' '/'
-%right '.'
+%nonassoc precUnaryMinus
+%nonassoc '.'
 %%
 
 Module : ModuleAttributes
@@ -201,8 +202,12 @@ Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
                 Statements
             'Next' VAR eol                { StmtFor $2 $4 $6 Nothing $8 }
           | 'Exit' 'Function' eol         { StmtReturn }
-          | 'Call' FNCallRef FNCallArgumentList eol
-                                          { StmtCall $2 $3 }
+          | 'Call' VAR FNCallArgumentList eol
+                                          { StmtCall (NameLhs $2) $3 }
+          | 'Call' VAR '.' VAR FNCallArgumentList eol
+                                          { StmtCall (FieldLhs [NameLhs $2, NameLhs $4]) $5 }
+          | 'Call' VAR '.' VAR '.' VAR FNCallArgumentList eol
+                                          { StmtCall (FieldLhs [NameLhs $2, NameLhs $4, NameLhs $6]) $7 }
           | 'Do' eol
                 Statements
             'Loop' 'While' Expr eol       { StmtDoStatementsLoopWhileCond $3 $6 }
@@ -210,19 +215,16 @@ Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
 FNCallArgumentList : {- empty -}          { [] }
                    | '(' ExprList ')'     { $2 }
 
-Lhs : VAR                           { NameLhs $1 }
-    | Lhs '.' Lhs                   { FieldLhs ($1 : [$3]) }
-    | VAR '(' NonEmptyExprList ')'
-                                    { ArrayLhs $1 $3 }
+Lhs :: { Lhs }
+  : VAR                           { NameLhs $1 }
+  | VAR '(' NonEmptyExprList ')'
+                                  { ArrayLhs $1 $3 }
+  | VAR '.' Lhs                   { FieldLhs (NameLhs $1 : [$3]) }
+  | VAR '(' NonEmptyExprList ')' '.' Lhs
+                                  { FieldLhs (ArrayLhs $1 $3 : [$6]) }
 
-DottedFuncCall : VAR '.' DottedFuncCall
-                                    { NameLhs $1 : $3 }
-               | VAR                { [NameLhs $1] }
-
-FNCallRef : DottedFuncCall        { FieldLhs $1 }
-
-Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
-     | '-' Expr                   { ENeg $2 }
+SimpleExpr :: { Expr }
+     : '-' Expr %prec precUnaryMinus { ENeg $2 }
      | Expr 'And' Expr            { EOp And $1 $3 }
      | Expr 'Or' Expr             { EOp Or $1 $3 }
      | Expr '<' Expr              { EOp LTh $1 $3 }
@@ -235,7 +237,16 @@ Expr : FNCallRef '(' ExprList ')' { ECall $1 $3 }
      | Expr '/' Expr              { EOp Div $1 $3 }
      | '(' Expr ')'               { $2 }
      | Lit                        { ELit $1 }
-     | DottedFuncCall             { EAccess $1 }
+
+Expr :: { Expr }
+Expr : SimpleExpr                                 { $1 }
+     | VAR                                        { EVar $1 }
+     | VAR '(' ')'                                { ECall (NameLhs $1) [] }
+     | VAR '(' NonEmptyExprList ')'               { ECall (NameLhs $1) $3 }
+     | VAR '.' VAR                                { EAccess [NameLhs $1, NameLhs $3] }
+     | VAR '.' VAR '(' NonEmptyExprList ')'       { ECall (FieldLhs [NameLhs $1, NameLhs $3]) $5 }
+     | VAR '(' NonEmptyExprList ')' '.' VAR       { EAccess [ArrayLhs $1 $3, NameLhs $6] }
+     | VAR '.' VAR '.' VAR                        { EAccess [NameLhs $1, NameLhs $3, NameLhs $5] }
 
 ExprList : {-empty -}         { [] }
          | NonEmptyExprList   { $1 }
