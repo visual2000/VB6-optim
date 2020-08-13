@@ -47,7 +47,7 @@ tryParse parseWith str = case parseTokens str of
                              putStrLn err
                              return $ error "Lexing error."
                            Right toks -> do
-                             case runExcept (parseWith toks) of
+                             case runExcept (parseWith $ remDupEOLs toks) of
                                Left err -> do
                                  putStrLn (err str)
                                  return $ error "Parsing error."
@@ -75,19 +75,7 @@ optimiseModule = getCallsiteFree . getDimLifted
 parseFile :: FilePath -> IO Module
 parseFile f = do
   contents <- readFile f
-  let toks = parseTokens contents
-  case toks of
-    Left err -> do
-      putStrLn err
-      return $ error "Lexing error."
-    Right toks' -> do
-      let mod = parseModule toks'
-      case mod of
-        Left err -> do
-          putStrLn (err contents)
-          return $ error "Parsing error."
-        Right ast -> do
-          return ast
+  tryParse rawParseModule contents
 
 parseAndPrettyPrintFile :: FilePath -> IO String
 parseAndPrettyPrintFile f = do mod <- parseFile f
