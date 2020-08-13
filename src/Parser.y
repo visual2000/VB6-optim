@@ -15,8 +15,8 @@ import Data.Either
 
 }
 
--- Entry point
-%name modu
+-- Entry points
+%name rawParseModule            Module
 
 -- Lexer structure
 %tokentype { Token }
@@ -262,7 +262,7 @@ parseError [] = throwError (\_ -> "Unexpected: end of file")
 
 parseModule :: [Token] -> Either (String -> String) Module
 parseModule input = runExcept $ do
-  modu (remDupEOLs input)
+  rawParseModule (remDupEOLs input)
 
 -- todo rename to lexTokens
 parseTokens :: String -> Either String [Token]
