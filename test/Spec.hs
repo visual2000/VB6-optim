@@ -21,12 +21,15 @@ main = hspec $ do
   describe "Module1 end-to-end" $ do
     it "should parse and print the same module contents" $ do
       compareParsed "examples/Module1.bas"
+
   describe "Line continuations work" $ do
     it "works" $ do
       compareToLiteral "examples/LineContinuation.bas" "' ---\r\n' ---\r\nPublic Function SillyFunc(x As Long, y As Boolean) As Boolean\r\nEnd Function\r\n' ---\r\n' The end\r\n"
+
   describe "HitFuncs.bas end-to-end" $ do
     it "is the same" $ do
       compareParsed "examples/HitFuncs.bas"
+
   describe "verify the ordering of argument-setting vs return-value-getting" $ do
     it "corresponds to fixture" $ do
       compareToExpected "examples/ReturnValOrdering.bas" "examples/ReturnValOrdering.expect.bas"

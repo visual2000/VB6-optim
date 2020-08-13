@@ -137,7 +137,7 @@ data Lhs
 data Expr
   | ELit       lit :: Lit
   | EVar       name :: Name
-  | ECall      left :: Lhs
+  | ECall      left :: Lhs -- this could be a function call or array access.
                exprs :: Exprs
   | EAccess    names :: Lhss -- a.b.c
   | EOp        binop :: Binop

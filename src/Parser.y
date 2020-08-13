@@ -5,6 +5,8 @@
 module Parser (
   parseModule,
   parseTokens,
+  rawParseModule,
+  rawParseStatement,
 ) where
 
 import Lexer
@@ -17,6 +19,7 @@ import Data.Either
 
 -- Entry points
 %name rawParseModule            Module
+%name rawParseStatement         Statement
 
 -- Lexer structure
 %tokentype { Token }
