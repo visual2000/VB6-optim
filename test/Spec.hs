@@ -1,9 +1,11 @@
+import Lexer
 import Parser
 import Printer
 
 import AG
 import Util (getDimLifted, getCallsiteFree)
 
+import Control.Monad.Except
 import Text.PrettyPrint
 import Test.Hspec
 
@@ -33,6 +35,24 @@ main = hspec $ do
   describe "verify the ordering of argument-setting vs return-value-getting" $ do
     it "corresponds to fixture" $ do
       compareToExpected "examples/ReturnValOrdering.bas" "examples/ReturnValOrdering.expect.bas"
+
+  describe "statement parsing" $ do
+    it "manages simple statements" $ do
+      parsed <- (tryParse rawParseStatement "x = foo\n")
+      parsed `shouldBe` (StmtAssign (NameLhs "x") (EVar "foo"))
+
+tryParse :: ([Token] -> Except (String -> String) a) -> String -> IO a
+tryParse parseWith str = case parseTokens str of
+                           Left err -> do
+                             putStrLn err
+                             return $ error "Lexing error."
+                           Right toks -> do
+                             case runExcept (parseWith toks) of
+                               Left err -> do
+                                 putStrLn (err str)
+                                 return $ error "Parsing error."
+                               Right ast -> do
+                                 return ast
 
 compareParsed f = do contents <- readFile f
                      testOutput <- parseAndPrettyPrintFile f
