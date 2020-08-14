@@ -7,7 +7,8 @@ import Util (getDimLifted, getCallsiteFree)
 
 import Control.Monad.Except
 import Text.PrettyPrint
-import Test.Hspec
+import Test.Hspec (hspec, describe, it)
+import Test.Hspec.Expectations.Pretty (shouldBe)
 
 -- As a workaround, to pretty-print modules.  Without this, multiline
 -- strings are printed as "asd\nafasdf\n..." which is unreadable.

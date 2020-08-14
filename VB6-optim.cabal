@@ -4,7 +4,7 @@ cabal-version: 2.0
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 8e2c453a3df8fe15300d08c35781b290bdfffb1b2f045d5b56b8ab52f064e957
+-- hash: 982c3f08d227993582750cd85a02d40569cad7b8d2616a235de0b4f39688b23e
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -110,6 +110,7 @@ test-suite VB6-optim-test
     , base >=4.7 && <5
     , containers
     , hspec
+    , hspec-expectations-pretty-diff
     , ini
     , mtl
     , pretty

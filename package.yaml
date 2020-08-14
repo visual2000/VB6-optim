@@ -90,3 +90,4 @@ tests:
     dependencies:
     - VB6-optim
     - hspec
+    - hspec-expectations-pretty-diff
