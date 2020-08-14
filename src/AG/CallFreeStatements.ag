@@ -17,7 +17,7 @@ attr Module Declarations Declaration Stmts Stmt Exprs MExpr Expr Lhss Lhs
 
 sem Declaration
   | FuncDecl      lhs.collect_signatures = [(@name, @ty.self)]
-                  lhs.dim_return_vars = [GlobalVarDecl Private $ GlobalTypeDecl @loc.return_name @ty.self] ++ @statements.dim_callsites
+                  lhs.dim_return_vars = [GlobalVarDecl Private $ GlobalTypeDecl @loc.return_name @ty.self]
                   loc.return_name = returnName (NameLhs @name)
   | SubDecl       lhs.collect_sub_names  = [@name]
 
@@ -29,7 +29,7 @@ sem Expr
   | ECall loc.num :: uniqueref counter
           loc.return_name = returnName @left.self
           loc.callsite_name = "callsite_" ++ functionName @left.self ++ "_" ++ show @loc.num
-          lhs.dim_callsites = callSiteDecl @left.self @loc.callsite_name @lhs.signatures
+          lhs.dim_callsites = callSiteDecl @left.self @loc.callsite_name @lhs.signatures ++ @exprs.dim_callsites
 
 attr Module ModuleAttributes ModuleOptions ModuleAttribute ModuleOption Visibility FuncArgDecls FuncArgDecl FuncArgDeclField TypeRef UserTypeDeclFields UserTypeDeclField GlobalTypeDecl Declarations Declaration Lit
   syn with_initialising :: self
