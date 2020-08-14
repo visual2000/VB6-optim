@@ -17,6 +17,7 @@ End Function
 
 Public Function try_it_out() As TVec3
     Dim blue As TVec3, white As TVec3, red As TVec3
+    Dim green As TVec3
 
     white = TVec3_init(1, 1, 1)
     red = TVec3_init(1, 0, 0)
