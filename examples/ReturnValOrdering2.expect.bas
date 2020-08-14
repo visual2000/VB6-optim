@@ -9,7 +9,7 @@ Private callsite_TVec3_init_7 As TVec3
 Private callsite_TVec3_init_8 As TVec3
 Private callsite_add_9 As TVec3
 Private callsite_add_10 As TVec3
-Private callsite_add_12 As TVec3
+Private callsite_add_13 As TVec3
 Private return_TVec3_init As TVec3
 Private return_add As TVec3
 Private return_try_it_out As TVec3
@@ -91,9 +91,9 @@ Public Function try_it_out() As TVec3
     arg_add_0((rec_depth_add + 1)) = dim_try_it_out_white(rec_depth_try_it_out)
     arg_add_1((rec_depth_add + 1)) = dim_try_it_out_red(rec_depth_try_it_out)
     Call add()
-    callsite_add_12 = return_add
+    callsite_add_13 = return_add
     arg_add_0((rec_depth_add + 1)) = callsite_add_10
-    arg_add_1((rec_depth_add + 1)) = callsite_add_12
+    arg_add_1((rec_depth_add + 1)) = callsite_add_13
     Call add()
     callsite_add_9 = return_add
     return_try_it_out = callsite_add_9
