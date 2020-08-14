@@ -17,6 +17,8 @@ custom-setup:
 extra-source-files:
 - README.md
 - ChangeLog.md
+- src/Parser.y
+- src/Lexer.x
 - src/AG.ag
 - src/AG/*.ag
 - uuagc_options

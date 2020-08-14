@@ -4,7 +4,7 @@ cabal-version: 2.0
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e78ba3ad271b841973a36b8cc176889ef8a6cfb88a916b8e511ad61313939011
+-- hash: 8e2c453a3df8fe15300d08c35781b290bdfffb1b2f045d5b56b8ab52f064e957
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -22,6 +22,8 @@ build-type:     Custom
 extra-source-files:
     README.md
     ChangeLog.md
+    src/Parser.y
+    src/Lexer.x
     src/AG.ag
     src/AG/Base.ag
     src/AG/CallFreeStatements.ag
