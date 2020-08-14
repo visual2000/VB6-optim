@@ -36,6 +36,8 @@ main = hspec $ do
   describe "verify the ordering of argument-setting vs return-value-getting" $ do
     it "corresponds to fixture" $ do
       compareToExpected "examples/ReturnValOrdering.bas" "examples/ReturnValOrdering.expect.bas"
+    it "corresponds to fixture" $ do
+      compareToExpected "examples/ReturnValOrdering2.bas" "examples/ReturnValOrdering2.expect.bas"
 
   describe "statement parsing" $ do
     it "parses simple assignment" $ do
