@@ -77,14 +77,14 @@ Public Function try_it_out() As TVec3
     arg_TVec3_init_2((rec_depth_TVec3_init + 1)) = 0
     Call TVec3_init()
     callsite_TVec3_init_7 = return_TVec3_init
-    green = callsite_TVec3_init_7
+    dim_try_it_out_green(rec_depth_try_it_out) = callsite_TVec3_init_7
     arg_TVec3_init_0((rec_depth_TVec3_init + 1)) = 0.5
     arg_TVec3_init_1((rec_depth_TVec3_init + 1)) = 0.3
     arg_TVec3_init_2((rec_depth_TVec3_init + 1)) = 1.0
     Call TVec3_init()
     callsite_TVec3_init_8 = return_TVec3_init
     dim_try_it_out_blue(rec_depth_try_it_out) = callsite_TVec3_init_8
-    arg_add_0((rec_depth_add + 1)) = green
+    arg_add_0((rec_depth_add + 1)) = dim_try_it_out_green(rec_depth_try_it_out)
     arg_add_1((rec_depth_add + 1)) = dim_try_it_out_blue(rec_depth_try_it_out)
     Call add()
     callsite_add_10 = return_add
