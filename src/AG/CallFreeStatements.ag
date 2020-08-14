@@ -104,8 +104,8 @@ sem Exprs
 
 sem Expr
   | ECall lhs.initialise_please = if isOurFunction @left.self @lhs.signatures then
-                                    concat (zipWith (\inits assign -> inits ++ [assign]) @exprs.initialise_please
-                                     (zipWith (\e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EOp Add (EVar (recDepthName @left.self)) (ELit (LInt 1))]) e) @exprs.with_initialising [0..]))
+                                    concat @exprs.initialise_please
+                                    ++ (zipWith (\e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EOp Add (EVar (recDepthName @left.self)) (ELit (LInt 1))]) e) @exprs.with_initialising [0..])
                                     ++ [StmtCall @left.self []]
                                     ++ [StmtAssign (NameLhs @loc.callsite_name) (EVar @loc.return_name)]
                                   else
