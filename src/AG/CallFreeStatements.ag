@@ -124,8 +124,8 @@ nextUnique u = (u+1, u)
 isOurSub :: Lhs -> [Name] -> Bool
 isOurSub (NameLhs nm) fs            = elem nm fs
 isOurSub (FieldLhs [NameLhs nm]) fs = elem nm fs
-isOurSub (FieldLhs lhss) fs    = False
-isOurSub (ArrayLhs nm idxs) fs = False
+isOurSub (FieldLhs lhss) fs         = False
+isOurSub (ArrayLhs nm idxs) fs      = False
 
 isOurFunction :: Lhs -> [(Name, TypeRef)] -> Bool
 isOurFunction (NameLhs nm) fs            = case lookup nm fs of
