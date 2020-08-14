@@ -38,28 +38,28 @@ main = hspec $ do
       compareToExpected "examples/ReturnValOrdering.bas" "examples/ReturnValOrdering.expect.bas"
 
   describe "statement parsing" $ do
-    it "manages simple assignment" $ do
+    it "parses simple assignment" $ do
       parsed <- tryParse rawParseStatement "x = foo\n"
       parsed `shouldBe` StmtAssign (NameLhs "x") (EVar "foo")
 
-    it "manages assignment of fields" $ do
+    it "parses assignment of fields" $ do
       parsed <- tryParse rawParseStatement "x.y.z = foo\n"
       parsed `shouldBe` StmtAssign (FieldLhs [NameLhs "x",
                                               FieldLhs [NameLhs "y",
                                                         NameLhs "z"]]) (EVar "foo")
 
-    it "manages assignment of arrays" $ do
+    it "parses assignment of arrays" $ do
       parsed <- tryParse rawParseStatement "x(1, 4) = foo\n"
       parsed `shouldBe` StmtAssign (ArrayLhs "x" [ELit (LInt 1),
                                                   ELit (LInt 4)]) (EVar "foo")
 
-    it "manages assignment of arrays mixed with fields" $ do
+    it "parses assignment of arrays mixed with fields" $ do
       parsed <- tryParse rawParseStatement "x.y(3, 5) = foo\n"
       parsed `shouldBe` StmtAssign (FieldLhs [NameLhs "x",
                                               ArrayLhs "y" [ELit (LInt 3),
                                                             ELit (LInt 5)]]) (EVar "foo")
 
-    it "manages assignment of arrays mixed with fields, non-constant values" $ do
+    it "parses assignment of arrays mixed with fields, non-constant values" $ do
       parsed <- tryParse rawParseStatement "x.y(LBound(y), (z + 4)) = foo\n"
       parsed `shouldBe` StmtAssign (FieldLhs [NameLhs "x",
                                               ArrayLhs "y" [ECall (NameLhs "LBound") [EVar "y"],
