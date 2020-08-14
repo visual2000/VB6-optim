@@ -94,25 +94,28 @@ sem Stmt
          ++ @condition.initialise_please)
         @condition.with_initialising]
 
-attr Exprs MExpr Expr
+attr Exprs
+  syn initialise_please :: Stmts
+
+attr MExpr Expr
   syn initialise_please use {++} {[]} :: Stmts
 
 attr Exprs MExpr Expr Lhss Lhs Binop
   syn with_initialising :: self
 
+sem Exprs
+  | Cons lhs.initialise_please = @hd.initialise_please ++ @tl.initialise_please
+  | Nil  lhs.initialise_please = []
+
 sem Expr
-  | ECall lhs.initialise_please = @exprs.initialise_please ++ @loc.set_args ++ @loc.preassign_stmt
-          loc.set_args       = if isOurFunction @left.self @lhs.signatures then
-                                 zipWith (\ e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EOp Add (EVar (recDepthName @left.self)) (ELit (LInt 1))]) e) @exprs.with_initialising [0..]
-                               else
-                                 []
-          loc.preassign_stmt = if isOurFunction @left.self @lhs.signatures then
-                                 [StmtCall @left.self []]
-                                 -- note that now, the return value is set at the end of the function's body.
-                                 -- [StmtAssign (NameLhs @loc.return_name) (ECall @left.self [])]
-                               else
-                                 []
-  | ECall lhs.with_initialising = if isOurFunction @left.self @lhs.signatures then
+  | ECall lhs.initialise_please = @loc.set_args
+          loc.set_args          = if isOurFunction @left.self @lhs.signatures then
+                                    @exprs.initialise_please
+                                    ++ (zipWith (\ e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EOp Add (EVar (recDepthName @left.self)) (ELit (LInt 1))]) e) @exprs.with_initialising [0..])
+                                    ++ [StmtCall @left.self []]
+                                  else
+                                    @exprs.initialise_please
+          lhs.with_initialising = if isOurFunction @left.self @lhs.signatures then
                                     EVar @loc.return_name
                                   else
                                     @self
