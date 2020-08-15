@@ -13,9 +13,15 @@ sem Module
                                                   @lhs.generated_sub_name
                                                   []
                                                   (
-                                                    [StmtGoTo @lhs.generated_sub_name]
+                                                    [ StmtAssign (NameLhs "time_in_return") (ELit (LInt 0))
+                                                    , StmtGoTo @lhs.generated_sub_name]
                                                     ++ @decls.all_statements
-                                                    ++ [StmtLabel "TheEnd"]
+                                                    ++ [ StmtLabel "TheEnd"
+                                                       , StmtAssign (NameLhs "frmView.txtLog.Text")
+                                                         (EVar "frmView.txtLog.Text + \"time in return case = \" + CStr(time_in_return/1000.0) + vbNewLine")
+                                                       , StmtAssign (NameLhs "frmView.txtLog.SelStart") (EVar "Len(frmView.txtLog.Text)")
+                                                       ]
+
                                                   )])
 
 

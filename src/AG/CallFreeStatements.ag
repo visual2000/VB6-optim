@@ -15,15 +15,28 @@ attr Declarations
   inh final_callsite_labels :: {[Int]}
 
 sem Declarations
-  | Nil lhs.dim_callback_pointer = [GlobalVarDecl Private $ GlobalTypeDecl "callback_pointer" TInt,
-                                    GlobalVarDecl Private $ GlobalTypeDeclArrayWithBounds "callback_stack" 0 500 TInt]
+  | Nil lhs.dim_callback_pointer = [ GlobalVarDecl Private $ GlobalTypeDecl "callback_pointer" TInt
+                                   , GlobalVarDecl Private $ GlobalTypeDeclArrayWithBounds "callback_stack" 0 500 TInt
+                                   , GlobalVarDecl Private $ GlobalTypeDecl "time_in_return" TLong
+                                   , GlobalVarDecl Private $ GlobalTypeDecl "time_temp" TLong
+                                   ]
 
 sem Declarations
   | Nil lhs.callsite_cases = [SubDecl Private "CallsiteCases" []
                               [StmtLabel "func_return",
+                               StmtAssign (NameLhs "time_temp") (ECall (NameLhs "GetTickCount") []),
                                StmtAssign (NameLhs "callback_pointer") (EOp Sub (EVar "callback_pointer")(ELit (LInt 1))),
                                StmtSelectCase (ECall (NameLhs "callback_stack") [EOp Add (EVar "callback_pointer") (ELit (LInt 1))])
-                               (map (\n -> CaseLit (LInt n) [StmtGoTo $ "callsite_" ++ show n]) @lhs.final_callsite_labels)
+                               (map (\n -> CaseLit
+                                             (LInt n)
+                                             [ StmtAssign (NameLhs "time_in_return")
+                                               (EOp Add
+                                                (EVar "time_in_return")
+                                                 (EOp Sub
+                                                  (ECall (NameLhs "GetTickCount") [])
+                                                  (EVar "time_temp")))
+                                             , StmtGoTo $ "callsite_" ++ show n
+                                             ]) @lhs.final_callsite_labels)
                               ]]
 
 attr Declarations Declaration

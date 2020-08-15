@@ -240,4 +240,5 @@ instance Printable TypeRef where
   pp TInt = text "Integer"
   pp TString = text "String"
   pp TBoolean = text "Boolean"
+  pp TLong = text "Long"
   pp (TUDT n) = text n

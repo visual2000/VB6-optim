@@ -102,6 +102,7 @@ data GlobalTypeDecl
 
 data TypeRef
   | TDouble
+  | TLong
   | TInt
   | TBoolean
   | TString
