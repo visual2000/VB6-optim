@@ -184,6 +184,21 @@ instance Printable [Stmt] where
                                        $+$ text "Loop While"
                                        <+> pp expr
                                        $+$ pp ss
+  pp ((StmtSelectCase expr cases):ss) = text "Select Case"
+                                       <+> pp expr
+                                       $+$ (nest 4 (pp cases))
+                                       $+$ text "End Select"
+                                       $+$ pp ss
+
+instance Printable [Case] where
+  pp [] = empty
+  pp (c:cs) = pp c $+$ pp cs
+
+instance Printable Case where
+  pp (CaseLit lit ss) = text "Case" <+> pp lit
+                        $+$ nest 4 (pp ss)
+  pp (CaseElse    ss) = text "Case Else"
+                        $+$ nest 4 (pp ss)
 
 instance Printable Lhs where
   pp (NameLhs n) = text n

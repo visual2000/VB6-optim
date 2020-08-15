@@ -1,7 +1,7 @@
-attr FuncArgDecls FuncArgDecl FuncArgDeclField Stmts Stmt StmtTypeDecls StmtTypeDecl
+attr FuncArgDecls FuncArgDecl FuncArgDeclField Stmts Stmt StmtTypeDecls StmtTypeDecl Cases Case
   inh defining_function :: Name
 
-attr Stmts Stmt Lhss Lhs Exprs MExpr Expr Binop
+attr Stmts Stmt Lhss Lhs Exprs MExpr Expr Binop Cases Case
   inh list_of_replacements :: {[(Name, Name)]}
   inh my_recursion_counter :: String
 
@@ -83,7 +83,7 @@ attr Stmt
 attr Stmts
   syn dim_lifted use {++} {[]} :: Stmts
 
-attr Lhss Lhs Exprs MExpr Expr Lit Binop
+attr Lhss Lhs Exprs MExpr Expr Lit Binop Cases Case
   syn dim_lifted :: self
 
 attr Declarations Declaration
@@ -135,6 +135,7 @@ sem Stmt
   | StmtDecl lhs.dim_lifted = []
   | StmtGoTo lhs.dim_lifted = [@self]
   | StmtLabel lhs.dim_lifted = [@self]
+  | StmtSelectCase lhs.dim_lifted = [StmtSelectCase @expr.dim_lifted @cases.dim_lifted]
   | StmtReturn lhs.dim_lifted = [StmtAssign (NameLhs @lhs.my_recursion_counter) (EOp Sub (EVar @lhs.my_recursion_counter) (ELit (LInt 1))),
                                  @self]
   | StmtAssign lhs.dim_lifted = if isReturnStatement @left.self @lhs.signatures @lhs.defining_function then

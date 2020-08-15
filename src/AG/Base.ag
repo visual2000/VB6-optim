@@ -1,6 +1,7 @@
 {
 type Name = String
 }
+type Cases                 = [Case]
 type Declarations          = [Declaration]
 type Exprs                 = [Expr]
 type FuncArgDecls          = [FuncArgDecl]
@@ -106,6 +107,11 @@ data TypeRef
   | TString
   | TUDT     name :: Name
 
+data Case
+  | CaseLit              case :: Lit
+                         statements :: Stmts
+  | CaseElse             statements :: Stmts
+
 data Stmt
   | StmtDecl             typedecls :: StmtTypeDecls
   | StmtGoTo             label :: Name
@@ -127,6 +133,8 @@ data Stmt
                          to :: Expr
                          step :: MExpr
                          statements :: Stmts
+  | StmtSelectCase       expr :: Expr
+                         cases :: Cases
   | StmtDoStatementsLoopWhileCond  statements :: Stmts
                                    condition :: Expr
 
@@ -158,10 +166,12 @@ data Binop | Add | Sub | Mul | Div | Eql
 
 {
 deriving instance Eq Binop
+deriving instance Eq Case
 deriving instance Eq Declaration
 deriving instance Eq Expr
 deriving instance Eq FuncArgDecl
 deriving instance Eq FuncArgDeclField
+deriving instance Eq GlobalTypeDecl
 deriving instance Eq Lhs
 deriving instance Eq Lit
 deriving instance Eq Module
@@ -169,15 +179,16 @@ deriving instance Eq ModuleAttribute
 deriving instance Eq ModuleOption
 deriving instance Eq Stmt
 deriving instance Eq StmtTypeDecl
-deriving instance Eq GlobalTypeDecl
 deriving instance Eq TypeRef
 deriving instance Eq UserTypeDeclField
 deriving instance Eq Visibility
 deriving instance Show Binop
+deriving instance Show Case
 deriving instance Show Declaration
 deriving instance Show Expr
 deriving instance Show FuncArgDecl
 deriving instance Show FuncArgDeclField
+deriving instance Show GlobalTypeDecl
 deriving instance Show Lhs
 deriving instance Show Lit
 deriving instance Show Module
@@ -185,7 +196,6 @@ deriving instance Show ModuleAttribute
 deriving instance Show ModuleOption
 deriving instance Show Stmt
 deriving instance Show StmtTypeDecl
-deriving instance Show GlobalTypeDecl
 deriving instance Show TypeRef
 deriving instance Show UserTypeDeclField
 deriving instance Show Visibility
