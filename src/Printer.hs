@@ -117,6 +117,10 @@ instance Printable StmtTypeDecl where
 
 instance Printable [Stmt] where
   pp [] = empty
+  pp (StmtGoTo l : ss) = text "GoTo" <+> text l
+                         $+$ pp ss
+  pp (StmtLabel l : ss) = (nest (-1000) (text l <> char ':'))
+                          $+$ pp ss
   pp (StmtReturn : ss) = text "Exit Function"
                          $+$ pp ss
   pp ((StmtDecl typefields):ss) = text "Dim"

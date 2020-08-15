@@ -60,6 +60,7 @@ tokens :-
   False                         { \p s -> Token p $ TokenFalse }
   For                           { \p s -> Token p $ TokenFor }
   Function                      { \p s -> Token p $ TokenFunction }
+  GoTo                          { \p s -> Token p $ TokenGoTo }
   If                            { \p s -> Token p $ TokenIf }
   Integer                       { \p s -> Token p $ TokenInteger }
   LSet                          { \p s -> Token p $ TokenLSet }
@@ -83,6 +84,7 @@ tokens :-
   $digit+                       { \p s -> Token p $ TokenIntLit (read s) }
   $digit+ \#                    { \p s -> Token p $ TokenDoubleLit ((read . reverse . (drop 1) . reverse) s) }
   $digit+ \. $digit+            { \p s -> Token p $ TokenDoubleLit (read s) }
+  :                             { \p s -> Token p $ TokenColon }
   \(                            { \p s -> Token p $ TokenLParen }
   \)                            { \p s -> Token p $ TokenRParen }
   \*                            { \p s -> Token p $ TokenMul }
@@ -114,6 +116,7 @@ data IToken
   | TokenAttribute
   | TokenBoolean
   | TokenCall
+  | TokenColon
   | TokenComma
   | TokenDeclare | TokenLib
   | TokenDim | TokenByVal | TokenByRef
@@ -133,6 +136,7 @@ data IToken
   | TokenFalse
   | TokenFor | TokenTo | TokenStep | TokenNext
   | TokenFunction | TokenSubroutine
+  | TokenGoTo
   | TokenGt | TokenGeq | TokenLt | TokenLeq
   | TokenIf | TokenThen | TokenElse
   | TokenIntLit Int

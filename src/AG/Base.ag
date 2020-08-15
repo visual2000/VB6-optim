@@ -108,6 +108,8 @@ data TypeRef
 
 data Stmt
   | StmtDecl             typedecls :: StmtTypeDecls
+  | StmtGoTo             label :: Name
+  | StmtLabel            label :: Name
   | StmtReturn
   | StmtAssign           left :: Lhs
                          expr :: Expr

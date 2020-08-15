@@ -30,60 +30,62 @@ import Data.Either
 
 -- Token Names
 %token
-    'Declare'     { Token _ (TokenDeclare) }
-    'Call'        { Token _ (TokenCall) }
-    'Lib'         { Token _ (TokenLib) }
-    'LSet'        { Token _ (TokenLSet) }
-    'Set'         { Token _ (TokenSet) }
-    'Function'    { Token _ (TokenFunction) }
-    'Sub'         { Token _ (TokenSubroutine) }
-    'ByRef'       { Token _ (TokenByRef) }
-    'ByVal'       { Token _ (TokenByVal) }
-    'Type'        { Token _ (TokenType) }
-    'End'         { Token _ (TokenEnd) }
-    'For'         { Token _ (TokenFor) }
-    'To'          { Token _ (TokenTo) }
-    'Next'        { Token _ (TokenNext) }
-    'Step'        { Token _ (TokenStep) }
-    'Or'          { Token _ (TokenOr) }
-    'And'         { Token _ (TokenAnd) }
-    'If'          { Token _ (TokenIf) }
-    'Then'        { Token _ (TokenThen) }
-    'Else'        { Token _ (TokenElse) }
-    'Exit'        { Token _ (TokenExit) }
-    'Public'      { Token _ (TokenPublic) }
-    'Private'     { Token _ (TokenPrivate) }
-    'True'        { Token _ (TokenTrue) }
-    'False'       { Token _ (TokenFalse) }
-    INT           { Token _ (TokenIntLit $$) }
-    DOUBLE        { Token _ (TokenDoubleLit $$) }
-    VAR           { Token _ (TokenSym $$) }
-    STR           { Token _ (TokenStringLit $$) }
-    'Attribute'   { Token _ (TokenAttribute) }
-    'Option'      { Token _ (TokenOption) }
-    'Dim'         { Token _ (TokenDim) }
-    'Explicit'    { Token _ (TokenExplicit) }
-    'As'          { Token _ (TokenAs) }
-    'Do'          { Token _ (TokenDo) }
-    'Loop'        { Token _ (TokenLoop) }
-    'While'       { Token _ (TokenWhile) }
-    '='           { Token _ (TokenEq) }
-    '+'           { Token _ (TokenAdd) }
-    '-'           { Token _ (TokenSub) }
-    '*'           { Token _ (TokenMul) }
-    '/'           { Token _ (TokenDiv) }
-    '>'           { Token _ (TokenGt) }
-    '<'           { Token _ (TokenLt) }
-    '>='          { Token _ (TokenGeq) }
-    '<='          { Token _ (TokenLeq) }
-    '.'           { Token _ (TokenDot) }
-    'Double'      { Token _ (TokenDouble) }
-    'Integer'     { Token _ (TokenInteger) }
-    'Boolean'     { Token _ (TokenBoolean) }
-    'String'      { Token _ (TokenString) }
     '('           { Token _ (TokenLParen) }
     ')'           { Token _ (TokenRParen) }
+    '*'           { Token _ (TokenMul) }
+    '+'           { Token _ (TokenAdd) }
     ','           { Token _ (TokenComma ) }
+    '-'           { Token _ (TokenSub) }
+    '.'           { Token _ (TokenDot) }
+    ':'           { Token _ (TokenColon) }
+    '/'           { Token _ (TokenDiv) }
+    '<'           { Token _ (TokenLt) }
+    '<='          { Token _ (TokenLeq) }
+    '='           { Token _ (TokenEq) }
+    '>'           { Token _ (TokenGt) }
+    '>='          { Token _ (TokenGeq) }
+    'And'         { Token _ (TokenAnd) }
+    'As'          { Token _ (TokenAs) }
+    'Attribute'   { Token _ (TokenAttribute) }
+    'Boolean'     { Token _ (TokenBoolean) }
+    'ByRef'       { Token _ (TokenByRef) }
+    'ByVal'       { Token _ (TokenByVal) }
+    'Call'        { Token _ (TokenCall) }
+    'Declare'     { Token _ (TokenDeclare) }
+    'Dim'         { Token _ (TokenDim) }
+    'Do'          { Token _ (TokenDo) }
+    'Double'      { Token _ (TokenDouble) }
+    'Else'        { Token _ (TokenElse) }
+    'End'         { Token _ (TokenEnd) }
+    'Exit'        { Token _ (TokenExit) }
+    'Explicit'    { Token _ (TokenExplicit) }
+    'False'       { Token _ (TokenFalse) }
+    'For'         { Token _ (TokenFor) }
+    'Function'    { Token _ (TokenFunction) }
+    'GoTo'        { Token _ (TokenGoTo) }
+    'If'          { Token _ (TokenIf) }
+    'Integer'     { Token _ (TokenInteger) }
+    'LSet'        { Token _ (TokenLSet) }
+    'Lib'         { Token _ (TokenLib) }
+    'Loop'        { Token _ (TokenLoop) }
+    'Next'        { Token _ (TokenNext) }
+    'Option'      { Token _ (TokenOption) }
+    'Or'          { Token _ (TokenOr) }
+    'Private'     { Token _ (TokenPrivate) }
+    'Public'      { Token _ (TokenPublic) }
+    'Set'         { Token _ (TokenSet) }
+    'Step'        { Token _ (TokenStep) }
+    'String'      { Token _ (TokenString) }
+    'Sub'         { Token _ (TokenSubroutine) }
+    'Then'        { Token _ (TokenThen) }
+    'To'          { Token _ (TokenTo) }
+    'True'        { Token _ (TokenTrue) }
+    'Type'        { Token _ (TokenType) }
+    'While'       { Token _ (TokenWhile) }
+    DOUBLE        { Token _ (TokenDoubleLit $$) }
+    INT           { Token _ (TokenIntLit $$) }
+    STR           { Token _ (TokenStringLit $$) }
+    VAR           { Token _ (TokenSym $$) }
     eol           { Token _ (TokenEOL) }
 
 -- Operators
@@ -187,6 +189,8 @@ Statement : 'Dim' DimDeclArgs eol         { StmtDecl $2 }
           | 'LSet' Lhs '=' Expr eol       { StmtLSetAssign $2 $4 }
           | 'Set' Lhs '=' Expr eol        { StmtSetAssign $2 $4 }
           | Lhs '=' Expr eol              { StmtAssign $1 $3 }
+          | VAR ':' eol                   { StmtLabel $1 }
+          | 'GoTo' VAR eol                { StmtGoTo $2 }
           | 'If' Expr 'Then' eol
                 Statements
             'Else' eol
