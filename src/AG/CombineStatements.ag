@@ -30,6 +30,7 @@ sem Declaration
                                             ++ [StmtGoTo "TheEnd"]
                                           else
                                             @statements.self
+                                            ++ [StmtGoTo "func_return"]
 
   | DllFunc UserTypeDecl GlobalVarDecl
                      lhs.all_globals = [@self]
