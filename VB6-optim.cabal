@@ -1,10 +1,10 @@
 cabal-version: 2.0
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 982c3f08d227993582750cd85a02d40569cad7b8d2616a235de0b4f39688b23e
+-- hash: 088b844d48165dcd056fc26ab783441025942d4ae679f9e339efeb824a8fab27
 
 name:           VB6-optim
 version:        0.1.0.0
@@ -27,6 +27,7 @@ extra-source-files:
     src/AG.ag
     src/AG/Base.ag
     src/AG/CallFreeStatements.ag
+    src/AG/CombineStatements.ag
     src/AG/DimLift.ag
     uuagc_options
 
@@ -57,7 +58,7 @@ library
       src
   default-extensions: StandaloneDeriving
   other-extensions: CPP
-  ghc-options: -Wall -Werror -Wno-unused-matches -fwarn-incomplete-uni-patterns
+  ghc-options: -Wall -Werror -Wno-unused-matches -Wno-type-defaults -fwarn-incomplete-uni-patterns
   build-depends:
       MissingH
     , array

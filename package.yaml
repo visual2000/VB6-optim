@@ -54,6 +54,7 @@ library:
   - -Wall
   - -Werror
   - -Wno-unused-matches
+  - -Wno-type-defaults
   - -fwarn-incomplete-uni-patterns
 
   # default-extensions for the benefit of AGs, which don't allow
