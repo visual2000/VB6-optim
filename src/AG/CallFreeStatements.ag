@@ -9,6 +9,13 @@ attr Module Declarations Declaration
 attr Declarations Declaration Stmts Stmt Exprs MExpr Expr
   syn dim_callsites use {++} {[]} :: {[Declaration]}
 
+attr Declarations
+  syn dim_callback_pointer use {++} {[]} :: {[Declaration]}
+
+sem Declarations
+  | Nil lhs.dim_callback_pointer = [GlobalVarDecl Private $ GlobalTypeDecl "callback_pointer" TInt,
+                                    GlobalVarDecl Private $ GlobalTypeDeclArrayWithBounds "callback_stack" 0 200 TInt]
+
 attr Declarations Declaration
   syn dim_return_vars use {++} {[]} :: {[Declaration]}
 
@@ -26,10 +33,15 @@ sem Module
   | Mod decls.sub_signatures = @decls.collect_sub_names
 
 sem Expr
-  | ECall loc.num :: uniqueref counter
-          loc.return_name = returnName @left.self
-          loc.callsite_name = "callsite_" ++ functionName @left.self ++ "_" ++ show @loc.num
+  | ECall loc.return_name = returnName @left.self
+          loc.callsite_name = "callsite_" ++ functionName @left.self ++ "_" ++ show @left.num
           lhs.dim_callsites = callSiteDecl @left.self @loc.callsite_name @lhs.signatures ++ @exprs.dim_callsites
+
+sem Lhs
+  | * loc.num :: uniqueref counter
+
+attr Lhs
+  syn num :: Int
 
 attr Module ModuleAttributes ModuleOptions ModuleAttribute ModuleOption Visibility FuncArgDecls FuncArgDecl FuncArgDeclField TypeRef UserTypeDeclFields UserTypeDeclField GlobalTypeDecl Declarations Declaration Lit
   syn with_initialising :: self
@@ -38,6 +50,7 @@ sem Module
   | Mod lhs.with_initialising = Mod @attributes.self
                                     @options.self
                                     (@decls.dim_callsites
+                                     ++ @decls.dim_callback_pointer
                                      ++ @decls.dim_return_vars
                                      ++ @decls.with_initialising)
 
@@ -61,15 +74,20 @@ sem Stmt
   | StmtCall       lhs.with_initialising = @exprs.initialise_please
                                              ++ if isOurFunction @left.self @lhs.signatures
                                                    || isOurSub @left.self @lhs.sub_signatures then
-                                                                       @loc.set_args ++
-                                                                       [StmtCall @left.self []]
-                                                                     else
-                                                                       [StmtCall @left.self @exprs.with_initialising]
-                   loc.set_args       = if isOurFunction @left.self @lhs.signatures
-                                           || isOurSub @left.self @lhs.sub_signatures then
-                                          zipWith (\ e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EOp Add (EVar (recDepthName @left.self)) (ELit (LInt 1))]) e) @exprs.with_initialising [0..]
-                                        else
-                                          []
+                                                  zipWith (\e n -> StmtAssign
+                                                            (ArrayLhs
+                                                              (argumentName @left.self n)
+                                                              [EOp Add
+                                                                (EVar (recDepthName @left.self))
+                                                                (ELit (LInt 1))]) e) @exprs.with_initialising [0..]
+                                                  ++ [StmtAssign (NameLhs "callback_pointer")
+                                                       (EOp Add (EVar "callback_pointer") (ELit (LInt 1)))]
+                                                  ++ [StmtAssign (ArrayLhs "callback_stack" [EVar "callback_pointer"])
+                                                       (ELit (LInt @left.num))]
+                                                  ++ [StmtGoTo (functionName @left.self)]
+                                                  ++ [StmtLabel ("callsite_" ++ show @left.num)]
+                                                else
+                                                  [StmtCall @left.self @exprs.with_initialising]
   | StmtIfThenElse lhs.with_initialising =
      @expr.initialise_please
        ++ [StmtIfThenElse @expr.with_initialising
@@ -98,13 +116,23 @@ attr Exprs MExpr Expr Lhss Lhs Binop
   syn with_initialising :: self
 
 sem Expr
-  | ECall lhs.initialise_please = if isOurFunction @left.self @lhs.signatures then
-                                    @exprs.initialise_please
-                                    ++ (zipWith (\e n -> StmtAssign (ArrayLhs (argumentName @left.self n) [EOp Add (EVar (recDepthName @left.self)) (ELit (LInt 1))]) e) @exprs.with_initialising [0..])
-                                    ++ [StmtCall @left.self []]
+  | ECall lhs.initialise_please = @exprs.initialise_please ++
+                                  if isOurFunction @left.self @lhs.signatures then
+                                    (zipWith (\e n -> StmtAssign
+                                               (ArrayLhs
+                                                (argumentName @left.self n)
+                                                [EOp Add
+                                                 (EVar (recDepthName @left.self))
+                                                 (ELit (LInt 1))]) e) @exprs.with_initialising [0..])
+                                    ++ [StmtAssign (NameLhs "callback_pointer")
+                                         (EOp Add (EVar "callback_pointer") (ELit (LInt 1)))]
+                                    ++ [StmtAssign (ArrayLhs "callback_stack" [EVar "callback_pointer"])
+                                         (ELit (LInt @left.num))]
+                                    ++ [StmtGoTo (functionName @left.self)]
+                                    ++ [StmtLabel ("callsite_" ++ show @left.num)]
                                     ++ [StmtAssign (NameLhs @loc.callsite_name) (EVar @loc.return_name)]
                                   else
-                                    @exprs.initialise_please
+                                    []
           lhs.with_initialising = if isOurFunction @left.self @lhs.signatures then
                                     EVar @loc.callsite_name
                                   else
