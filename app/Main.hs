@@ -96,6 +96,7 @@ projectFile = "/Users/paul/Public/BasicTrace/BasicTrace.vbp"
 outDirectory = "/Users/paul/Public/OptimTrace"
 cleanTargetDir = True
 newModuleName = "Monolith"
+generatedSubName = "OurMagicEntryPoint"
 
 parseModuleList :: FilePath -> [FilePath] -> IO [Module]
 parseModuleList baseDir = mapM (parseFileToModule . (baseDir </>))
@@ -112,7 +113,7 @@ processProject project dest = do
   createDirectory dest
   copyOtherFiles project dest
   do mods <- parseModuleList (baseDirectory project) (modules project)
-     let finalModule = printModule $ (getCallsiteFree . getDimLifted) (combineModules mods) in
+     let finalModule = printModule $ (getSingleSub . getCallsiteFree . getDimLifted) (combineModules mods) in
        do putStrLn finalModule
           writeFile (dest </> newModuleName ++ ".bas") finalModule
   let ini = originalIni project
@@ -136,3 +137,16 @@ main = do fileContents <- T.readFile projectFile
 
 -- TODO warn/bail if final statement in Func isn't a return/Exit
 -- Function (because we use that to keep track of recursion depth).
+
+getSingleSub :: Module -> Module
+getSingleSub m = all_statements_in_one_sub_Syn_Module (wrapAG m)
+
+getDimLifted :: Module -> Module
+getDimLifted m = dim_lifted_Syn_Module (wrapAG m)
+
+getCallsiteFree :: Module -> Module
+getCallsiteFree m = with_initialising_Syn_Module (wrapAG m)
+
+wrapAG :: Module -> Syn_Module
+wrapAG m = wrap_Module (sem_Module m) Inh_Module{counter_Inh_Module=0
+                                                ,generated_sub_name_Inh_Module=generatedSubName}

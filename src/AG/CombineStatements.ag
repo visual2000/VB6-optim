@@ -1,0 +1,35 @@
+attr Module
+  syn all_statements_in_one_sub :: Module
+
+attr Module Declarations Declaration
+  inh generated_sub_name :: String
+
+sem Module
+  | Mod lhs.all_statements_in_one_sub = Mod @attributes.self
+                                            @options.self
+                                            (@decls.all_globals
+                                             ++ [SubDecl
+                                                  Public
+                                                  @lhs.generated_sub_name
+                                                  []
+                                                  (
+                                                    [StmtGoTo @lhs.generated_sub_name]
+                                                    ++ @decls.all_statements
+                                                    ++ [StmtLabel "TheEnd"]
+                                                  )])
+
+
+
+attr Declarations Declaration
+  syn all_globals use {++} {[]} :: Declarations
+  syn all_statements use {++} {[]} :: Stmts
+
+sem Declaration
+  | FuncDecl SubDecl lhs.all_statements = if @name == @lhs.generated_sub_name then
+                                            @statements.self
+                                            ++ [StmtGoTo "TheEnd"]
+                                          else
+                                            @statements.self
+
+  | DllFunc UserTypeDecl GlobalVarDecl
+                     lhs.all_globals = [@self]
